@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-/* sticky, translucent deltaDAO header (styled in Header/Menu.module.css) */
+/* sticky, translucent header (styled in Header/Menu.module.css) */
 .app > header {
   position: sticky;
   top: 0;

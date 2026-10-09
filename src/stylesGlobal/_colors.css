@@ -1,23 +1,29 @@
 :root {
   /* ------------------------------------------------------------------
-   * deltaDAO brand tokens (source of truth, see reskin spec section 2)
+   * AgrospAI brand tokens, mapped onto the deck token names
    * ------------------------------------------------------------------ */
-  --brand-highlight: #0073cd; /* primary blue (links, dataset type) */
-  --brand-accent: #00b8e4; /* cyan, DECORATIVE ONLY on light bg */
-  --brand-accent-dark: #0090b1;
-  --brand-accent-darker: #00708a; /* the only cyan allowed as text on light */
-  --brand-secondary: #a051ff; /* violet, gradient 3rd stop + algorithm */
-  --brand-secondary-dark: #7c3aed; /* violet that passes 4.5:1 on white */
+  --brand-agrospai-light: #d4e393; /* lime, highlights on the green slide */
+  --brand-agrospai-dark: #295140; /* forest green, footer / dark slides */
+  --brand-agrospai-light-25: rgba(212, 227, 147, 0.25);
 
-  --deck-blue: #2450ec; /* headings, primary CTA, active nav */
-  --deck-blue-hover: #1d42c9;
-  --deck-cyan: #00b8e4;
-  --deck-surface: #e6edef; /* mist hero / page-header background */
-  --deck-surface-soft: #f3f6f7; /* page body background behind cards */
-  --deck-navy: #0b1322; /* dark slide (home hero, footer) */
-  --deck-navy-2: #111b2e;
+  --brand-highlight: #00718b; /* teal (links, dataset type), 5.6:1 on white */
+  --brand-accent: #008baa; /* teal, DECORATIVE ONLY on light bg */
+  --brand-accent-dark: #00718b;
+  --brand-accent-darker: #005f74; /* the only teal allowed as text on light */
+  --brand-secondary: #3d7a5c; /* green, gradient 3rd stop + algorithm */
+  --brand-secondary-dark: var(
+    --brand-agrospai-dark
+  ); /* passes 4.5:1 on white */
 
-  /* decorative gradients stay blue to cyan, no violet tint */
+  --deck-blue: #004967; /* headings, primary CTA, active nav */
+  --deck-blue-hover: #003349;
+  --deck-cyan: #008baa;
+  --deck-surface: #eaf0e2; /* mist hero / page-header background */
+  --deck-surface-soft: #f5f7f0; /* page body background behind cards */
+  --deck-navy: var(--brand-agrospai-dark); /* dark slide (home hero, footer) */
+  --deck-navy-2: #1f3e31;
+
+  /* decorative gradients stay navy to teal */
   --brand-gradient: linear-gradient(
     to right,
     var(--brand-highlight),
@@ -34,11 +40,11 @@
     var(--deck-blue) 0%,
     var(--brand-highlight) 100%
   );
-  --button-hero-shadow: 0 4px 14px rgba(0, 184, 228, 0.28),
-    0 1px 2px rgba(36, 80, 236, 0.2);
+  --button-hero-shadow: 0 4px 14px rgba(0, 139, 170, 0.28),
+    0 1px 2px rgba(0, 73, 103, 0.2);
   --button-hero-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.12) inset,
-    0 0 22px rgba(0, 184, 228, 0.55), 0 8px 26px rgba(36, 80, 236, 0.35);
-  --button-hero-shadow-active: 0 2px 8px rgba(0, 184, 228, 0.3);
+    0 0 22px rgba(0, 139, 170, 0.55), 0 8px 26px rgba(0, 73, 103, 0.35);
+  --button-hero-shadow-active: 0 2px 8px rgba(0, 139, 170, 0.3);
   --brand-hairline: linear-gradient(
     to right,
     var(--deck-blue),
@@ -57,17 +63,12 @@
   --input: #898e98; /* field boundary: 3.29:1 on white, 3.03:1 on --deck-surface-soft (WCAG 1.4.11) */
   --input-hover: var(--deck-blue); /* field hover / focus border, 6.1:1 */
   /* outlined / ghost / secondary button borders */
-  --control-border: rgba(
-    36,
-    80,
-    236,
-    0.7
-  ); /* 3.40:1 on white, 3.09:1 on mist */
+  --control-border: rgba(0, 73, 103, 0.7); /* 3.40:1 on white, 3.09:1 on mist */
   --control-border-hover: var(--deck-blue);
   --control-border-on-dark: rgba(255, 255, 255, 0.45); /* 4.5:1 on navy */
   --control-border-on-dark-hover: rgba(255, 255, 255, 0.6); /* 7.1:1 on navy */
   --input-strong: rgba(22, 22, 22, 0.5); /* 3.4:1, checkbox/radio boundaries */
-  --ring: rgba(36, 80, 236, 0.35);
+  --ring: rgba(0, 73, 103, 0.35);
   --destructive: #e40014;
   --destructive-soft: rgba(228, 0, 20, 0.08);
   --destructive-strong: #b91c1c; /* red-700, for text on tinted bg */
@@ -79,18 +80,18 @@
   --warning-soft: #fffbeb;
 
   /* tints (icon tiles, hovers, selected states) */
-  --deck-blue-4: rgba(36, 80, 236, 0.04);
-  --deck-blue-8: rgba(36, 80, 236, 0.08);
-  --deck-blue-12: rgba(36, 80, 236, 0.12);
-  --deck-blue-25: rgba(36, 80, 236, 0.25);
-  --deck-blue-40: rgba(36, 80, 236, 0.4);
-  --deck-cyan-13: rgba(0, 184, 228, 0.13);
+  --deck-blue-4: rgba(0, 73, 103, 0.04);
+  --deck-blue-8: rgba(0, 73, 103, 0.08);
+  --deck-blue-12: rgba(0, 73, 103, 0.12);
+  --deck-blue-25: rgba(0, 73, 103, 0.25);
+  --deck-blue-40: rgba(0, 73, 103, 0.4);
+  --deck-cyan-13: rgba(0, 139, 170, 0.13);
   /* opaque equivalents for button states (safe on navy surfaces too) */
   --deck-blue-8-solid: color-mix(in srgb, var(--deck-blue) 8%, var(--card));
   --deck-blue-12-solid: color-mix(in srgb, var(--deck-blue) 12%, var(--card));
-  --deck-cyan-25: rgba(0, 184, 228, 0.25);
-  --shadow-blue-5: 0 1px 2px rgba(36, 80, 236, 0.05);
-  --shadow-blue-10: 0 10px 25px -5px rgba(36, 80, 236, 0.1);
+  --deck-cyan-25: rgba(0, 139, 170, 0.25);
+  --shadow-blue-5: 0 1px 2px rgba(0, 73, 103, 0.05);
+  --shadow-blue-10: 0 10px 25px -5px rgba(0, 73, 103, 0.1);
   --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
     0 4px 6px -4px rgba(0, 0, 0, 0.04);
 
@@ -118,10 +119,10 @@
   --destructive-bg: color-mix(in srgb, var(--destructive) 6%, var(--card));
 
   /* wave decoration (spec section 6) */
-  --wave-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 320' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='p' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%234f7cf0'/%3E%3Cstop offset='1' stop-color='%232450ec'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%232450ec'/%3E%3Cstop offset='1' stop-color='%2319b8f0'/%3E%3C/linearGradient%3E%3ClinearGradient id='t' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%2334b3c4'/%3E%3Cstop offset='1' stop-color='%238fdbe2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 300 C200 170 390 310 570 215 C720 135 810 215 900 160 L900 0 L0 0 Z' fill='url(%23p)' opacity='0.1'/%3E%3Cpath d='M0 220 C170 110 340 250 520 165 C680 90 790 180 900 110 L900 0 L0 0 Z' fill='url(%23b)' opacity='0.16'/%3E%3Cpath d='M0 150 C140 60 300 200 460 130 C620 60 760 150 900 70 L900 0 L0 0 Z' fill='url(%23t)' opacity='0.26'/%3E%3C/svg%3E");
+  --wave-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 320' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='p' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%233d7a5c'/%3E%3Cstop offset='1' stop-color='%23004967'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%23004967'/%3E%3Cstop offset='1' stop-color='%23008baa'/%3E%3C/linearGradient%3E%3ClinearGradient id='t' x1='0' y1='0' x2='1' y2='0.4'%3E%3Cstop offset='0' stop-color='%23a5c960'/%3E%3Cstop offset='1' stop-color='%23d4e393'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 300 C200 170 390 310 570 215 C720 135 810 215 900 160 L900 0 L0 0 Z' fill='url(%23p)' opacity='0.1'/%3E%3Cpath d='M0 220 C170 110 340 250 520 165 C680 90 790 180 900 110 L900 0 L0 0 Z' fill='url(%23b)' opacity='0.16'/%3E%3Cpath d='M0 150 C140 60 300 200 460 130 C620 60 760 150 900 70 L900 0 L0 0 Z' fill='url(%23t)' opacity='0.26'/%3E%3C/svg%3E");
 
   /* ------------------------------------------------------------------
-   * Legacy names, remapped onto the deltaDAO tokens so untouched files
+   * Legacy names, remapped onto the brand tokens so untouched files
    * degrade gracefully. New code should use the tokens above.
    * ------------------------------------------------------------------ */
   --brand-white: #ffffff;
@@ -145,10 +146,10 @@
   --ocean-pink: var(--brand-secondary);
   --ocean-violet: var(--brand-secondary);
   --ocean-blue: var(--brand-highlight);
-  --ocean-orange-color: var(--deck-cyan-13);
+  --ocean-orange-color: var(--brand-agrospai-light);
 
   --clr-navy: var(--deck-blue);
-  --clr-amber: var(--deck-cyan-13);
+  --clr-amber: var(--brand-agrospai-light);
   --clr-teal: var(--brand-accent-darker);
   --clr-slate-70: var(--muted-foreground);
   --clr-slate-50: var(--placeholder);
@@ -178,17 +179,17 @@
 
   --border-color: var(--border);
   --border-navy-soft: var(--deck-blue-25);
-  --box-shadow-color: rgba(36, 80, 236, 0.06);
-  --modal-overlay-background: rgba(11, 19, 34, 0.55);
+  --box-shadow-color: rgba(0, 73, 103, 0.06);
+  --modal-overlay-background: rgba(20, 41, 32, 0.55);
 
   --primary-hover: var(--deck-blue-hover);
   --surface-highlight: var(--muted);
-  --surface-warning: var(--deck-cyan-13);
+  --surface-warning: var(--brand-agrospai-light-25);
   --surface-neutral: rgba(22, 22, 22, 0.02);
   --surface-hover: var(--deck-blue-4);
 
   --gradient-primary: var(--deck-blue);
-  --gradient-accent: var(--deck-cyan-13);
+  --gradient-accent: var(--brand-agrospai-light-25);
 
   /* Component tokens */
   --checkbox-selected-background: var(--deck-blue-8);
@@ -199,6 +200,7 @@
   --badge-background-color: var(--deck-blue);
 
   --menu-logo-color-hover: var(--deck-blue);
+  --menu-background: rgba(212, 227, 147, 0.92); /* AgrospAI lime */
   --menu-font-color: var(--foreground);
   --menu-font-color-active: var(--deck-blue);
   --menu-font-color-hover: var(--deck-blue);
@@ -246,7 +248,7 @@
 
   --confetti-color-one: var(--deck-blue);
   --confetti-color-two: var(--deck-cyan);
-  --confetti-color-three: var(--brand-secondary);
+  --confetti-color-three: var(--brand-agrospai-light);
   --confetti-color-four: var(--brand-highlight);
   --confetti-color-five: var(--brand-white);
 
@@ -255,7 +257,7 @@
   /* Palette (normalized from legacy literals) */
   /* Neutrals */
   --black-1000: #000000;
-  --overlay-dark-90: rgba(11, 19, 34, 0.9);
+  --overlay-dark-90: rgba(20, 41, 32, 0.9);
   --neutral-900: #333333;
   --neutral-850: #444444;
   --neutral-700: #555555;
@@ -313,19 +315,19 @@
   --red-100: #fee2e2;
   --red-80: var(--destructive-tint);
 
-  /* Yellows (legacy amber -> cyan/blue tints; warning text stays amber-dark) */
+  /* Yellows (legacy amber -> AgrospAI lime tints; warning text stays amber-dark) */
   --yellow-900: var(--warning-strong);
-  --yellow-700: var(--deck-cyan);
-  --yellow-600: var(--deck-cyan-13);
-  --yellow-550: var(--deck-cyan-13);
-  --yellow-500: var(--deck-cyan-13);
-  --yellow-450: var(--deck-cyan-13);
-  --yellow-400: var(--deck-cyan);
-  --yellow-350: var(--deck-cyan-13);
-  --yellow-200: var(--deck-cyan-13);
-  --yellow-180: var(--deck-cyan-13);
+  --yellow-700: var(--brand-agrospai-light);
+  --yellow-600: var(--brand-agrospai-light-25);
+  --yellow-550: var(--brand-agrospai-light-25);
+  --yellow-500: var(--brand-agrospai-light-25);
+  --yellow-450: var(--brand-agrospai-light-25);
+  --yellow-400: var(--brand-agrospai-light);
+  --yellow-350: var(--brand-agrospai-light-25);
+  --yellow-200: var(--brand-agrospai-light-25);
+  --yellow-180: var(--brand-agrospai-light-25);
   --yellow-150: var(--warning-soft);
-  --yellow-120: var(--deck-cyan-13);
+  --yellow-120: var(--brand-agrospai-light-25);
 
   /* Alphas */
   --black-alpha-0: rgba(0, 0, 0, 0);
@@ -351,22 +353,22 @@
   --ink-alpha-30: rgba(22, 22, 22, 0.3);
   --ink-alpha-40: rgba(22, 22, 22, 0.4);
   --ink-alpha-80: rgba(22, 22, 22, 0.8);
-  --navy-alpha-5: rgba(36, 80, 236, 0.05);
-  --navy-alpha-10: rgba(36, 80, 236, 0.1);
-  --navy-alpha-20: rgba(36, 80, 236, 0.2);
-  --navy-alpha-30: rgba(36, 80, 236, 0.3);
-  --navy-alpha-40: rgba(36, 80, 236, 0.4);
-  --navy-alpha-94: rgba(11, 19, 34, 0.94);
-  --ocean-alpha-10: rgba(0, 115, 205, 0.1);
-  --ocean-alpha-30: rgba(0, 115, 205, 0.3);
-  --ocean-bright-alpha-10: rgba(0, 115, 205, 0.1);
-  --ocean-bright-alpha-90: rgba(0, 115, 205, 0.9);
-  --teal-alpha-10: rgba(0, 184, 228, 0.1);
-  --cyan-alpha-1: rgba(0, 184, 228, 0.01);
+  --navy-alpha-5: rgba(0, 73, 103, 0.05);
+  --navy-alpha-10: rgba(0, 73, 103, 0.1);
+  --navy-alpha-20: rgba(0, 73, 103, 0.2);
+  --navy-alpha-30: rgba(0, 73, 103, 0.3);
+  --navy-alpha-40: rgba(0, 73, 103, 0.4);
+  --navy-alpha-94: rgba(20, 41, 32, 0.94);
+  --ocean-alpha-10: rgba(0, 113, 139, 0.1);
+  --ocean-alpha-30: rgba(0, 113, 139, 0.3);
+  --ocean-bright-alpha-10: rgba(0, 113, 139, 0.1);
+  --ocean-bright-alpha-90: rgba(0, 113, 139, 0.9);
+  --teal-alpha-10: rgba(0, 139, 170, 0.1);
+  --cyan-alpha-1: rgba(0, 139, 170, 0.01);
   --green-alpha-1: rgba(4, 120, 87, 0.01);
   --green-bright-alpha-15: rgba(4, 120, 87, 0.12);
-  --yellow-alpha-10: rgba(0, 184, 228, 0.1);
-  --yellow-alpha-30: rgba(0, 184, 228, 0.3);
+  --yellow-alpha-10: rgba(212, 227, 147, 0.2);
+  --yellow-alpha-30: rgba(212, 227, 147, 0.5);
   --red-alpha-15: rgba(228, 0, 20, 0.12);
   --white-alpha-15: rgba(255, 255, 255, 0.15);
   --white-alpha-20: rgba(255, 255, 255, 0.2);
@@ -380,7 +382,7 @@
   --font-color-heading: #f7f7f7;
   --background-body: rgb(10, 10, 10);
   --background-body-transparent: rgba(10, 10, 10, 0.9);
-  --modal-overlay-background: rgba(11, 19, 34, 0.7);
+  --modal-overlay-background: rgba(20, 41, 32, 0.7);
   --background-content: #141414;
   --background-highlight: #201f1f;
   --border-color: #303030;

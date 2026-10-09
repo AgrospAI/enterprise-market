@@ -1,10 +1,10 @@
 {
-  "name": "deltaDAO Marketplace",
-  "short_name": "deltaDAO",
-  "description": "Publish, discover and monetize data and AI assets with full data sovereignty, privacy-preserving Compute-to-Data and built-in GDPR compliance.",
+  "name": "AgrospAI Demonstration Marketplace",
+  "short_name": "AgrospAI",
+  "description": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#2450ec",
+  "theme_color": "#004967",
   "background_color": "#ffffff",
   "icons": [
     {

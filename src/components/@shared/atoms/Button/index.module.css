@@ -126,7 +126,7 @@ body .accent:hover,
 body .accent:focus-visible {
   background: var(--button-hero-gradient);
   color: var(--brand-white);
-  /* capped so white on the #0073cd stop stays >= 4.5:1 (4.59); the cyan glow carries hover */
+  /* capped so white on the --brand-highlight stop stays >= 4.5:1; the cyan glow carries hover */
   filter: brightness(1.03);
   box-shadow: var(--button-hero-shadow-hover);
   transform: translateY(-1px);

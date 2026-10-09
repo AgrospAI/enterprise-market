@@ -112,7 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: 3.5rem;
-  padding: 0 20px 4rem;
+  padding: 4rem 20px;
   box-sizing: border-box;
 }
 
@@ -139,10 +139,6 @@
 
 .contentContainer::after {
   right: 20px;
-}
-
-.contentContainer > header {
-  width: 100%;
 }
 
 .textContent {
@@ -354,7 +350,7 @@
 @media (max-width: 1024px) {
   .contentContainer {
     gap: 3.5rem;
-    padding: 0 2rem 3.5rem;
+    padding: 3.5rem 2rem;
   }
 
   .contentContainer::before,
@@ -374,7 +370,7 @@
 @media (max-width: 480px) {
   .contentContainer {
     gap: 2.5rem;
-    padding: 0 16px 3rem;
+    padding: 2.5rem 16px 3rem;
   }
 
   .title {

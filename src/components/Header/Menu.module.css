@@ -1,5 +1,5 @@
 /*
- * deltaDAO header: sticky, translucent white bar (sticky positioning lives on
+ * AgrospAI header: sticky, translucent lime bar (sticky positioning lives on
  * the <header> element in App/index.module.css).
  */
 .menu {
@@ -22,7 +22,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--menu-background);
   -webkit-backdrop-filter: saturate(1.4) blur(12px);
   backdrop-filter: saturate(1.4) blur(12px);
   pointer-events: none;
@@ -236,7 +236,7 @@ svg.caret {
 .mobileCtaButton:has(.uploadIcon):focus-visible {
   background: var(--button-hero-gradient);
   color: var(--brand-white);
-  filter: brightness(1.03); /* keeps white on #0073cd >= 4.5:1 */
+  filter: brightness(1.03); /* keeps white on --brand-highlight >= 4.5:1 */
   box-shadow: var(--button-hero-shadow-hover);
   transform: translateY(-1px);
 }

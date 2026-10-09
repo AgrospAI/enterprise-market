@@ -1,4 +1,4 @@
-/* ── Full-bleed brand panel: deltaDAO navy slide ── */
+/* ── Full-bleed brand panel: AgrospAI green slide ── */
 .brandPanel {
   flex: 1 1 50%;
   display: flex;
@@ -116,7 +116,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* ── Logo (wordmark uses currentColor; the gradient mark keeps its colors) ── */
+/* ── Logo (full-colour AgrospAI mark) ── */
 .logoWrapper {
   display: flex;
   justify-content: flex-start;
@@ -126,11 +126,11 @@
 
 .logoWrapper svg {
   width: auto;
-  height: 2.75rem;
+  height: 4rem;
   max-width: 100%;
   margin: 0;
   /* the svg carries width/height="1em", so pin the logo's own ratio */
-  aspect-ratio: 1058 / 350;
+  aspect-ratio: 476 / 207;
 }
 
 /* ── Typography ── */
@@ -224,7 +224,7 @@
   }
 
   .logoWrapper svg {
-    height: 3.25rem;
+    height: 4.5rem;
   }
 
   .title {
@@ -282,7 +282,7 @@
   }
 
   .logoWrapper svg {
-    height: 2.5rem;
+    height: 3.5rem;
   }
 
   .title {
@@ -371,7 +371,7 @@
   }
 
   .logoWrapper svg {
-    height: 2.25rem;
+    height: 3.25rem;
   }
 
   .title {

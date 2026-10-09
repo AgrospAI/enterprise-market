@@ -660,7 +660,7 @@ export function dfnsConnector() {
         const webAuthnSigner = new WebAuthnSigner({
           relyingParty: {
             id: dfnsConfig.relyingPartyId,
-            name: 'deltaDAO Marketplace'
+            name: 'AgrospAI Marketplace'
           }
         })
         const authenticator = new DfnsAuthenticator({

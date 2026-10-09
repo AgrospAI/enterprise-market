@@ -8,7 +8,7 @@ import {
 export const META_DESCRIPTION_MAX_LENGTH = 160
 export const SHARE_IMAGE_WIDTH = 1200
 export const SHARE_IMAGE_HEIGHT = 630
-export const THEME_COLOR = '#2450ec'
+export const THEME_COLOR = '#004967'
 
 function normalizeOrigin(url?: string | null): string | null {
   if (!url || typeof url !== 'string') return null

@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import styles from './Footer.module.css'
 import Links from './Links'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import Logo from '@images/logo.svg'
+import Logo from '@images/agrospai_logo_horizontal.svg'
 
 export default function Footer(): ReactElement {
   const { siteContent } = useMarketMetadata()
@@ -19,16 +19,16 @@ export default function Footer(): ReactElement {
           <Logo className={styles.logo} />
           <div className={styles.taglineContainer}>
             <span className={styles.tagline}>
-              Built by deltaDAO AG, your partner for data-driven business models
-              and decentralized AI solutions.
+              Developed by Universitat de Lleida and powered by Ocean
+              Enterprise. Learn more about the project!
             </span>
             <a
               className={styles.websiteLink}
-              href="https://delta-dao.com"
+              href="https://agrospai.udl.cat/en"
               target="_blank"
               rel="noopener noreferrer"
             >
-              delta-dao.com
+              agrospai.udl.cat
             </a>
           </div>
         </div>

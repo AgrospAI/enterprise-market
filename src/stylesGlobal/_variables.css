@@ -3,11 +3,11 @@
 
 :root {
   /* Menubar */
-  /* logo is sized by height, width follows the 2.7:1 aspect ratio */
+  /* logo is sized by height, width follows the ~1.1:1 aspect ratio */
   --menu-logo-size-width-sm: auto;
-  --menu-logo-size-height-sm: 2.25rem;
+  --menu-logo-size-height-sm: 2.75rem;
   --menu-logo-size-width-lg: auto;
-  --menu-logo-size-height-lg: 2.5rem;
+  --menu-logo-size-height-lg: 3.25rem;
   --menu-height: 64px;
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-border-radius: var(--border-radius-sm);
@@ -21,7 +21,7 @@
   /* Homepage */
   --home-brand-logo-size-width: auto;
   --home-brand-logo-size-height: 2.75rem;
-  --footer-logo-size-height: 2.75rem;
+  --footer-logo-size-height: 4.5rem;
 
   /* Input elements */
   --input-border-size: var(--border-size-sm);

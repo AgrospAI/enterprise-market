@@ -82,7 +82,7 @@
   background: var(--card);
   color: var(--deck-blue);
   border-color: var(--deck-blue-25);
-  box-shadow: var(--shadow-blue-5), 0 1px 3px rgba(36, 80, 236, 0.1);
+  box-shadow: var(--shadow-blue-5), 0 1px 3px rgba(0, 73, 103, 0.1);
 }
 
 .pillTabActive:hover {

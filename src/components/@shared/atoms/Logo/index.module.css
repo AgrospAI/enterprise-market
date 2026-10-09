@@ -1,12 +1,11 @@
 /*
- * deltaDAO logo: the wordmark paths use fill="currentColor", so the parent
- * sets the wordmark color (foreground on light, white on navy). The mark keeps
- * its own blue/cyan gradients. Sized by height, width follows the aspect ratio.
+ * AgrospAI logo: full-colour mark with fixed fills. Sized by height, width
+ * follows the aspect ratio.
  */
 .logo {
   /* the SVGR component sets width/height="1em", so the ratio must be explicit
-   * (matches the cropped viewBox of src/@images/logo.svg) */
-  aspect-ratio: 1058 / 350;
+   * (matches the viewBox of src/@images/agrospai_logo.svg) */
+  aspect-ratio: 227 / 206.75;
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
   margin: 0;

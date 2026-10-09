@@ -61,7 +61,7 @@
       {
         "name": "copyrightHolder",
         "label": "Copyright Holder",
-        "placeholder": "e.g. deltaDAO AG",
+        "placeholder": "e.g. Universitat de Lleida",
         "help": "The entity holding the legal copyright for this asset."
       },
       {

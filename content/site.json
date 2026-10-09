@@ -1,10 +1,10 @@
 {
-  "siteTitle": "deltaDAO Marketplace",
-  "siteTagline": "Publish, discover and monetize data and AI assets with full data sovereignty, privacy-preserving Compute-to-Data and built-in GDPR compliance.",
+  "siteTitle": "AgrospAI Demonstration Marketplace",
+  "siteTagline": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
   "taglineContinuation": "",
   "siteUrl": "",
   "siteImage": "/share.png",
-  "siteImageAlt": "deltaDAO Marketplace: publish, discover and monetize data and AI assets",
+  "siteImageAlt": "AgrospAI Demonstration Marketplace: sovereign agri-food data-sharing and AI services",
   "menu": [
     {
       "name": "Catalogue",
@@ -24,29 +24,29 @@
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in beta phase."
   },
-  "siteDescription": "The deltaDAO Marketplace lets organizations publish, discover and monetize data and AI assets with Compute-to-Data, verifiable credentials and GDPR compliance.",
+  "siteDescription": "Agri-food data space for sovereign data-sharing and AI services, developed by Universitat de Lleida and powered by Ocean Enterprise.",
   "footer": {
-    "subtitle": "The deltaDAO data and AI marketplace",
-    "copyright": "© deltaDAO AG 2026",
+    "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
+    "copyright": "© AgrospAI 2026 · Universitat de Lleida",
     "content": [
       {
         "title": "Resources",
         "links": [
           {
-            "name": "GitHub",
-            "link": "https://github.com/deltaDAO"
+            "name": "About AgrospAI",
+            "link": "https://agrospai.udl.cat/en"
+          },
+          {
+            "name": "Universitat de Lleida",
+            "link": "https://www.udl.cat"
           },
           {
             "name": "Docs",
-            "link": "https://docs.pontus-x.eu/"
+            "link": "https://docs.oceanenterprise.io/"
           },
           {
-            "name": "deltaDAO",
-            "link": "https://delta-dao.com"
-          },
-          {
-            "name": "Contact",
-            "link": "https://delta-dao.com/contact"
+            "name": "GitHub",
+            "link": "https://github.com/AgrospAI"
           }
         ]
       },

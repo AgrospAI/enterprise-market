@@ -16,7 +16,7 @@ describe('DocumentHead', () => {
     expect(view).toContain(`<title>${siteContent.siteTitle}</title>`)
     expect(view).toContain('property="og:type" content="website"')
     expect(view).toContain('name="twitter:card" content="summary_large_image"')
-    expect(view).toContain('name="theme-color" content="#2450ec"')
+    expect(view).toContain('name="theme-color" content="#004967"')
     expect(view).toContain('property="og:image:width" content="1200"')
     expect(view).toContain('property="og:image:height" content="630"')
     expect(view).toContain('data-next-head=""')

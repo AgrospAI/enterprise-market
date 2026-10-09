@@ -42,7 +42,6 @@ export default function App({
   const dfnsSsoReturn = useDfnsSsoReturn()
 
   const router = useRouter()
-  const isRoot = router.pathname === '/'
   const isRouterReady = router.isReady
 
   const allowedEnvAddresses = useAllowedTokenAddresses(chainId)
@@ -169,7 +168,7 @@ export default function App({
         <AnnouncementBanner text={siteContent.announcement} />
       )}
 
-      {!isRoot && <Header />}
+      <Header />
 
       <NetworkWarningModal
         chainId={chainId}

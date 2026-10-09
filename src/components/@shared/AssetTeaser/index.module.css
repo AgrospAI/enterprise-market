@@ -17,7 +17,7 @@
 
 .algorithm {
   /* violet darkened for 4.5:1 on white */
-  --type-badge-color: #7c3aed;
+  --type-badge-color: var(--brand-secondary-dark);
   --type-badge-border: color-mix(
     in srgb,
     var(--brand-secondary) 40%,

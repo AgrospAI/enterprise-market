@@ -17,7 +17,6 @@ import EcosystemStats from './Sections/EcosystemStats'
 import Products from './Sections/Products'
 import Upload from '@images/publish.svg'
 import SearchLogo from '@images/search.svg'
-import Menu from './Menu/Menu'
 import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
@@ -128,9 +127,6 @@ function HeroSection({
   return (
     <section className={styles.hero}>
       <div className={styles.contentContainer}>
-        <header>
-          <Menu />
-        </header>
         <div className={styles.textContent}>
           <h1 className={styles.title}>{content.hero.title}</h1>
           <p className={styles.subtitle}>{content.hero.subtitle}</p>

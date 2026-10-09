@@ -190,7 +190,7 @@ export async function setNFTMetadataAndTokenURI(
         : {
             name: (asset as Asset).indexedMetadata.nft.name,
             symbol: (asset as Asset).indexedMetadata.nft.symbol,
-            description: `${nftMetadataTemplate.description}\n\nView on the deltaDAO Marketplace: ${externalUrl}`,
+            description: `${nftMetadataTemplate.description}\n\nView on the AgrospAI Marketplace: ${externalUrl}`,
             external_url: externalUrl
           }
     )

@@ -39,9 +39,9 @@
 }
 
 .gpu {
-  background: rgba(160, 81, 255, 0.08);
+  background: rgba(41, 81, 64, 0.08);
   color: var(--brand-secondary-dark);
-  border-color: rgba(160, 81, 255, 0.4);
+  border-color: rgba(41, 81, 64, 0.4);
 }
 
 .tooltip {

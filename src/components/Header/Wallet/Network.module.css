@@ -21,9 +21,8 @@
   font-size: 10px;
 }
 
-/* the testnet badge follows its surrounding surface: deck-blue on the light
- * header, overridden via these variables on the navy home hero (see
- * Home/Menu .actions); two classes beat the Badge atom's own colours */
+/* the testnet badge follows its surrounding surface via these variables;
+ * two classes beat the Badge atom's own colours */
 .network .badge {
   color: var(--network-badge-color, var(--deck-blue));
   background: var(--network-badge-background, var(--deck-blue-8));

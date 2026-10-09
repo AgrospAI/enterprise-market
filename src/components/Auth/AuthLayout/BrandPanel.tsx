@@ -1,4 +1,4 @@
-import Logo from '@images/logo.svg'
+import Logo from '@images/agrospai_logo_horizontal.svg'
 import appConfig from 'app.config.cjs'
 import { authBrandDefaults, type AuthPanelContent } from '../constants'
 import { BrandPanelIcon, BrandPanelWaves } from './BrandPanelArtwork'
