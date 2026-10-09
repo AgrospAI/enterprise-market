@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { jwtVerify, type JWTPayload } from 'jose'
 import { buildAuthCookieStrings } from './_cookies'
 import { buildClearTransientCookieStrings } from './_transient'
-import { getOidcMetadata } from './_oidc'
+import { getOidcEndpoints, getOidcMetadata } from './_oidc'
 import { OIDC_REQUEST_TIMEOUT_MS } from './_constants'
 import { introspectAccessToken } from './_introspect'
 import { getLoginSource, getWellKnownUrl } from './_claims'
@@ -17,14 +17,6 @@ import {
 } from 'app.config.cjs'
 
 const OIDC_CLIENT_SECRET_ENV_KEY = 'OIDC_CLIENT_SECRET'
-
-function getTokenUrl(issuer: string): string {
-  if (issuer.includes('/application/o/')) {
-    const base = issuer.split('/application/o/')[0]
-    return `${base}/application/o/token/`
-  }
-  return `${issuer.replace(/\/$/, '')}/token/`
-}
 
 function getRequiredStringClaim(payload: JWTPayload, claim: string): string {
   const value = payload[claim]
@@ -83,7 +75,7 @@ export default async function handler(
   }
 
   try {
-    const tokenUrl = oidcTokenUrl || getTokenUrl(issuer)
+    const tokenUrl = oidcTokenUrl || (await getOidcEndpoints(issuer)).token
 
     const tokenRes = await fetch(tokenUrl, {
       method: 'POST',

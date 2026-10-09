@@ -6,6 +6,7 @@ import {
   setAuthCookies
 } from './_cookies'
 import { OIDC_REQUEST_TIMEOUT_MS } from './_constants'
+import { getOidcEndpoints } from './_oidc'
 import {
   authEnabled,
   oidcClientId,
@@ -114,12 +115,7 @@ export default async function handler(
     const issuer = oidcIssuer
 
     if (!tokenUrl && issuer) {
-      if (issuer.includes('/application/o/')) {
-        const baseUrl = issuer.split('/application/o/')[0]
-        tokenUrl = `${baseUrl}/application/o/token/`
-      } else {
-        tokenUrl = `${issuer.replace(/\/$/, '')}/token/`
-      }
+      tokenUrl = (await getOidcEndpoints(issuer)).token
     }
 
     if (!clientId || !clientSecret || !tokenUrl) {

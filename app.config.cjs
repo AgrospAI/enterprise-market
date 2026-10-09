@@ -267,6 +267,12 @@ module.exports = {
     getEnv('NEXT_PUBLIC_OIDC_REDIRECT_URI') ||
     process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI ||
     null,
+  // Space-separated scopes requested at login. Override for providers that
+  // do not define the Authentik oe-* scopes (e.g. Keycloak).
+  oidcScope:
+    getEnv('NEXT_PUBLIC_OIDC_SCOPE') ||
+    process.env.NEXT_PUBLIC_OIDC_SCOPE ||
+    'openid profile email offline_access oe-central-federated_identity oe-organizationId oe-walletId oe-signerServer oe-wellKnownUrl',
   oidcSignupFlow:
     getEnv('NEXT_PUBLIC_OIDC_SIGNUP_FLOW') ||
     process.env.NEXT_PUBLIC_OIDC_SIGNUP_FLOW ||

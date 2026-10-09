@@ -69,6 +69,7 @@ if (authEnabled) {
   config.NEXT_PUBLIC_OIDC_CLIENT_ID = process.env.NEXT_PUBLIC_OIDC_CLIENT_ID
   config.NEXT_PUBLIC_OIDC_REDIRECT_URI = process.env.NEXT_PUBLIC_OIDC_REDIRECT_URI
   config.NEXT_PUBLIC_OIDC_SIGNUP_FLOW = process.env.NEXT_PUBLIC_OIDC_SIGNUP_FLOW
+  config.NEXT_PUBLIC_OIDC_SCOPE = process.env.NEXT_PUBLIC_OIDC_SCOPE
   config.NEXT_PUBLIC_MAX_LICENSE_FILE_SIZE_KB = process.env.NEXT_PUBLIC_MAX_LICENSE_FILE_SIZE_KB
 } else {
   console.log('Auth is disabled, skipping OIDC config exposure')

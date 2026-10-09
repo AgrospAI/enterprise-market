@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isSafeCallbackUrl } from './_transient'
+import { isAuthentikIssuer } from './_oidc'
 import {
   authEnabled,
   oidcClientId,
@@ -51,6 +52,14 @@ export default async function handler(
   const rawCallbackUrl =
     typeof req.query.callbackUrl === 'string' ? req.query.callbackUrl : ''
   const callbackUrl = isSafeCallbackUrl(rawCallbackUrl) ? rawCallbackUrl : null
+
+  // Non-Authentik providers (e.g. Keycloak) handle registration through the
+  // standard authorize request with prompt=create.
+  if (!isAuthentikIssuer(issuer)) {
+    const loginUrl = new URL(buildPostSignupUrl(redirectUri, callbackUrl))
+    loginUrl.searchParams.set('prompt', 'create')
+    return res.redirect(302, loginUrl.toString())
+  }
 
   return res.redirect(
     302,

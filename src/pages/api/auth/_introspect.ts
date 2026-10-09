@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { getOidcEndpoints } from './_oidc'
 
 const INTROSPECT_TIMEOUT_MS = 5000
 
@@ -7,16 +8,8 @@ export type AccessTokenIntrospectionResult =
   | { status: 'inactive' }
   | { status: 'unknown'; reason: string }
 
-function getIntrospectUrl(issuer: string): string {
-  if (issuer.includes('/application/o/')) {
-    const base = issuer.split('/application/o/')[0]
-    return `${base}/application/o/introspect/`
-  }
-  return `${issuer.replace(/\/$/, '')}/introspect/`
-}
-
 /**
- * Asks Authentik whether this access token is still active.
+ * Asks the OIDC provider whether this access token is still active.
  *
  * Do not cache positive introspection responses. Session polling uses this as
  * the live source of truth for revocations, so `active: false` must be observed
@@ -28,7 +21,7 @@ export async function introspectAccessToken(
   clientId: string,
   clientSecret: string
 ): Promise<AccessTokenIntrospectionResult> {
-  const introspectUrl = getIntrospectUrl(issuer)
+  const { introspection: introspectUrl } = await getOidcEndpoints(issuer)
 
   try {
     const response = await fetch(introspectUrl, {
@@ -48,14 +41,14 @@ export async function introspectAccessToken(
 
     if (!response.ok) {
       // These statuses usually mean our OIDC setup is wrong, not that
-      // Authentik is temporarily down. Keep the log marker stable for alerts.
+      // the provider is temporarily down. Keep the log marker stable for alerts.
       if (
         response.status === 401 ||
         response.status === 403 ||
         response.status === 404
       ) {
         console.error(
-          `INTROSPECT_CONFIG_ERROR status=${response.status} — check OIDC_CLIENT_SECRET, NEXT_PUBLIC_OIDC_ISSUER, and that the OIDC client is permitted to call /introspect/.`
+          `INTROSPECT_CONFIG_ERROR status=${response.status} — check OIDC_CLIENT_SECRET, NEXT_PUBLIC_OIDC_ISSUER, and that the OIDC client is permitted to call the introspection endpoint.`
         )
       } else {
         console.error(`Introspection HTTP ${response.status}.`)

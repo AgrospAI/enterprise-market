@@ -5,6 +5,7 @@ import {
   oidcIssuer,
   oidcClientId,
   oidcRedirectUri,
+  oidcScope,
   oidcSignupFlow
 } from 'app.config.cjs'
 
@@ -51,6 +52,10 @@ export const authConfig = ((): AuthConfig => {
     ? oidcSignupFlow || ''
     : runtimeConfig.NEXT_PUBLIC_OIDC_SIGNUP_FLOW || ''
 
+  const scope = isServer()
+    ? oidcScope
+    : runtimeConfig.NEXT_PUBLIC_OIDC_SCOPE || oidcScope
+
   return {
     enabled,
     provider,
@@ -59,8 +64,7 @@ export const authConfig = ((): AuthConfig => {
       clientId,
       redirectUri,
       signupFlow,
-      scope:
-        'openid profile email offline_access oe-central-federated_identity oe-organizationId oe-walletId oe-signerServer oe-wellKnownUrl',
+      scope,
       responseType: 'code',
       pkceMethod: 'S256'
     }

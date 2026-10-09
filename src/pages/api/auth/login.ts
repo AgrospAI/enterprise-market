@@ -11,16 +11,10 @@ import {
   authEnabled,
   oidcClientId,
   oidcIssuer,
-  oidcRedirectUri
+  oidcRedirectUri,
+  oidcScope
 } from 'app.config.cjs'
-
-function getAuthorizeUrl(issuer: string): string {
-  if (issuer.includes('/application/o/')) {
-    const base = issuer.split('/application/o/')[0]
-    return `${base}/application/o/authorize/`
-  }
-  return `${issuer.replace(/\/$/, '')}/authorize/`
-}
+import { getOidcEndpoints } from './_oidc'
 
 export default async function handler(
   req: NextApiRequest,
@@ -63,13 +57,18 @@ export default async function handler(
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope:
-      'openid profile email offline_access oe-central-federated_identity oe-organizationId oe-walletId oe-signerServer oe-wellKnownUrl',
+    scope: oidcScope,
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
     state,
     nonce
   })
 
-  return res.redirect(302, `${getAuthorizeUrl(issuer)}?${params.toString()}`)
+  // Used by the signup route on providers without an Authentik signup flow
+  if (req.query.prompt === 'create') {
+    params.set('prompt', 'create')
+  }
+
+  const { authorization } = await getOidcEndpoints(issuer)
+  return res.redirect(302, `${authorization}?${params.toString()}`)
 }

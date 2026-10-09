@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { decodeJwt } from 'jose'
 import { buildClearAuthCookieStrings } from '../_cookies'
+import { getOidcEndpoints } from '../_oidc'
 import { authEnabled, oidcClientId, oidcIssuer } from 'app.config.cjs'
 import { isMainProviderByName } from '../_federated'
 import { getLoginSource } from '../_claims'
@@ -20,10 +21,6 @@ function getRequestOrigin(req: NextApiRequest): string {
   return `${protocol}://${host}`
 }
 
-function getEndSessionUrl(issuer: string) {
-  return `${issuer.replace(/\/$/, '')}/end-session/`
-}
-
 function serializeFederatedLogoutContinueCookie(value: string, maxAge: number) {
   return `${FEDERATED_LOGOUT_CONTINUE_COOKIE}=${encodeURIComponent(
     value
@@ -37,7 +34,10 @@ function clearLogoutCookies(res: NextApiResponse) {
   ])
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET'])
     return res.status(405).end()
@@ -95,14 +95,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   }
 
+  const { endSession: endSessionUrl } = await getOidcEndpoints(issuer)
+
   console.info('Continuing logout with Main OIDC provider.')
-  console.info(
-    `Redirecting to: ${getEndSessionUrl(issuer)}?${oidcParams.toString()}`
-  )
+  console.info(`Redirecting to: ${endSessionUrl}?${oidcParams.toString()}`)
 
   clearLogoutCookies(res)
-  return res.redirect(
-    302,
-    `${getEndSessionUrl(issuer)}?${oidcParams.toString()}`
-  )
+  return res.redirect(302, `${endSessionUrl}?${oidcParams.toString()}`)
 }

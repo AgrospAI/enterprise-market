@@ -8,7 +8,7 @@ import {
 } from '../_cookies'
 import { isMainProviderByName } from '../_federated'
 import { getLoginSource, getWellKnownUrl } from '../_claims'
-import { getEndSessionUrlFromWellKnown } from '../_oidc'
+import { getEndSessionUrlFromWellKnown, getOidcEndpoints } from '../_oidc'
 import { authEnabled, oidcClientId, oidcIssuer } from 'app.config.cjs'
 
 const OIDC_CLIENT_SECRET_ENV_KEY = 'OIDC_CLIENT_SECRET'
@@ -24,19 +24,6 @@ function getRequestOrigin(req: NextApiRequest): string {
   const protocol = forwardedProto.split(',')[0]?.trim() || 'https'
 
   return `${protocol}://${host}`
-}
-
-function getEndSessionUrl(issuer: string): string {
-  return `${issuer.replace(/\/$/, '')}/end-session/`
-}
-
-function getRevokeUrl(issuer: string): string {
-  if (issuer.includes('/application/o/')) {
-    const base = issuer.split('/application/o/')[0]
-    return `${base}/application/o/revoke/`
-  }
-
-  return `${issuer.replace(/\/$/, '')}/revoke/`
 }
 
 function getLoginSourceFromIdToken(idToken?: string): string | undefined {
@@ -96,7 +83,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const { access_token, refresh_token, id_token, login_source } = req.cookies
-  const revokeUrl = getRevokeUrl(issuer)
+  const { revocation: revokeUrl, endSession: mainEndSessionUrl } =
+    await getOidcEndpoints(issuer)
 
   await Promise.all([
     access_token
@@ -149,7 +137,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       }
     }
 
-    const mainLogoutUrl = `${getEndSessionUrl(issuer)}?${oidcParams.toString()}`
+    const mainLogoutUrl = `${mainEndSessionUrl}?${oidcParams.toString()}`
     return res.redirect(302, mainLogoutUrl)
   }
 
@@ -239,7 +227,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
   }
 
-  const mainLogoutUrl = `${getEndSessionUrl(issuer)}?${oidcParams.toString()}`
+  const mainLogoutUrl = `${mainEndSessionUrl}?${oidcParams.toString()}`
   return res.redirect(302, mainLogoutUrl)
 }
 
