@@ -137,7 +137,9 @@ export default function ExpandedServices({
     if (!nodeUri) return
 
     let cancelled = false
-    const provider = new JsonRpcProvider(nodeUri)
+    const provider = new JsonRpcProvider(nodeUri, undefined, {
+      batchMaxCount: 1
+    })
 
     async function resolveMissingTokenSymbols() {
       const entries = await Promise.all(

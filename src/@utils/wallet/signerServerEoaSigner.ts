@@ -22,10 +22,14 @@ export type SignerServerEoaSignerInit = {
 }
 
 function buildProvider(chain: Chain): JsonRpcProvider {
-  return new JsonRpcProvider(chain.rpcUrls.default.http[0], {
-    chainId: chain.id,
-    name: chain.name
-  })
+  return new JsonRpcProvider(
+    chain.rpcUrls.default.http[0],
+    {
+      chainId: chain.id,
+      name: chain.name
+    },
+    { batchMaxCount: 1 }
+  )
 }
 
 function toStringValue(value: TransactionRequest[keyof TransactionRequest]) {

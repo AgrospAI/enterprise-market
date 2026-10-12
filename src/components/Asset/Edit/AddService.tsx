@@ -79,7 +79,9 @@ export default function AddService({
   const rpcUrl = getOceanConfig(chainId)?.nodeUri
 
   const ethersProvider =
-    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+    publicClient && rpcUrl
+      ? new JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 })
+      : undefined
 
   const signer = walletClient as unknown as Signer
 

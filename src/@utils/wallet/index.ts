@@ -32,7 +32,9 @@ export function getOrCreateProvider(chainId: number): JsonRpcProvider {
     throw new Error('Missing nodeUri in Ocean config')
   }
 
-  const provider = new JsonRpcProvider(config.nodeUri)
+  const provider = new JsonRpcProvider(config.nodeUri, undefined, {
+    batchMaxCount: 1
+  })
   providerCache.set(chainId, provider)
   return provider
 }

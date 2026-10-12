@@ -260,7 +260,9 @@ export default function ComputeDownloads({
             const nodeUri = getOceanConfig(Number(chainId))?.nodeUri
             if (!nodeUri) return []
 
-            const provider = new JsonRpcProvider(nodeUri)
+            const provider = new JsonRpcProvider(nodeUri, undefined, {
+              batchMaxCount: 1
+            })
             return Promise.all(
               addresses.map(async (address) => {
                 const tokenInfo = await getTokenInfo(address, provider)
