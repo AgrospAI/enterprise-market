@@ -90,7 +90,7 @@ export default function AssetActions({
       return undefined
     }
   }, [chainId, rpcUrl])
-  const { isAssetNetwork, isOwner } = useAsset()
+  const { isAssetNetwork } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
   const {
@@ -523,11 +523,7 @@ export default function AssetActions({
         </div>
 
         <div className={styles.actionButtonWrapper}>
-          {!isCompute && isOwner ? (
-            <span className={styles.ownerMessage}>
-              You are the asset owner.
-            </span>
-          ) : isOwnedSaas ? (
+          {isOwnedSaas ? (
             <Download
               accountId={accountId}
               signer={signer as any}

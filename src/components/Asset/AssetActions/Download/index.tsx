@@ -133,7 +133,6 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
-  const [isOwner, setIsOwner] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [justBought, setJustBought] = useState(false)
 
@@ -217,7 +216,7 @@ export default function Download({
 
   useEffect(() => {
     const licenseMirrors =
-      asset?.credentialSubject?.metadata?.license?.licenseDocuments[0]
+      asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
         ?.mirrors || []
     let license = ''
 
@@ -236,12 +235,6 @@ export default function Download({
   const isUnsupportedPricing =
     accessDetails.type === 'NOT_SUPPORTED' ||
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
-
-  useEffect(() => {
-    if (asset?.indexedMetadata?.event?.from === accountId) {
-      setIsOwner(true)
-    }
-  }, [asset, accountId])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
@@ -745,8 +738,7 @@ export default function Download({
                   </Alert>
                 </div>
               )}
-              {!isOwner &&
-                !initializationError &&
+              {!initializationError &&
                 (isFullPriceLoading ? (
                   <>
                     {requiresCredentialCheck && (
