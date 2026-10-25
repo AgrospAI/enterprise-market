@@ -27,6 +27,7 @@ import {
   getExplicitTrustedAlgorithm,
   hasTrustedContainerChanged
 } from '@utils/computeContainerUpdates'
+import { credentialAddressValues } from '../credentials'
 
 export const MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS = 476
 
@@ -801,16 +802,15 @@ export async function getAlgorithmDatasetsForCompute(
 }
 
 function isAccountAllowed(ddo: any, accountId: string): boolean {
+  const matchesAccount = (address: string): boolean =>
+    address === '*' || address.toLowerCase() === accountId.toLowerCase()
+
   const checkAllowList = (allowList: any[]): boolean => {
     // If not present or is empty, treat as unrestricted
     if (!allowList || allowList.length === 0) return true
     return allowList.some((allowEntry) => {
       if (allowEntry.type !== 'address' || !allowEntry.values) return false
-      return allowEntry.values.some(
-        (val) =>
-          val.address === '*' ||
-          val.address.toLowerCase() === accountId.toLowerCase()
-      )
+      return credentialAddressValues(allowEntry).some(matchesAccount)
     })
   }
 
@@ -818,11 +818,7 @@ function isAccountAllowed(ddo: any, accountId: string): boolean {
     if (!denyList || denyList.length === 0) return false
     return denyList.some((denyEntry) => {
       if (denyEntry.type !== 'address' || !denyEntry.values) return false
-      return denyEntry.values.some(
-        (val) =>
-          val.address === '*' ||
-          val.address.toLowerCase() === accountId.toLowerCase()
-      )
+      return credentialAddressValues(denyEntry).some(matchesAccount)
     })
   }
 

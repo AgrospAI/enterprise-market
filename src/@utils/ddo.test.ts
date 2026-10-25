@@ -3,12 +3,15 @@ import {
   TIMEOUT_PRESETS,
   formatSecondsPrecise,
   formatServiceTimeout,
+  isAddressWhitelisted,
   isCustomTimeoutValue,
   isTimeoutPreset,
   mapTimeoutStringToSeconds,
   normalizeCustomTimeoutInput,
   timeoutSecondsToFormValue
 } from './ddo'
+import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 describe('service timeout (access duration)', () => {
   it('keeps the DDO seconds of existing presets unchanged', () => {
@@ -139,5 +142,111 @@ describe('Forever access duration (stored as 0)', () => {
     expect(timeoutSecondsToFormValue(undefined)).toBe('Forever')
     expect(mapTimeoutStringToSeconds(timeoutSecondsToFormValue(0))).toBe(0)
     expect(isTimeoutPreset('Forever')).toBe(true)
+  })
+})
+
+describe('credentials allow/deny lists', () => {
+  // Invented accounts, stored checksummed the way a publisher would write them.
+  const accountId = '0x1234567890AbcdEF1234567890aBcdef12345678'
+  const otherAccountId = '0xABcdEFABcdEFabcdEfAbCdefabcdeFABcDEFabCD'
+
+  // DDOs are published with the checksummed address the spec holds, while the
+  // connected account and the marketplace lower-case what they compare against.
+  const addressEntry = (...addresses: string[]) => ({
+    type: 'address',
+    values: addresses.map((address) => ({ address }))
+  })
+
+  const service = (credentials?: unknown) =>
+    ({ id: 'service-1', type: 'access', credentials } as unknown as Service)
+
+  const asset = (credentials?: unknown) =>
+    ({
+      credentialSubject: { credentials, services: [service(credentials)] }
+    } as unknown as Asset)
+
+  it('matches a checksummed allow entry against a checksummed account', () => {
+    const credentials = { allow: [addressEntry(accountId)] }
+
+    expect(
+      isAddressWhitelisted(asset(credentials), accountId, service(credentials))
+    ).toBe(true)
+  })
+
+  it('matches regardless of the case used on either side', () => {
+    const checksummed = { allow: [addressEntry(accountId)] }
+    const lowercased = { allow: [addressEntry(accountId.toLowerCase())] }
+
+    expect(
+      isAddressWhitelisted(
+        asset(checksummed),
+        accountId.toLowerCase(),
+        service(checksummed)
+      )
+    ).toBe(true)
+    expect(
+      isAddressWhitelisted(asset(lowercased), accountId, service(lowercased))
+    ).toBe(true)
+  })
+
+  it('reads bare string values as well as { address } objects', () => {
+    const credentials = {
+      allow: [{ type: 'address', values: [accountId] }]
+    }
+    const ddo = asset(credentials)
+
+    expect(isAddressWhitelisted(ddo, accountId, service(credentials))).toBe(
+      true
+    )
+  })
+
+  it('still rejects an address that is not listed', () => {
+    const credentials = { allow: [addressEntry(otherAccountId)] }
+    const ddo = asset(credentials)
+
+    expect(isAddressWhitelisted(ddo, accountId, service(credentials))).toBe(
+      false
+    )
+  })
+
+  it('honours a checksummed deny entry', () => {
+    // The wildcard allow must not paper over a deny entry: before the address
+    // normalisation the deny list silently failed to match and let the account in.
+    const credentials = {
+      allow: [addressEntry('*')],
+      deny: [addressEntry(accountId)]
+    }
+    const ddo = asset(credentials)
+
+    expect(isAddressWhitelisted(ddo, accountId, service(credentials))).toBe(
+      false
+    )
+  })
+
+  it('accepts the wildcard allow entry', () => {
+    const credentials = { allow: [addressEntry('*')] }
+    const ddo = asset(credentials)
+
+    expect(isAddressWhitelisted(ddo, accountId, service(credentials))).toBe(
+      true
+    )
+  })
+
+  it('checks the service list in addition to the dataset list', () => {
+    const datasetCredentials = { allow: [addressEntry(accountId)] }
+    const serviceCredentials = { allow: [addressEntry(otherAccountId)] }
+    const ddo = {
+      credentialSubject: { credentials: datasetCredentials }
+    } as unknown as Asset
+
+    expect(
+      isAddressWhitelisted(ddo, accountId, service(serviceCredentials))
+    ).toBe(false)
+  })
+
+  it('allows assets without credentials', () => {
+    expect(
+      isAddressWhitelisted(asset(undefined), accountId, service(undefined))
+    ).toBe(true)
   })
 })

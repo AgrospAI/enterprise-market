@@ -39,6 +39,24 @@ export function isCredentialPolicyBased(
   )
 }
 
+/**
+ * Addresses held by an address-based credential, read from both stored shapes:
+ * bare strings and `{ address }` objects. The original case is kept, callers
+ * decide how to compare. Values that are neither shape are skipped.
+ */
+export function credentialAddressValues(
+  credential: CredentialAddressBased | CredentialPolicyBased | undefined
+): string[] {
+  const values = (credential as { values?: unknown } | undefined)?.values
+  if (!Array.isArray(values)) return []
+
+  return values.flatMap((value) => {
+    if (typeof value === 'string') return [value]
+    const address = (value as { address?: unknown })?.address
+    return typeof address === 'string' ? [address] : []
+  })
+}
+
 export function requiresSsi(credentials?: Credential): boolean {
   if (!credentials || !Array.isArray(credentials.allow)) return false
 

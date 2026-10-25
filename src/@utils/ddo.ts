@@ -19,7 +19,10 @@ import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Option } from 'src/@types/ddo/Option'
 import { SaasMetadata } from 'src/@types/ddo/Metadata'
-import { isCredentialAddressBased } from './credentials'
+import {
+  isCredentialAddressBased,
+  credentialAddressValues
+} from './credentials'
 import {
   CredentialAddressBased,
   Credential,
@@ -299,16 +302,18 @@ function findCredential(
     if (!isCredentialAddressBased(credential)) {
       return false
     }
-    if (Array.isArray(credential?.values)) {
-      if (credential.values.length > 0) {
-        const credentialType = String(credential?.type)?.toLowerCase()
-        const credentialValues = credential.values.map((v) => v.address)
-        const result =
-          credentialType === consumerCredentials.type &&
-          (credentialValues.includes('*') ||
-            credentialValues.includes(consumerCredentials.values[0].address))
-        return result
-      }
+    // Compare case-insensitively: the DDO keeps whatever case the publisher
+    // stored (usually checksummed), while the consumer address is lowercased.
+    const credentialValues = credentialAddressValues(credential).map(
+      (address) => address.toLowerCase()
+    )
+    if (credentialValues.length > 0) {
+      const credentialType = String(credential?.type)?.toLowerCase()
+      const result =
+        credentialType === consumerCredentials.type &&
+        (credentialValues.includes('*') ||
+          credentialValues.includes(consumerCredentials.values[0].address))
+      return result
     }
     if (type === 'service') return true
     return false
