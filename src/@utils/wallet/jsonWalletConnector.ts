@@ -8,7 +8,9 @@ import {
   createWalletClient
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
+import { BrowserProvider, JsonRpcProvider, Wallet } from 'ethers'
 import { LoggerInstance } from '@oceanprotocol/lib'
+import { getTransactionRelayMap } from '../runtimeConfig'
 
 export const JSON_WALLET_CONNECTOR_ID = 'jsonWallet'
 
@@ -178,18 +180,54 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
 
           case 'eth_sendTransaction': {
             const [tx] = params as [Record<string, string | undefined>]
-            const wc = createWalletClient({
-              account,
+
+            // Build and sign the transaction locally with ethers, then relay it
+            // through eth_sendRawTransaction. We deliberately bypass viem's
+            // prepareTransactionRequest/sendTransaction here: those attempt
+            // eth_fillTransaction (and the RPC-side eth_sendTransaction), neither
+            // of which the dRPC free-plan endpoint implements.
+            //
+            // IMPORTANT: the transaction must be populated AND broadcast through
+            // the SAME provider so its nonce is consistent. dRPC's mempool can
+            // hold stale "phantom" pending transactions (nonces it accepted but
+            // never propagated to the mining network). That skews
+            // eth_getTransactionCount and makes the broadcast use a too-high
+            // nonce, which the real network then rejects/drops. So when a
+            // transaction relay is configured we build the provider from the
+            // relay (authoritative network state) and use it for both population
+            // and broadcast. Without a relay we fall back to the chain's (dRPC)
+            // transport.
+            const drpcTransport = configuredTransport({
               chain: activeChain,
-              transport: configuredTransport
-            })
-            return wc.sendTransaction({
-              account,
-              chain: activeChain,
-              to: tx.to as Address | undefined,
-              data: tx.data as Hex | undefined,
+              retryCount: 0
+            } as Parameters<HttpTransport>[0])
+
+            const drpcProvider = new BrowserProvider(
+              {
+                request: ({ method, params: rpcParams }) =>
+                  drpcTransport.request({
+                    method,
+                    params: rpcParams
+                  })
+              },
+              Number(activeChain.id)
+            )
+
+            const relayUrl = getTransactionRelayMap()[String(activeChain.id)]
+            const txProvider = relayUrl
+              ? new JsonRpcProvider(relayUrl, Number(activeChain.id), {
+                  batchMaxCount: 1
+                })
+              : drpcProvider
+
+            const wallet = new Wallet(privateKey, txProvider)
+
+            // Populate (nonce + gas + fees), sign locally, then broadcast.
+            const populated = await wallet.populateTransaction({
+              to: tx.to,
+              data: tx.data,
               value: tx.value ? BigInt(tx.value) : undefined,
-              gas: tx.gas ? BigInt(tx.gas) : undefined,
+              gas: tx.gas ? Number(tx.gas) : undefined,
               gasPrice: tx.gasPrice ? BigInt(tx.gasPrice) : undefined,
               maxFeePerGas: tx.maxFeePerGas
                 ? BigInt(tx.maxFeePerGas)
@@ -197,8 +235,17 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
               maxPriorityFeePerGas: tx.maxPriorityFeePerGas
                 ? BigInt(tx.maxPriorityFeePerGas)
                 : undefined,
-              nonce: tx.nonce ? Number(tx.nonce) : undefined
-            } as unknown as Parameters<typeof wc.sendTransaction>[0]) as any
+              nonce: tx.nonce ? Number(tx.nonce) : undefined,
+              type: tx.type ? Number(tx.type) : undefined
+            } as never)
+
+            const signedTx = await wallet.signTransaction(populated)
+
+            const hash = await txProvider.send('eth_sendRawTransaction', [
+              signedTx
+            ])
+
+            return hash as any
           }
 
           case 'wallet_switchEthereumChain': {

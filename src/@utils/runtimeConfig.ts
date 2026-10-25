@@ -23,6 +23,7 @@ export type RuntimeConfig = {
   NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS?: string
   NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS?: string
   NEXT_PUBLIC_NODE_URI_MAP?: string
+  NEXT_PUBLIC_TRANSACTION_RELAY_MAP?: string
   NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION?: string
   NEXT_PUBLIC_MARKET_FEE_ADDRESS?: string
   NEXT_PUBLIC_MARKET_DEVELOPMENT?: string
@@ -91,6 +92,8 @@ const runtimeConfig: RuntimeConfig = (() => {
     NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS:
       process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS,
     NEXT_PUBLIC_NODE_URI_MAP: process.env.NEXT_PUBLIC_NODE_URI_MAP,
+    NEXT_PUBLIC_TRANSACTION_RELAY_MAP:
+      process.env.NEXT_PUBLIC_TRANSACTION_RELAY_MAP,
     NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION:
       process.env.NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION,
     NEXT_PUBLIC_MARKET_FEE_ADDRESS: process.env.NEXT_PUBLIC_MARKET_FEE_ADDRESS,
@@ -153,6 +156,23 @@ export function getNodeUriMap(
   fallback: Record<string, string> = {}
 ): Record<string, string> {
   const parsed = parseRuntimeObject(getRuntimeConfig().NEXT_PUBLIC_NODE_URI_MAP)
+  if (!parsed) return fallback
+
+  return Object.keys(parsed).reduce((acc: Record<string, string>, key) => {
+    const value = parsed[key]
+    if (typeof value === 'string' && value.trim().length > 0) {
+      acc[key] = value
+    }
+    return acc
+  }, {})
+}
+
+export function getTransactionRelayMap(
+  fallback: Record<string, string> = {}
+): Record<string, string> {
+  const parsed = parseRuntimeObject(
+    getRuntimeConfig().NEXT_PUBLIC_TRANSACTION_RELAY_MAP
+  )
   if (!parsed) return fallback
 
   return Object.keys(parsed).reduce((acc: Record<string, string>, key) => {
