@@ -315,8 +315,14 @@ export default function UserParametersStep({
         return entry
       })
       setFieldValue('userUpdatedParameters', updated)
-      const algoParams = updated.filter((p) => !p.did)
-      const datasetParams = updated.filter((p) => p.did)
+      // Algorithm entries may also carry a DID (algorithm flow), so classify
+      // by the groups built from the form context instead of by the DID.
+      const isAlgoEntry = (entry: NormalizedEntry) =>
+        context.algoParams.some(
+          (algo) => algo.did === entry.did && algo.serviceId === entry.serviceId
+        )
+      const algoParams = updated.filter(isAlgoEntry)
+      const datasetParams = updated.filter((entry) => !isAlgoEntry(entry))
       setFieldValue('updatedGroupedUserParameters', {
         algoParams,
         datasetParams
@@ -347,7 +353,9 @@ export default function UserParametersStep({
         return (
           <select
             className={styles.paramInput}
-            value={param.value === true ? 'true' : 'false'}
+            value={
+              param.value === true || param.value === 'true' ? 'true' : 'false'
+            }
             onChange={(e) => onChange(e.target.value)}
           >
             <option value="true">true</option>

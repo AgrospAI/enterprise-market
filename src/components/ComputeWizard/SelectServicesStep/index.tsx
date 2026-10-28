@@ -16,6 +16,7 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import { resolveServiceTokenSymbol } from '@utils/priceToken'
 import Tooltip from '@shared/atoms/Tooltip'
 import InfoIcon from '@images/info.svg'
+import { mergeConsumerParameters } from '../consumerParameters'
 
 type DatasetService = {
   id?: string
@@ -548,6 +549,13 @@ export default function SelectServicesStep({
                 ?.id
             : null
 
+        // Algorithms declare their parameters in metadata.algorithm, while
+        // services can also declare their own consumer parameters. The wizard
+        // needs both; otherwise an algorithm with only metadata-level
+        // parameters hides the User Parameters step entirely.
+        const algorithmConsumerParameters =
+          assetDdo.credentialSubject?.metadata?.algorithm?.consumerParameters
+
         const normalizedServices = effectiveServices.map((svc, idx) => ({
           id: svc.id,
           title: extractString(svc.name) || svc.type,
@@ -565,7 +573,10 @@ export default function SelectServicesStep({
               : serviceId != null
               ? svc.id === serviceId
               : idx === 0,
-          userParameters: svc.consumerParameters
+          userParameters: mergeConsumerParameters(
+            algorithmConsumerParameters,
+            svc.consumerParameters
+          )
         }))
 
         const normalized: NormalizedAsset = {

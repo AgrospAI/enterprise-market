@@ -19,6 +19,7 @@ import SelectServicesStep from './SelectServicesStep'
 import PreviewSelectionStep from './PreviewSelectionStep'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { mergeConsumerParameters } from './consumerParameters'
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>
 
@@ -171,17 +172,17 @@ export default function Steps({
   useEffect(() => {
     if (!asset || !service) return
 
-    const hasParams = Boolean(service.consumerParameters?.length)
-
     if (flow === 'dataset') {
       setFieldValue('dataset', [`${asset.id}|${service.id}`])
 
-      if (!hasParams) {
+      const datasetParams = service.consumerParameters ?? []
+
+      if (!datasetParams.length) {
         setFieldValue('datasetServiceParams', [])
         return
       }
 
-      const entries = service.consumerParameters.map(
+      const entries = datasetParams.map(
         (param: ConsumerParameter): WizardUserParameter => ({
           name: param.name,
           label: param.label ?? param.name,
@@ -204,14 +205,21 @@ export default function Steps({
       return
     }
 
-    setFieldValue('isUserParameters', hasParams)
+    // Algorithm parameters live in metadata.algorithm.consumerParameters;
+    // service-level consumer parameters are also possible.
+    const algorithmParams = mergeConsumerParameters(
+      asset.credentialSubject?.metadata?.algorithm?.consumerParameters,
+      service.consumerParameters
+    )
 
-    if (!hasParams) {
+    setFieldValue('isUserParameters', algorithmParams.length > 0)
+
+    if (!algorithmParams.length) {
       setFieldValue('algorithmServiceParams', [])
       return
     }
 
-    const entries = service.consumerParameters.map(
+    const entries = algorithmParams.map(
       (param: ConsumerParameter): WizardUserParameter => ({
         name: param.name,
         label: param.label ?? param.name,
