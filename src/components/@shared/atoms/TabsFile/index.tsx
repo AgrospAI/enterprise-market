@@ -12,6 +12,7 @@ import IconIpfs from '@images/ipfs.svg'
 import IconArweave from '@images/arweave.svg'
 import IconS3Storage from '@images/s3_storage.svg'
 import IconFtp from '@images/ftp.svg'
+import IconEdc from '@images/edc.svg'
 
 interface TabsField {
   value: string
@@ -47,7 +48,8 @@ const iconMap = {
   IPFS: IconIpfs,
   ARWEAVE: IconArweave,
   S3: IconS3Storage,
-  'FTP/FTPS': IconFtp
+  'FTP/FTPS': IconFtp,
+  EDC: IconEdc
 }
 
 export default function TabsFile({
