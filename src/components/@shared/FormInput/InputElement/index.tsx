@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror'
 import styles from './index.module.css'
 import { InputProps } from '..'
 import FilesInput from './FilesInput'
+import EDCInput from './EDCInput'
 import CustomProvider from './Provider'
 import BoxSelection, { BoxSelectionOption } from './BoxSelection'
 import Datatoken from './Datatoken'
@@ -25,6 +26,7 @@ import { ConsumerParametersBuilder } from './ConsumerParameters/ConsumerParamete
 import InputKeyValue from './KeyValueInput'
 import TimeoutInput from './TimeoutInput'
 import type { KeyValuePair } from 'src/@types/KeyValuePair'
+import { edcApiUrl } from 'app.config.cjs'
 
 const cx = classNames.bind(styles)
 
@@ -176,19 +178,28 @@ const InputElement = forwardRef(
       }
       case 'tabs': {
         const tabs: any = []
-        props.fields.map((field: any, i) => {
+        props.fields.forEach((field: any, i) => {
+          if (field.type === 'edc' && !edcApiUrl) return
           return tabs.push({
             title: field.title,
             field,
             props,
-            content: (
-              <FilesInput
-                key={`fileInput_${i}`}
-                {...field}
-                form={form}
-                {...props}
-              />
-            )
+            content:
+              field.type === 'edc' ? (
+                <EDCInput
+                  key={`edcInput_${i}`}
+                  {...field}
+                  form={form}
+                  {...props}
+                />
+              ) : (
+                <FilesInput
+                  key={`fileInput_${i}`}
+                  {...field}
+                  form={form}
+                  {...props}
+                />
+              )
           })
         })
 
