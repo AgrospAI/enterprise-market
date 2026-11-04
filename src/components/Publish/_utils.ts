@@ -580,6 +580,7 @@ export async function transformPublishFormToDdo(
     name,
     description,
     tags,
+    ontologyTerms,
     author,
     providedBy,
     copyrightHolder,
@@ -714,6 +715,7 @@ export async function transformPublishFormToDdo(
     license,
     additionalInformation: {
       termsAndConditions,
+      ...(ontologyTerms?.length > 0 && { 'dcat:theme': ontologyTerms }),
       ...(isSaas && {
         saas: {
           redirectUrl: sanitizeUrl(files[0].url || ''),

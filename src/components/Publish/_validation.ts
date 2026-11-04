@@ -195,6 +195,7 @@ const validationMetadata = {
     )
     .nullable(),
   tags: Yup.array<string[]>().nullable(),
+  ontologyTerms: Yup.array().nullable(),
   dockerImage: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string().required('Required')

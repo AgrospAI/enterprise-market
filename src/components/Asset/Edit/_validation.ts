@@ -185,6 +185,7 @@ export const metadataValidationSchema = Yup.object().shape({
     )
     .nullable(),
   tags: Yup.array<string[]>().nullable(),
+  ontologyTerms: Yup.array().nullable(),
   containerImage: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string()

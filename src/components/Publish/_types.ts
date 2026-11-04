@@ -1,6 +1,7 @@
 import { CredentialForm } from '@components/@shared/PolicyEditor/types'
 import { FileInfo } from '@oceanprotocol/lib'
 import type { KeyValuePair } from 'src/@types/KeyValuePair'
+import type { OntologyTerm } from 'src/@types/AgroPortal'
 import { NftMetadata } from '@utils/nft'
 import { ReactElement } from 'react'
 import { License } from 'src/@types/ddo/License'
@@ -79,6 +80,7 @@ export interface FormPublishData {
     termsAndConditions: boolean
     license?: License
     tags?: string[]
+    ontologyTerms?: OntologyTerm[]
     dockerImage?: string
     dockerImageCustom?: string
     dockerImageCustomTag?: string

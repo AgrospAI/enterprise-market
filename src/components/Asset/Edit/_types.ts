@@ -5,6 +5,7 @@ import {
   FormUrlFileInfo
 } from '@components/Publish/_types'
 import type { KeyValuePair } from 'src/@types/KeyValuePair'
+import type { OntologyTerm } from 'src/@types/AgroPortal'
 import { FileInfo } from '@oceanprotocol/lib'
 import { License } from '../../../@types/ddo/License'
 import { CredentialForm } from '@components/@shared/PolicyEditor/types'
@@ -30,6 +31,7 @@ export interface MetadataEditForm {
   providedBy?: string
   copyrightHolder?: string
   tags?: string[]
+  ontologyTerms?: OntologyTerm[]
   containerImage?: string
   containerTag?: string
   containerChecksum?: string

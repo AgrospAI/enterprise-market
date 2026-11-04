@@ -80,6 +80,11 @@ export default function MetadataFields(): ReactElement {
         name="metadata.tags"
       />
       <Field
+        {...getFieldContent('ontologyTerms', content.metadata.fields)}
+        component={Input}
+        name="metadata.ontologyTerms"
+      />
+      <Field
         {...getFieldContent('author', content.metadata.fields)}
         component={Input}
         name="metadata.author"

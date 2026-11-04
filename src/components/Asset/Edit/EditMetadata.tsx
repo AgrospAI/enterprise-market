@@ -134,6 +134,9 @@ export default function Edit({
         license,
         additionalInformation: {
           ...asset.credentialSubject?.metadata?.additionalInformation,
+          'dcat:theme': values.ontologyTerms?.length
+            ? values.ontologyTerms
+            : undefined,
           ...(asset.credentialSubject?.metadata?.additionalInformation?.saas &&
             values.saas?.redirectUrl && {
               saas: {

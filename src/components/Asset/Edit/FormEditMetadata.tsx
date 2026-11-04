@@ -244,6 +244,11 @@ export default function FormEditMetadata(): ReactElement {
           component={Input}
           name="tags"
         />
+        <Field
+          {...getFieldContent('ontologyTerms', data)}
+          component={Input}
+          name="ontologyTerms"
+        />
 
         <Field
           {...getFieldContent('author', data)}

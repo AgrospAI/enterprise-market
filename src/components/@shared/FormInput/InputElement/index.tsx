@@ -17,6 +17,7 @@ import Nft from './Nft'
 import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
+import OntologyTermsInput from './OntologyTermsInput'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
 import { ConsumerParameters } from './ConsumerParameters'
@@ -320,6 +321,8 @@ const InputElement = forwardRef(
         )
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
+      case 'ontologyTerms':
+        return <OntologyTermsInput {...field} {...props} />
       case 'keyValue':
         return (
           <InputKeyValue

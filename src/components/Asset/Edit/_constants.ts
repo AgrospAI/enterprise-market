@@ -348,6 +348,7 @@ export function getInitialValues(
     providedBy: metadata?.providedBy || '',
     copyrightHolder: metadata?.copyrightHolder || '',
     tags: metadata?.tags,
+    ontologyTerms: metadata?.additionalInformation?.['dcat:theme'] || [],
     containerImage,
     containerTag,
     containerChecksum: container?.checksum || '',
