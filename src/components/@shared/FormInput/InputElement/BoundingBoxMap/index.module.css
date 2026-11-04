@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* The global input rule sets a field height, which would stretch the
+ * react-select search input */
+.container input {
+  height: auto;
+  min-height: 0;
+}
+
+/* Search results open over the map */
+.locationSearch {
+  position: relative;
+  z-index: 1;
+}
+
+.map,
+.loading {
+  height: 350px;
+  width: 100%;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  background-color: var(--muted);
+}
+
+/* Leaflet panes and controls use z-indexes up to 1000, keep them inside
+ * the map instead of competing with the rest of the page */
+.map {
+  isolation: isolate;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  font-size: var(--font-size-small);
+}
+
+.wktDisplay {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  background-color: var(--muted);
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+}
+
+.wktLabel {
+  color: var(--muted-foreground);
+  font-weight: var(--font-weight-bold);
+}
+
+.wktValue {
+  color: var(--foreground);
+  word-break: break-all;
+  font-family: var(--font-family-monospace);
+}

@@ -16,6 +16,7 @@ import { Compute } from 'src/@types/ddo/Service'
 import { AdditionalCredentials } from './AdditionalCredentials'
 import { AccessPolicies } from './AccessPolicies'
 import { createEmptyUrlFileInfo } from './_license'
+import { emptyGeoMetadata } from '@utils/dcat'
 
 export const wizardSteps: StepContent[] = [
   {
@@ -94,6 +95,7 @@ export const initialValues: FormPublishData = {
     dockerImageCustomChecksum: '',
     tags: [],
     ontologyTerms: [],
+    geoMetadata: emptyGeoMetadata,
     license: undefined,
     // usesConsumerParameters: false,
     // consumerParameters: [],

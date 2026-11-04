@@ -32,10 +32,28 @@ export type SaasMetadata = {
   paymentMode: 'Subscription'
 }
 
+// DCAT geographic coverage, https://www.w3.org/TR/vocab-dcat-3/#Property:location_bbox
+export type DcatSpatial = {
+  '@type': string[]
+  'dcat:bbox': { '@type': 'geo:wktLiteral'; '@value': string }
+  'skos:prefLabel'?: string
+}
+
+type XsdDate = { '@type': 'xsd:date'; '@value': string }
+
+// DCAT temporal coverage, https://www.w3.org/TR/vocab-dcat-3/#Class:Period_of_Time
+export type DcatTemporal = {
+  '@type': 'dct:PeriodOfTime'
+  'dcat:startDate'?: XsdDate
+  'dcat:endDate'?: XsdDate
+}
+
 export interface AdditionalInformation {
   termsAndConditions?: boolean
   saas?: SaasMetadata
   'dcat:theme'?: OntologyTerm[]
+  'dct:spatial'?: DcatSpatial
+  'dct:temporal'?: DcatTemporal
   [key: string]: AdditionalInformationValue | undefined
 }
 

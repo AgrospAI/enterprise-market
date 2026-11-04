@@ -2,7 +2,11 @@ import * as Yup from 'yup'
 import { isAddress } from 'ethers'
 import { MAX_DECIMALS } from '@utils/constants'
 import { getMaxDecimalsValidation } from '@utils/numbers'
-import { getOriginalValue, testOptionalUrl } from '@utils/yup'
+import {
+  getOriginalValue,
+  testOptionalUrl,
+  validationGeoMetadata
+} from '@utils/yup'
 import { validationConsumerParameters } from '@shared/FormInput/InputElement/ConsumerParameters/_validation'
 import { isS3File } from 'src/@types/S3File'
 import {
@@ -186,6 +190,7 @@ export const metadataValidationSchema = Yup.object().shape({
     .nullable(),
   tags: Yup.array<string[]>().nullable(),
   ontologyTerms: Yup.array().nullable(),
+  geoMetadata: validationGeoMetadata,
   containerImage: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string()

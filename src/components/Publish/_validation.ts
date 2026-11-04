@@ -2,7 +2,12 @@ import { FileInfo } from '@oceanprotocol/lib'
 import { MAX_DECIMALS } from '@utils/constants'
 import { getMaxDecimalsValidation } from '@utils/numbers'
 import * as Yup from 'yup'
-import { getOriginalValue, testLinks, testOptionalUrl } from '@utils/yup'
+import {
+  getOriginalValue,
+  testLinks,
+  testOptionalUrl,
+  validationGeoMetadata
+} from '@utils/yup'
 import { validationConsumerParameters } from '@components/@shared/FormInput/InputElement/ConsumerParameters/_validation'
 import { FormUrlFileInfo } from './_types'
 import { additionalLicenseSourceOptions } from './_license'
@@ -196,6 +201,7 @@ const validationMetadata = {
     .nullable(),
   tags: Yup.array<string[]>().nullable(),
   ontologyTerms: Yup.array().nullable(),
+  geoMetadata: validationGeoMetadata,
   dockerImage: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string().required('Required')

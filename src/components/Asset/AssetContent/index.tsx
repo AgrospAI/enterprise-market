@@ -34,6 +34,7 @@ import ComputeJobs from '@components/@shared/ComputeJobs'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
+import BoundingBoxPreview from '@shared/BoundingBoxPreview'
 
 export default function AssetContent({
   asset
@@ -201,6 +202,9 @@ export default function AssetContent({
     }
   }, [isDropdownOpen])
 
+  const spatial =
+    asset.credentialSubject?.metadata?.additionalInformation?.['dct:spatial']
+
   const isDescriptionIsString =
     typeof asset.credentialSubject?.metadata?.description === 'string'
   return (
@@ -338,6 +342,12 @@ export default function AssetContent({
             className={styles.network}
           />
           <Web3Feedback accountId={accountId} isAssetNetwork={isAssetNetwork} />
+          {spatial?.['dcat:bbox']?.['@value'] && (
+            <BoundingBoxPreview
+              wkt={spatial['dcat:bbox']['@value']}
+              label={spatial['skos:prefLabel']}
+            />
+          )}
           {!asset.accessDetails ? (
             <p>Loading access details...</p>
           ) : (

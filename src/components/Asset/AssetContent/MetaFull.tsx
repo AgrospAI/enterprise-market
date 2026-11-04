@@ -35,6 +35,10 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
       ? assetStateToString(ddo.indexedMetadata.nft.state)
       : 'Active')
 
+  const temporal = metadata?.additionalInformation?.['dct:temporal']
+  const temporalStart = temporal?.['dcat:startDate']?.['@value']
+  const temporalEnd = temporal?.['dcat:endDate']?.['@value']
+
   const paymentCollector = asset?.accessDetails?.[0]?.paymentCollector
   const publisherDid = ddo?.issuer
 
@@ -95,6 +99,18 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
               content={<Publisher account={paymentCollector} />}
             />
           )}
+        {(temporalStart || temporalEnd) && (
+          <MetaItem
+            title="Temporal Coverage"
+            content={
+              temporalStart && temporalEnd
+                ? `${temporalStart} – ${temporalEnd}`
+                : temporalStart
+                ? `From ${temporalStart}`
+                : `Until ${temporalEnd}`
+            }
+          />
+        )}
         {metadata?.type === 'algorithm' && dockerImage && (
           <MetaItem title="Docker Image" content={dockerImage} />
         )}

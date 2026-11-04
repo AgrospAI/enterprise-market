@@ -8,6 +8,7 @@ import {
 } from '@components/Publish/_utils'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { Metadata } from 'src/@types/ddo/Metadata'
+import { transformGeoMetadata } from '@utils/dcat'
 import { Credential } from 'src/@types/ddo/Credentials'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { keyValuePairsToRecord } from '@utils/links'
@@ -44,6 +45,7 @@ export default function DebugEditMetadata({
           'dcat:theme': values.ontologyTerms?.length
             ? values.ontologyTerms
             : undefined,
+          ...transformGeoMetadata(values.geoMetadata),
           ...(asset?.credentialSubject?.metadata?.additionalInformation?.saas &&
             values.saas?.redirectUrl && {
               saas: {

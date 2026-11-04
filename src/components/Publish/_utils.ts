@@ -58,6 +58,7 @@ import {
 import { isS3File, getS3Access } from 'src/@types/S3File'
 import * as VCDataModel from 'src/@types/ddo/VerifiableCredential'
 import { convertLinks, keyValuePairsToRecord } from '@utils/links'
+import { transformGeoMetadata } from '@utils/dcat'
 import { License } from 'src/@types/ddo/License'
 import { RemoteObject } from 'src/@types/ddo/RemoteObject'
 import base64url from 'base64url'
@@ -581,6 +582,7 @@ export async function transformPublishFormToDdo(
     description,
     tags,
     ontologyTerms,
+    geoMetadata,
     author,
     providedBy,
     copyrightHolder,
@@ -716,6 +718,7 @@ export async function transformPublishFormToDdo(
     additionalInformation: {
       termsAndConditions,
       ...(ontologyTerms?.length > 0 && { 'dcat:theme': ontologyTerms }),
+      ...transformGeoMetadata(geoMetadata),
       ...(isSaas && {
         saas: {
           redirectUrl: sanitizeUrl(files[0].url || ''),
