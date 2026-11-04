@@ -160,6 +160,8 @@ module.exports = {
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
   edcApiUrl:
     getEnv('NEXT_PUBLIC_EDC_URL') || process.env.NEXT_PUBLIC_EDC_URL || null,
+  reaApiUrl:
+    getEnv('NEXT_PUBLIC_REA_URL') || process.env.NEXT_PUBLIC_REA_URL || null,
   ipfsGateway:
     getEnv('NEXT_PUBLIC_IPFS_GATEWAY') || process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUploadUrl:

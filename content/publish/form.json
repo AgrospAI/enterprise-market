@@ -387,6 +387,13 @@
             "prominentHelp": true,
             "type": "edc",
             "required": true
+          },
+          {
+            "value": "rea",
+            "title": "REA",
+            "label": "REA",
+            "type": "rea",
+            "required": true
           }
         ],
         "sortOptions": false,
