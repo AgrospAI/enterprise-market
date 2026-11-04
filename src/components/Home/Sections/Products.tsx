@@ -206,7 +206,7 @@ export default function Products(): ReactElement {
           })}
         </ul>
 
-        <div
+        {/* <div
           className={`${styles.cta} ${shared.reveal}`}
           style={{ '--i': items.length + 1 } as CSSProperties}
         >
@@ -228,7 +228,7 @@ export default function Products(): ReactElement {
               </span>
             </SmartLink>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   )

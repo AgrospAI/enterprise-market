@@ -1,9 +1,9 @@
 {
   "name": "@deltadao/enterprise-market",
-  "description": "deltaDAO Marketplace, a data and AI marketplace built on Ocean Enterprise",
+  "description": "AgrospAI Demonstration Marketplace, an agri-food data and AI marketplace built on Ocean Enterprise",
   "version": "1.5.0",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/deltaDAO/enterprise-market",
+  "homepage": "https://github.com/AgrospAI/enterprise-market",
   "type": "module",
   "scripts": {
     "start": "npm run pregenerate && next dev -p 8008",
@@ -193,7 +193,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/deltaDAO/enterprise-market"
+    "url": "https://github.com/AgrospAI/enterprise-market"
   },
   "engines": {
     "node": "22"
