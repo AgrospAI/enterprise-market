@@ -9,6 +9,7 @@ import { isSaasAsset } from '@utils/ddo'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import Bookmark from '@components/Asset/AssetContent/Bookmark'
 import { ServiceTypeIcons } from '@shared/AssetList/ServiceTypeIcons'
+import IconLocation from '@images/location.svg'
 
 declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -22,7 +23,11 @@ export default function AssetTeaser({
   noPublisher,
   noDescription
 }: AssetTeaserProps): ReactElement {
-  const { name, type, description } = asset.credentialSubject.metadata
+  const { name, type, description, additionalInformation } =
+    asset.credentialSubject.metadata
+  const spatial = additionalInformation?.['dct:spatial']
+  const hasGeoCoverage = Boolean(spatial?.['dcat:bbox']?.['@value'])
+  const geoLabel = spatial?.['skos:prefLabel'] || 'Geographic coverage'
   const isSaas = isSaasAsset(asset)
   const services = asset.credentialSubject?.services
   const hasServiceTypes = services?.some((service) =>
@@ -48,6 +53,15 @@ export default function AssetTeaser({
                 hideEmpty
                 className={styles.serviceTypes}
               />
+            </>
+          )}
+          {hasGeoCoverage && (
+            <>
+              <span className={styles.detailDivider} aria-hidden="true" />
+              <span className={styles.geoCoverage} title={geoLabel}>
+                <IconLocation aria-hidden="true" />
+                <span className={styles.geoLabel}>{geoLabel}</span>
+              </span>
             </>
           )}
         </aside>

@@ -35,6 +35,7 @@ import {
   normalizeDockerImageReference
 } from '@utils/docker'
 import DockerRegistryChecksum from '@shared/DockerRegistryChecksum'
+import GeoMetadataFields from '@shared/GeoMetadataFields'
 
 const { data } = content.form
 const assetTypeOptionsTitles = getFieldContent('type', data).options
@@ -285,6 +286,7 @@ export default function FormEditMetadata(): ReactElement {
             hideLabel
           />
         </SectionContainer>
+        <GeoMetadataFields name="geoMetadata" fields={data} />
         {asset.credentialSubject?.metadata?.type === 'algorithm' && (
           <>
             <SectionContainer title="Docker configuration" required>

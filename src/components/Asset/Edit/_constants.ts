@@ -27,6 +27,7 @@ import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifi
 import { State } from 'src/@types/ddo/State'
 import { recordToKeyValuePairs } from '@utils/links'
 import { normalizeDockerImageReference } from '@utils/docker'
+import { parseGeoMetadata } from '@utils/dcat'
 
 export const defaultServiceComputeOptions: Compute = {
   allowRawAlgorithm: false,
@@ -349,6 +350,7 @@ export function getInitialValues(
     copyrightHolder: metadata?.copyrightHolder || '',
     tags: metadata?.tags,
     ontologyTerms: metadata?.additionalInformation?.['dcat:theme'] || [],
+    geoMetadata: parseGeoMetadata(metadata?.additionalInformation),
     containerImage,
     containerTag,
     containerChecksum: container?.checksum || '',

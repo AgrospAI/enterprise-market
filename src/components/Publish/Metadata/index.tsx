@@ -12,6 +12,7 @@ import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
 import DockerRegistryChecksum from '@shared/DockerRegistryChecksum'
 import { FormPublishData } from '../_types'
+import GeoMetadataFields from '@shared/GeoMetadataFields'
 
 export default function MetadataFields(): ReactElement {
   const { setFieldTouched, setFieldValue } = useFormikContext<FormPublishData>()
@@ -110,6 +111,10 @@ export default function MetadataFields(): ReactElement {
           hideLabel
         />
       </SectionContainer>
+      <GeoMetadataFields
+        name="metadata.geoMetadata"
+        fields={content.metadata.fields}
+      />
 
       <Field
         {...getFieldContent('type', content.metadata.fields)}

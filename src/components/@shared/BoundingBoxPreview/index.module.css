@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-small);
+  color: var(--font-color-heading);
+}
+
+.label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.map,
+.loading {
+  height: 200px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--muted);
+}
+
+/* Leaflet panes and controls use z-indexes up to 1000, keep them inside
+ * the map instead of competing with the rest of the page */
+.map {
+  isolation: isolate;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  font-size: var(--font-size-small);
+}

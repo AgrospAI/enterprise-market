@@ -71,6 +71,34 @@
         "required": false
       },
       {
+        "name": "boundingBox",
+        "label": "Geographic Coverage",
+        "type": "boundingBoxMap",
+        "help": "Draw a bounding box on the map to define the geographic area covered by this asset. Use the rectangle tool on the map, or search for a location to auto-fill the area.",
+        "required": false
+      },
+      {
+        "name": "locationLabel",
+        "label": "Location Name",
+        "placeholder": "e.g. Lleida, Catalonia, Spain",
+        "help": "Optional: Provide a human-readable name for the geographic area.",
+        "required": false
+      },
+      {
+        "name": "temporalCoverageStart",
+        "label": "Temporal Coverage Start Date",
+        "type": "date",
+        "help": "The start date of the time period covered by this asset.",
+        "required": false
+      },
+      {
+        "name": "temporalCoverageEnd",
+        "label": "Temporal Coverage End Date",
+        "type": "date",
+        "help": "The end date of the time period covered by this asset.",
+        "required": false
+      },
+      {
         "name": "author",
         "label": "New Author",
         "type": "author",

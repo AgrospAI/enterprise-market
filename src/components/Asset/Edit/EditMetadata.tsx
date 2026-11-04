@@ -21,6 +21,7 @@ import {
   stringifyCredentialPolicies
 } from '@components/Publish/_utils'
 import { Metadata } from 'src/@types/ddo/Metadata'
+import { transformGeoMetadata } from '@utils/dcat'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
@@ -137,6 +138,7 @@ export default function Edit({
           'dcat:theme': values.ontologyTerms?.length
             ? values.ontologyTerms
             : undefined,
+          ...transformGeoMetadata(values.geoMetadata),
           ...(asset.credentialSubject?.metadata?.additionalInformation?.saas &&
             values.saas?.redirectUrl && {
               saas: {

@@ -88,3 +88,25 @@ export function testLinks(_isEdit?: boolean) {
     return true
   })
 }
+
+// Geographic metadata is optional, but a temporal coverage must not end
+// before it starts. ISO dates (YYYY-MM-DD) compare correctly as strings.
+export const validationGeoMetadata = Yup.object()
+  .shape({
+    boundingBox: Yup.object().shape({
+      wkt: Yup.string(),
+      label: Yup.string().max(256, 'Location name is too long')
+    }),
+    temporalCoverage: Yup.object().shape({
+      startDate: Yup.string(),
+      endDate: Yup.string().test(
+        'endAfterStart',
+        'End date must be on or after the start date',
+        (endDate, context) => {
+          const { startDate } = context.parent
+          return !startDate || !endDate || endDate >= startDate
+        }
+      )
+    })
+  })
+  .nullable()
