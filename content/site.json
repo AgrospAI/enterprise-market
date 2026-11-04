@@ -72,7 +72,7 @@
         "links": [
           {
             "name": "Imprint",
-            "link": "https://www.delta-dao.com/imprint"
+            "link": "/privacy/imprint"
           },
           {
             "name": "Privacy Policy",

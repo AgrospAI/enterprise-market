@@ -30,13 +30,13 @@ export default function PrivacyPolicyHeader({
 
   // Only keep an `anchor` where the target renders that id: the terms,
   // privacy and cookie pages have no matching heading id, so their tabs just
-  // open the page. rehype-slug gives the lifecycle policy H1 its id, and the
-  // deltaDAO imprint page has an element with id="imprint".
+  // open the page. rehype-slug gives the imprint and lifecycle policy H1s
+  // their ids.
   const navItems = [
     {
       label: 'Imprint',
       anchor: 'imprint',
-      href: 'https://www.delta-dao.com/imprint'
+      href: '/privacy/imprint'
     },
     {
       label: 'Terms and Conditions',
@@ -50,7 +50,7 @@ export default function PrivacyPolicyHeader({
     // Enterprise Collective e.V. as the Portal Operator) was removed, so
     // /privacy/data-portal-usage-agreement returns 404 unless
     // NEXT_PUBLIC_DPUA_URL points at an external document. Add the tab back
-    // once a deltaDAO version exists.
+    // once an AgrospAI version exists.
     {
       label: 'Cookie Policy',
       href: '/privacy/cookie-policy'

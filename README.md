@@ -1,8 +1,8 @@
-[![deltaDAO Marketplace](public/share.png)](https://delta-dao.com)
+[![AgrospAI Demonstration Marketplace](public/share.png)](https://market.agrospai.udl.cat)
 
-<h1 align="center">deltaDAO Marketplace</h1>
+<h1 align="center">AgrospAI Demonstration Marketplace</h1>
 
-<p align="center">A data and AI marketplace by <a href="https://delta-dao.com">deltaDAO AG</a>, built on the open-source <a href="https://github.com/OceanProtocolEnterprise/market">Ocean Enterprise market</a>.</p>
+<p align="center">An agri-food data and AI marketplace by <a href="https://www.udl.cat">Universitat de Lleida</a>, built on the open-source <a href="https://github.com/OceanProtocolEnterprise/market">Ocean Enterprise market</a> and powered by <a href="https://delta-dao.com">deltaDAO</a>.</p>
 
 [![Build Status](https://github.com/oceanprotocol/market/workflows/CI/badge.svg)](https://github.com/oceanprotocol/market/actions)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/c85f4d8b-95e1-4010-95a4-2bacd8b90981/deploy-status)](https://app.netlify.com/sites/market-oceanprotocol/deploys)
