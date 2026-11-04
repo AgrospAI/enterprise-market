@@ -7,6 +7,7 @@ export type RuntimeConfig = {
   NEXT_PUBLIC_SSI_ENABLED?: string
   NEXT_PUBLIC_EDC_URL?: string
   NEXT_PUBLIC_REA_URL?: string
+  AGROPORTAL_ENABLED?: string
   NEXT_PUBLIC_PROVIDER_URL?: string
   NEXT_PUBLIC_IPFS_UNPIN_FILES?: string
   NEXT_PUBLIC_NODE_URI?: string
@@ -71,6 +72,9 @@ const runtimeConfig: RuntimeConfig = (() => {
     NEXT_PUBLIC_SSI_ENABLED: process.env.NEXT_PUBLIC_SSI_ENABLED,
     NEXT_PUBLIC_EDC_URL: process.env.NEXT_PUBLIC_EDC_URL,
     NEXT_PUBLIC_REA_URL: process.env.NEXT_PUBLIC_REA_URL,
+    AGROPORTAL_ENABLED:
+      process.env.AGROPORTAL_ENABLED ??
+      (process.env.AGROPORTAL_API_KEY ? 'true' : 'false'),
     NEXT_PUBLIC_PROVIDER_URL: process.env.NEXT_PUBLIC_PROVIDER_URL,
     NEXT_PUBLIC_IPFS_UNPIN_FILES: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES,
     NEXT_PUBLIC_NODE_URI: process.env.NEXT_PUBLIC_NODE_URI,

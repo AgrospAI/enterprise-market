@@ -93,6 +93,7 @@ export const initialValues: FormPublishData = {
     dockerImageCustomEntrypoint: '',
     dockerImageCustomChecksum: '',
     tags: [],
+    ontologyTerms: [],
     license: undefined,
     // usesConsumerParameters: false,
     // consumerParameters: [],

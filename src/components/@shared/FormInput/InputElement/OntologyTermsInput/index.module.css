@@ -1,0 +1,66 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* The global input rule sets a field height, which would stretch the
+ * react-select search input and pad every row of selected terms */
+.container input {
+  height: auto;
+  min-height: 0;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.error {
+  margin: calc(var(--sp-4) * -1 + var(--sp-1)) 0 0;
+  font-size: 12px;
+  color: var(--destructive);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--sp-2);
+  text-align: left;
+}
+
+.sourceLink {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: inherit;
+}
+
+.sourceLink:hover {
+  color: var(--deck-blue);
+}
+
+.sourceLink svg {
+  width: 12px;
+  height: 12px;
+}
+
+.sourceLink svg path {
+  stroke: currentColor;
+}
+
+.label {
+  font-weight: var(--text-weight-medium, 500);
+}
+
+.scheme {
+  font-size: 10px;
+  color: var(--muted-foreground);
+}

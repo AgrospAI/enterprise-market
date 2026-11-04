@@ -162,6 +162,10 @@ module.exports = {
     getEnv('NEXT_PUBLIC_EDC_URL') || process.env.NEXT_PUBLIC_EDC_URL || null,
   reaApiUrl:
     getEnv('NEXT_PUBLIC_REA_URL') || process.env.NEXT_PUBLIC_REA_URL || null,
+  // Derived from the server-side AGROPORTAL_API_KEY; the key is never exposed.
+  agroPortalEnabled:
+    (getEnv('AGROPORTAL_ENABLED') ??
+      (process.env.AGROPORTAL_API_KEY ? 'true' : 'false')) === 'true',
   ipfsGateway:
     getEnv('NEXT_PUBLIC_IPFS_GATEWAY') || process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUploadUrl:

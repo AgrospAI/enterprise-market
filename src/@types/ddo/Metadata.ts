@@ -2,6 +2,7 @@ import { LanguageValueObject } from './LanguageValueObject'
 import { License } from './License'
 import { RemoteObject } from './RemoteObject'
 import { Option } from './Option'
+import type { OntologyTerm } from '../AgroPortal'
 
 interface Container {
   entrypoint: string
@@ -34,6 +35,7 @@ export type SaasMetadata = {
 export interface AdditionalInformation {
   termsAndConditions?: boolean
   saas?: SaasMetadata
+  'dcat:theme'?: OntologyTerm[]
   [key: string]: AdditionalInformationValue | undefined
 }
 

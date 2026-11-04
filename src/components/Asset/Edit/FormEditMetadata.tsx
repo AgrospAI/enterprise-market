@@ -244,6 +244,13 @@ export default function FormEditMetadata(): ReactElement {
           component={Input}
           name="tags"
         />
+        {appConfig.agroPortalEnabled && (
+          <Field
+            {...getFieldContent('ontologyTerms', data)}
+            component={Input}
+            name="ontologyTerms"
+          />
+        )}
 
         <Field
           {...getFieldContent('author', data)}

@@ -63,6 +63,14 @@
         "required": false
       },
       {
+        "name": "ontologyTerms",
+        "label": "New Ontology terms",
+        "type": "ontologyTerms",
+        "placeholder": "e.g. agriculture",
+        "help": "Terms from AgroPortal ontologies that describe this asset.",
+        "required": false
+      },
+      {
         "name": "author",
         "label": "New Author",
         "type": "author",

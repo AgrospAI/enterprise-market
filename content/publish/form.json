@@ -53,6 +53,13 @@
         "placeholder": "e.g. logistics"
       },
       {
+        "name": "ontologyTerms",
+        "label": "Ontology terms",
+        "type": "ontologyTerms",
+        "placeholder": "e.g. agriculture",
+        "help": "Terms from AgroPortal ontologies that describe this asset."
+      },
+      {
         "name": "author",
         "label": "Author",
         "type": "author",
