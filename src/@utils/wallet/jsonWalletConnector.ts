@@ -43,6 +43,9 @@ type Properties = JsonWalletConnectorProperties
 ------------------------------------------------------- */
 let onImportRequest: (() => void) | null = null
 
+// Warn only once per chain so we don't flood the console on every tx.
+const warnedMissingRelayChains = new Set<number>()
+
 export function setImportRequestHandler(handler: (() => void) | null) {
   onImportRequest = handler
 }
@@ -214,6 +217,14 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
             )
 
             const relayUrl = getTransactionRelayMap()[String(activeChain.id)]
+            if (!relayUrl && !warnedMissingRelayChains.has(activeChain.id)) {
+              warnedMissingRelayChains.add(activeChain.id)
+              console.warn(
+                `[jsonWalletConnector] No transaction relay configured for chain ${activeChain.id} ` +
+                  `(NEXT_PUBLIC_TRANSACTION_RELAY_MAP). Transactions will be populated and ` +
+                  `broadcast through the chain's RPC.`
+              )
+            }
             const txProvider = relayUrl
               ? new JsonRpcProvider(relayUrl, Number(activeChain.id), {
                   batchMaxCount: 1
