@@ -146,8 +146,11 @@ export async function order(
 
   switch (accessDetails.type) {
     case 'fixed': {
+      const fixedRateExchangeAddress =
+        accessDetails.fixedRateExchangeAddress ||
+        config.fixedRateExchangeAddress
       const freParams = {
-        exchangeContract: config.fixedRateExchangeAddress,
+        exchangeContract: fixedRateExchangeAddress,
         exchangeId: accessDetails.addressOrId,
         maxBaseTokenAmount: orderPriceAndFees?.price,
         baseTokenAddress: accessDetails.baseToken?.address,
@@ -164,14 +167,14 @@ export async function order(
             config,
             accountId,
             accessDetails.baseToken.address,
-            config.fixedRateExchangeAddress,
+            fixedRateExchangeAddress,
             orderPriceAndFees?.price,
             false
           )
           await txApprove.wait()
 
           const fre = new FixedRateExchange(
-            config.fixedRateExchangeAddress,
+            fixedRateExchangeAddress,
             signer as any
           )
           const freTx = await fre.buyDatatokens(

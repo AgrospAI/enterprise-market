@@ -113,7 +113,7 @@ export default function EditService({
     const config = getOceanConfig(asset.credentialSubject?.chainId)
 
     const fixedRateInstance = new FixedRateExchange(
-      config.fixedRateExchangeAddress,
+      accessDetails.fixedRateExchangeAddress || config.fixedRateExchangeAddress,
       signer
     )
 
