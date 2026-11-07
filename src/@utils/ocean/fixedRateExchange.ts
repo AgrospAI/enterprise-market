@@ -31,7 +31,7 @@ export async function getFixedBuyPrice(
     return zeroPriceAndFees
   }
   const fixed = new FixedRateExchange(
-    config.fixedRateExchangeAddress,
+    accessDetails.fixedRateExchangeAddress || config.fixedRateExchangeAddress,
     signer,
     chainId
   )
