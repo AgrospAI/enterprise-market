@@ -149,10 +149,26 @@ export async function order(
       const fixedRateExchangeAddress =
         accessDetails.fixedRateExchangeAddress ||
         config.fixedRateExchangeAddress
+      // Total base-token amount required by the exchange for 1 DT, including
+      // the ocean fee and the publisher/consume swap fees. getFixedBuyPrice()
+      // queries the same exchange and returns this total as baseTokenAmount.
+      const exchangeBaseTokenAmount =
+        orderPriceAndFees?.baseTokenAmount &&
+        new Decimal(orderPriceAndFees.baseTokenAmount).gt(0)
+          ? orderPriceAndFees.baseTokenAmount
+          : new Decimal(orderPriceAndFees?.price || 0)
+              .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+              .add(
+                new Decimal(orderPriceAndFees?.publisherMarketFixedSwapFee || 0)
+              )
+              .add(
+                new Decimal(orderPriceAndFees?.consumeMarketFixedSwapFee || 0)
+              )
+              .toString()
       const freParams = {
         exchangeContract: fixedRateExchangeAddress,
         exchangeId: accessDetails.addressOrId,
-        maxBaseTokenAmount: orderPriceAndFees?.price,
+        maxBaseTokenAmount: exchangeBaseTokenAmount,
         baseTokenAddress: accessDetails.baseToken?.address,
         baseTokenDecimals: accessDetails.baseToken?.decimals || 18,
         swapMarketFee: consumeMarketFixedSwapFee,
@@ -168,7 +184,7 @@ export async function order(
             accountId,
             accessDetails.baseToken.address,
             fixedRateExchangeAddress,
-            orderPriceAndFees?.price,
+            exchangeBaseTokenAmount,
             false
           )
           await txApprove.wait()
@@ -180,7 +196,7 @@ export async function order(
           const freTx = await fre.buyDatatokens(
             accessDetails.addressOrId,
             '1',
-            orderPriceAndFees?.price,
+            exchangeBaseTokenAmount,
             marketFeeAddress,
             '0'
           )
@@ -210,9 +226,9 @@ export async function order(
           activeConsumeMarketOrderFeeWei,
           accessDetails.baseToken.decimals
         )
-        let totalBaseTokenApprove = new Decimal(orderPriceAndFees?.price || 0)
-          .add(new Decimal(orderPriceAndFees?.opcFee || 0))
-          .add(new Decimal(consumeMarketFeeHuman || 0))
+        let totalBaseTokenApprove = new Decimal(exchangeBaseTokenAmount).add(
+          new Decimal(consumeMarketFeeHuman || 0)
+        )
 
         if (isProviderTokenSameAsBase && providerFeeWei !== '0') {
           const providerFeeHuman = formatUnits(
@@ -283,12 +299,8 @@ export async function order(
           }
         }
 
-        // Adjust freParams to only include cost items paid via the exchange
-        freParams.maxBaseTokenAmount = new Decimal(
-          orderPriceAndFees?.price || 0
-        )
-          .add(new Decimal(orderPriceAndFees?.opcFee || 0))
-          .toString()
+        // Cap the exchange purchase to its full cost for 1 DT
+        freParams.maxBaseTokenAmount = exchangeBaseTokenAmount
 
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
