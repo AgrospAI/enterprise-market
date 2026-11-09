@@ -3,6 +3,7 @@ import {
   KeyboardEvent,
   ReactElement,
   ReactNode,
+  useCallback,
   useEffect,
   useRef,
   useState
@@ -12,7 +13,7 @@ import { useAccount, useSwitchChain } from 'wagmi'
 import Alert from '@shared/atoms/Alert'
 import Button from '@shared/atoms/Button'
 import Loader from '@shared/atoms/Loader'
-import { useChat } from '@hooks/useChat'
+import { PreviousChat, useChat } from '@hooks/useChat'
 import { useChatPanel } from '@context/ChatPanel'
 import { useSiweSession } from '@hooks/useSiweSession'
 import { markdownToChatHtml } from '@utils/markdown'
@@ -66,10 +67,12 @@ function Steps({ steps }: { steps: ChatStep[] }): ReactElement {
 
 function Message({
   message,
-  isLiveIntent
+  isLiveIntent,
+  onRunningChange
 }: {
   message: ChatMessage
   isLiveIntent: (intent: ChatIntent) => boolean
+  onRunningChange: (running: boolean) => void
 }): ReactElement {
   if (message.role === 'user') {
     return <p className={styles.userMessage}>{message.content}</p>
@@ -86,7 +89,12 @@ function Message({
         }}
       />
       {message.intents?.map((intent, index) => (
-        <IntentCard key={index} intent={intent} live={isLiveIntent(intent)} />
+        <IntentCard
+          key={index}
+          intent={intent}
+          live={isLiveIntent(intent)}
+          onRunningChange={onRunningChange}
+        />
       ))}
     </div>
   )
@@ -97,7 +105,15 @@ interface Suggestion {
   prompt: string
 }
 
-/** Questions to start with, for the page the user is on. */
+const DOWNLOAD_PROMPT =
+  'Find a free dataset I can download, and prepare the download for me.'
+const COMPUTE_PROMPT =
+  'Help me run a Compute-to-Data job: suggest a dataset and a compatible algorithm, then prepare the job.'
+
+/**
+ * What to start with, for the page the user is on. They mix searching with
+ * doing, because the examples are how users learn what the assistant can do.
+ */
 export function suggestionsFor(pathname: string, did?: string): Suggestion[] {
   const ask = (label: string, prompt = label): Suggestion => ({ label, prompt })
   if (pathname === '/asset/[did]' && did) {
@@ -107,6 +123,10 @@ export function suggestionsFor(pathname: string, did?: string): Suggestion[] {
         `What is the asset ${did} and what does it cost?`
       ),
       ask(
+        'Get this asset for me',
+        `Prepare what I need to use the asset ${did}: a download if it can be downloaded, otherwise a Compute-to-Data job with a compatible algorithm or dataset.`
+      ),
+      ask(
         'What can I run with this asset?',
         `What can I run with the asset ${did}? Show what it is compatible with.`
       )
@@ -114,15 +134,15 @@ export function suggestionsFor(pathname: string, did?: string): Suggestion[] {
   }
   if (pathname === '/search') {
     return [
-      ask('Find free datasets I can download'),
       ask('Find algorithms for satellite images'),
-      ask('Which datasets can I analyse without downloading them?')
+      ask('Download a free dataset', DOWNLOAD_PROMPT),
+      ask('Run an algorithm without downloading the data', COMPUTE_PROMPT)
     ]
   }
   return [
     ask('Find datasets about soil or crops'),
-    ask('Which algorithms work with SIGPAC parcels?'),
-    ask('What compute environments are there and what do they cost?')
+    ask('Download a free dataset', DOWNLOAD_PROMPT),
+    ask('Run an algorithm on a dataset', COMPUTE_PROMPT)
   ]
 }
 
@@ -171,7 +191,11 @@ function PanelHeader({
     <header className={styles.header}>
       <h2 className={styles.title}>
         <SparkleIcon className={styles.titleIcon} />
-        AgrospAI Assistant
+        <span>
+          {/* Only on a wide panel: next to "New chat", it would wrap. */}
+          <span className={styles.titleBrand}>AgrospAI </span>
+          Assistant
+        </span>
       </h2>
       <div className={styles.headerActions}>
         {children}
@@ -190,7 +214,47 @@ function PanelHeader({
   )
 }
 
-function MoreMenu({ onSignOut }: { onSignOut: () => void }): ReactElement {
+const BUSY_REASON = 'Wait until the action in progress finishes'
+
+function formatSavedAt(updatedAt?: number): string {
+  if (!updatedAt) return 'an earlier visit'
+  return new Date(updatedAt).toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+}
+
+/** Brings back a conversation that was put aside or just deleted. */
+function PreviousNotice({
+  previous,
+  onRestore
+}: {
+  previous: PreviousChat
+  onRestore: () => void
+}): ReactElement {
+  return (
+    <p className={styles.previous}>
+      <span>
+        {previous.reason === 'deleted'
+          ? 'Conversation deleted.'
+          : `Your last conversation is from ${formatSavedAt(
+              previous.updatedAt
+            )}. A new one starts here.`}
+      </span>
+      <button type="button" className={styles.linkButton} onClick={onRestore}>
+        {previous.reason === 'deleted' ? 'Undo' : 'Continue it'}
+      </button>
+    </p>
+  )
+}
+
+function MoreMenu({
+  onSignOut,
+  isBusy
+}: {
+  onSignOut: () => void
+  isBusy: boolean
+}): ReactElement {
   const [isOpen, setIsOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -232,12 +296,14 @@ function MoreMenu({ onSignOut }: { onSignOut: () => void }): ReactElement {
             type="button"
             role="menuitem"
             className={styles.menuItem}
+            disabled={isBusy}
+            title={isBusy ? BUSY_REASON : undefined}
             onClick={() => {
               setIsOpen(false)
               onSignOut()
             }}
           >
-            Sign out of chat
+            Sign out and delete conversation
           </button>
         </div>
       )}
@@ -266,9 +332,17 @@ function Conversation({
     send,
     stop,
     clear,
+    previous,
+    restorePrevious,
     isLiveIntent
   } = useChat(address, onSessionLost)
   const [draft, setDraft] = useState('')
+  // Cards sending orders, payments or a job: the conversation must stay.
+  const [runningCards, setRunningCards] = useState(0)
+  const isBusy = runningCards > 0
+  const onRunningChange = useCallback((running: boolean) => {
+    setRunningCards((count) => Math.max(0, count + (running ? 1 : -1)))
+  }, [])
   const endRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -294,34 +368,56 @@ function Conversation({
   }
 
   function startOver() {
+    if (isBusy) return
     clear()
     inputRef.current?.focus()
+  }
+
+  function signOutAndDelete() {
+    if (isBusy) return
+    // On a shared computer, signing out should not leave the conversation behind.
+    clear()
+    onSignOut()
   }
 
   return (
     <>
       {header(
         <>
-          <IconButton
-            label="New conversation"
-            disabled={messages.length === 0 && !isStreaming}
+          <button
+            type="button"
+            className={styles.newChat}
+            aria-label="New chat"
+            title={isBusy ? BUSY_REASON : 'Start a new conversation'}
+            disabled={isBusy || (messages.length === 0 && !isStreaming)}
             onClick={startOver}
           >
             <NewChatIcon />
-          </IconButton>
-          <MoreMenu onSignOut={onSignOut} />
+            <span className={styles.newChatLabel}>New chat</span>
+          </button>
+          <MoreMenu onSignOut={signOutAndDelete} isBusy={isBusy} />
         </>
       )}
 
       <div className={styles.messages} aria-live="polite">
+        {messages.length === 0 && previous && (
+          <PreviousNotice previous={previous} onRestore={restorePrevious} />
+        )}
         {messages.length === 0 && (
           <div className={styles.welcome}>
-            <p className={styles.welcomeTitle}>How can I help?</p>
-            <p className={styles.hint}>
-              Ask about the catalogue: datasets, algorithms, or what can run on
-              what. I can also prepare downloads and Compute-to-Data jobs for
-              you to check and confirm.
+            <p className={styles.welcomeTitle}>
+              Find, buy and use data by chat
             </p>
+            <p className={styles.hint}>
+              Search the catalogue, download datasets or run Compute-to-Data
+              jobs: just say what you need. I prepare each action, and you check
+              it and sign it in your wallet.
+            </p>
+            <ul className={styles.capabilities} aria-label="What I can do">
+              <li>Search the catalogue</li>
+              <li>Buy and download</li>
+              <li>Run Compute-to-Data jobs</li>
+            </ul>
             <ul className={styles.suggestions}>
               {suggestions.map((suggestion) => (
                 <li key={suggestion.label}>
@@ -335,10 +431,19 @@ function Conversation({
                 </li>
               ))}
             </ul>
+            <p className={styles.limits}>
+              Publishing and editing assets, and your job results, are in the
+              portal.
+            </p>
           </div>
         )}
         {messages.map((message, index) => (
-          <Message key={index} message={message} isLiveIntent={isLiveIntent} />
+          <Message
+            key={index}
+            message={message}
+            isLiveIntent={isLiveIntent}
+            onRunningChange={onRunningChange}
+          />
         ))}
         {isStreaming && (
           <div className={styles.status}>
@@ -356,7 +461,7 @@ function Conversation({
             ref={inputRef}
             className={styles.input}
             aria-label="Message"
-            placeholder="Ask about the market"
+            placeholder="Search, download or run a job…"
             rows={1}
             value={draft}
             data-autofocus

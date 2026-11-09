@@ -207,10 +207,13 @@ function PaymentRows({
  */
 export default function IntentCard({
   intent,
-  live
+  live,
+  onRunningChange
 }: {
   intent: ChatIntent
   live: boolean
+  /** Told while the card sends orders, payments or the job, so the conversation is kept. */
+  onRunningChange?: (running: boolean) => void
 }): ReactElement {
   const { address, chainId } = useAccount()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -244,6 +247,13 @@ export default function IntentCard({
     address?.toLowerCase() === intent.consumerAddress.toLowerCase()
   const isRightChain = chainId === intent.chainId
   const canCheck = live && isOwnWallet && isRightChain
+  const isRunning = phase === 'running'
+
+  useEffect(() => {
+    if (!isRunning || !onRunningChange) return
+    onRunningChange(true)
+    return () => onRunningChange(false)
+  }, [isRunning, onRunningChange])
 
   useEffect(() => {
     if (!canCheck) return

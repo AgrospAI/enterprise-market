@@ -1,7 +1,10 @@
 import {
   CHAT_HISTORY_LIMIT,
+  CHAT_HISTORY_TTL_MS,
   clearChatHistory,
+  isChatStale,
   readChatHistory,
+  readSavedChat,
   writeChatHistory
 } from './chatHistory'
 import type { ChatMessage } from 'src/@types/Chat'
@@ -33,6 +36,31 @@ describe('chat history', () => {
     const saved = readChatHistory(ADDRESS)
     expect(saved).toHaveLength(CHAT_HISTORY_LIMIT)
     expect(saved[0].content).toBe('5')
+  })
+
+  it('keeps when the conversation was last written', () => {
+    writeChatHistory(ADDRESS, [message], 1_000)
+    expect(readSavedChat(ADDRESS)).toEqual({
+      messages: [message],
+      updatedAt: 1_000
+    })
+  })
+
+  it('reads conversations saved before the time was kept, as not stale', () => {
+    window.localStorage.setItem(
+      `chat:${ADDRESS.toLowerCase()}`,
+      JSON.stringify([message])
+    )
+    const saved = readSavedChat(ADDRESS)
+    expect(saved).toEqual({ messages: [message] })
+    expect(isChatStale(saved)).toBe(false)
+  })
+
+  it('is stale only after the time limit', () => {
+    const now = 10 * CHAT_HISTORY_TTL_MS
+    const at = (age: number) => ({ messages: [message], updatedAt: now - age })
+    expect(isChatStale(at(CHAT_HISTORY_TTL_MS), now)).toBe(false)
+    expect(isChatStale(at(CHAT_HISTORY_TTL_MS + 1), now)).toBe(true)
   })
 
   it('deletes a conversation', () => {

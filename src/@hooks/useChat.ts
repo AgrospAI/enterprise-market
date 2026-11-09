@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   clearChatHistory,
-  readChatHistory,
+  isChatStale,
+  readSavedChat,
   writeChatHistory
 } from '@utils/chatHistory'
 import { readChatStream } from '@utils/chatStream'
@@ -20,6 +21,16 @@ function requestErrorMessage(status: number): string {
   return 'The assistant is unavailable right now. Please try again.'
 }
 
+/**
+ * A conversation that is not shown but can be brought back: one left too long
+ * ago, or one the user has just deleted.
+ */
+export interface PreviousChat {
+  reason: 'stale' | 'deleted'
+  messages: ChatMessage[]
+  updatedAt?: number
+}
+
 export function useChat(
   address: string | undefined,
   onSessionLost: () => void
@@ -28,6 +39,7 @@ export function useChat(
   const [isStreaming, setIsStreaming] = useState(false)
   const [activeTool, setActiveTool] = useState<string>()
   const [error, setError] = useState<string>()
+  const [previous, setPrevious] = useState<PreviousChat>()
   const abortRef = useRef<AbortController>()
   // Intents received in this page. Saved ones are shown, but cannot run again.
   const liveIntents = useRef(new WeakSet<ChatIntent>())
@@ -40,7 +52,15 @@ export function useChat(
   useEffect(() => {
     cancelRequest()
     setError(undefined)
-    setMessages(address ? readChatHistory(address) : [])
+    const saved = address ? readSavedChat(address) : { messages: [] }
+    // It stays saved until a new message replaces it, so it can be continued.
+    if (saved.messages.length && isChatStale(saved)) {
+      setMessages([])
+      setPrevious({ reason: 'stale', ...saved })
+    } else {
+      setMessages(saved.messages)
+      setPrevious(undefined)
+    }
   }, [address, cancelRequest])
 
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -56,6 +76,8 @@ export function useChat(
 
       const history: ChatMessage[] = [...messages, { role: 'user', content }]
       setMessages(history)
+      // A new conversation replaces the one put aside when it is saved.
+      setPrevious(undefined)
       setError(undefined)
       setIsStreaming(true)
 
@@ -151,12 +173,22 @@ export function useChat(
 
   const stop = useCallback(() => abortRef.current?.abort(), [])
 
+  /** Deletes the conversation. It can be brought back until a new message. */
   const clear = useCallback(() => {
     cancelRequest()
+    setPrevious(messages.length ? { reason: 'deleted', messages } : undefined)
     setMessages([])
     setError(undefined)
     if (address) clearChatHistory(address)
-  }, [address, cancelRequest])
+  }, [address, cancelRequest, messages])
+
+  const restorePrevious = useCallback(() => {
+    if (!previous || !address) return
+    setMessages(previous.messages)
+    setPrevious(undefined)
+    setError(undefined)
+    writeChatHistory(address, previous.messages)
+  }, [address, previous])
 
   const isLiveIntent = useCallback(
     (intent: ChatIntent) => liveIntents.current.has(intent),
@@ -171,6 +203,8 @@ export function useChat(
     send,
     stop,
     clear,
+    previous,
+    restorePrevious,
     isLiveIntent
   }
 }

@@ -4,7 +4,9 @@ import { useAccount, useSwitchChain } from 'wagmi'
 import { useSiweSession } from '@hooks/useSiweSession'
 import { ChatPanelProvider } from '@context/ChatPanel'
 import Chat, { suggestionsFor } from '.'
-import AssistantButton from './AssistantButton'
+import AssistantButton, { INTRO_SEEN_KEY } from './AssistantButton'
+import { CHAT_HISTORY_TTL_MS } from '@utils/chatHistory'
+import { computeIntent } from '../../../.jest/__fixtures__/chatIntents'
 
 jest.mock('wagmi', () => ({
   useAccount: jest.fn(),
@@ -16,12 +18,31 @@ jest.mock('@hooks/useSiweSession', () => ({
 jest.mock('@oceanprotocol/lib', () => ({
   LoggerInstance: { error: jest.fn() }
 }))
+// A card that starts and finishes its action on request, without a wallet.
+jest.mock('./IntentCard', () => ({
+  __esModule: true,
+  default: ({
+    onRunningChange
+  }: {
+    onRunningChange?: (running: boolean) => void
+  }) => (
+    <div>
+      <button type="button" onClick={() => onRunningChange?.(true)}>
+        Pay
+      </button>
+      <button type="button" onClick={() => onRunningChange?.(false)}>
+        Paid
+      </button>
+    </div>
+  )
+}))
 jest.mock('@utils/markdown', () => ({
   markdownToChatHtml: (text: string) => `<p>${text}</p>`,
   markdownToHtml: (text: string) => `<p>${text}</p>`
 }))
 
 const ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+const STORAGE_KEY = `chat:${ADDRESS.toLowerCase()}`
 const signIn = jest.fn()
 const signOut = jest.fn()
 const markSignedOut = jest.fn()
@@ -78,7 +99,7 @@ function setPath(pathname: string, query = {}) {
 }
 
 function openPanel() {
-  fireEvent.click(screen.getByRole('button', { name: 'Ask AI' }))
+  fireEvent.click(screen.getByRole('button', { name: 'AI Assistant' }))
 }
 
 function sendMessage(text: string) {
@@ -264,7 +285,7 @@ describe('Chat', () => {
       expect(screen.getByText('Saved')).toBeInTheDocument()
     })
 
-    it('deletes the conversation', async () => {
+    it('deletes the conversation, and can undo it until a new message', async () => {
       fetchMock.mockResolvedValue(
         streamResponse([{ type: 'text', delta: 'Gone' }, { type: 'done' }])
       )
@@ -274,12 +295,74 @@ describe('Chat', () => {
       await screen.findByText('Gone')
       await screen.findByRole('button', { name: 'Send' })
 
-      fireEvent.click(screen.getByRole('button', { name: 'New conversation' }))
+      fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
 
       expect(screen.queryByText('Gone')).not.toBeInTheDocument()
+      expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
+      expect(screen.getByText('Conversation deleted.')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      expect(screen.getByText('Gone')).toBeInTheDocument()
+      expect(window.localStorage.getItem(STORAGE_KEY)).toContain('Gone')
+
+      fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
+      sendMessage('something else')
       expect(
-        window.localStorage.getItem(`chat:${ADDRESS.toLowerCase()}`)
-      ).toBeNull()
+        screen.queryByRole('button', { name: 'Undo' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('puts aside a conversation left too long ago, and can continue it', () => {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          updatedAt: Date.now() - CHAT_HISTORY_TTL_MS - 60_000,
+          messages: [{ role: 'user', content: 'old question' }]
+        })
+      )
+      renderChat()
+      openPanel()
+
+      expect(screen.queryByText('old question')).not.toBeInTheDocument()
+      expect(
+        screen.getByText(/Your last conversation is from/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {
+          name: 'Find datasets about soil or crops'
+        })
+      ).toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Continue it' }))
+      expect(screen.getByText('old question')).toBeInTheDocument()
+    })
+
+    it('keeps the conversation while a card is paying', async () => {
+      fetchMock.mockResolvedValue(
+        streamResponse([
+          { type: 'text', delta: 'Review the card.' },
+          { type: 'intent', intent: computeIntent() },
+          { type: 'done' }
+        ])
+      )
+      renderChat()
+      openPanel()
+      sendMessage('run it')
+      await screen.findByText('Review the card.')
+      await screen.findByRole('button', { name: 'Send' })
+      const newChat = screen.getByRole('button', { name: 'New chat' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Pay' }))
+      expect(newChat).toBeDisabled()
+      fireEvent.click(screen.getByRole('button', { name: 'More options' }))
+      expect(
+        screen.getByRole('menuitem', {
+          name: 'Sign out and delete conversation'
+        })
+      ).toBeDisabled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Paid' }))
+      expect(newChat).toBeEnabled()
     })
 
     it('leaves the conversation when the server says the session ended', async () => {
@@ -318,14 +401,22 @@ describe('Chat', () => {
       ).toBeInTheDocument()
     })
 
-    it('signs out on request', () => {
+    it('signs out and deletes the conversation on request', () => {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify([{ role: 'user', content: 'private question' }])
+      )
       renderChat()
       openPanel()
+      expect(screen.getByText('private question')).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'More options' }))
       fireEvent.click(
-        screen.getByRole('menuitem', { name: 'Sign out of chat' })
+        screen.getByRole('menuitem', {
+          name: 'Sign out and delete conversation'
+        })
       )
       expect(signOut).toHaveBeenCalled()
+      expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
     })
 
     it('starts with suggestions for the page, and sends the one picked', async () => {
@@ -334,9 +425,7 @@ describe('Chat', () => {
       )
       renderChat()
       openPanel()
-      expect(
-        screen.getByRole('button', { name: 'New conversation' })
-      ).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'New chat' })).toBeDisabled()
 
       fireEvent.click(
         screen.getByRole('button', {
@@ -358,7 +447,7 @@ describe('Chat', () => {
       jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
       const { rerender } = renderChat()
       expect(
-        screen.queryByRole('button', { name: 'Ask AI' })
+        screen.queryByRole('button', { name: 'AI Assistant' })
       ).not.toBeInTheDocument()
 
       jest.mocked(useAccount).mockReturnValue({ isConnected: true } as any)
@@ -368,24 +457,43 @@ describe('Chat', () => {
           <Chat />
         </ChatPanelProvider>
       )
-      expect(screen.getByRole('button', { name: 'Ask AI' })).toHaveAttribute(
-        'aria-expanded',
-        'false'
+      expect(
+        screen.getByRole('button', { name: 'AI Assistant' })
+      ).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('tells a first visitor what it can do, until it is opened', () => {
+      const { unmount } = renderChat()
+      expect(screen.getByRole('note')).toHaveTextContent(
+        'find, buy and download data, or run Compute-to-Data jobs'
       )
+      openPanel()
+      expect(screen.queryByRole('note')).not.toBeInTheDocument()
+      unmount()
+
+      renderChat()
+      expect(screen.queryByRole('note')).not.toBeInTheDocument()
+    })
+
+    it('lets the first-visit note be dismissed', () => {
+      renderChat()
+      fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+      expect(screen.queryByRole('note')).not.toBeInTheDocument()
+      expect(window.localStorage.getItem(INTRO_SEEN_KEY)).toBe('1')
     })
 
     it('stays out of the publish steps', () => {
       setPath('/publish/[step]')
       renderChat()
       expect(
-        screen.queryByRole('button', { name: 'Ask AI' })
+        screen.queryByRole('button', { name: 'AI Assistant' })
       ).not.toBeInTheDocument()
     })
 
     it('opens from the header, takes the focus, and gives it back on Escape', () => {
       setSession({ status: 'signedIn', sessionAddress: ADDRESS })
       renderChat()
-      const button = screen.getByRole('button', { name: 'Ask AI' })
+      const button = screen.getByRole('button', { name: 'AI Assistant' })
       button.focus()
       fireEvent.click(button)
 
@@ -400,7 +508,7 @@ describe('Chat', () => {
     it('after a mouse click, lets the focus go on close instead of ringing the button', () => {
       setSession({ status: 'signedIn', sessionAddress: ADDRESS })
       renderChat()
-      const button = screen.getByRole('button', { name: 'Ask AI' })
+      const button = screen.getByRole('button', { name: 'AI Assistant' })
       fireEvent.pointerDown(button)
       button.focus()
       fireEvent.click(button)
@@ -416,15 +524,14 @@ describe('Chat', () => {
       renderChat()
       openPanel()
       fireEvent.click(screen.getByRole('button', { name: 'Close' }))
-      expect(screen.getByRole('button', { name: 'Ask AI' })).toHaveAttribute(
-        'aria-expanded',
-        'false'
-      )
+      expect(
+        screen.getByRole('button', { name: 'AI Assistant' })
+      ).toHaveAttribute('aria-expanded', 'false')
     })
 
     it('opens and closes with the keyboard shortcut', () => {
       renderChat()
-      const button = screen.getByRole('button', { name: 'Ask AI' })
+      const button = screen.getByRole('button', { name: 'AI Assistant' })
       fireEvent.keyDown(window, { key: '/', ctrlKey: true, metaKey: true })
       expect(button).toHaveAttribute('aria-expanded', 'true')
       fireEvent.keyDown(window, { key: '/', ctrlKey: true, metaKey: true })
@@ -452,12 +559,23 @@ describe('suggestionsFor', () => {
     expect(first.prompt).toContain(DID)
   })
 
-  it('has catalogue questions on the search page and general ones elsewhere', () => {
+  it('has catalogue suggestions on the search page and general ones elsewhere', () => {
     expect(suggestionsFor('/search').map((s) => s.label)).toContain(
-      'Find free datasets I can download'
+      'Find algorithms for satellite images'
     )
     expect(suggestionsFor('/profile').map((s) => s.label)).toContain(
       'Find datasets about soil or crops'
     )
+  })
+
+  it('shows on every page that it can act, not only answer', () => {
+    for (const [pathname, did] of [
+      ['/', undefined],
+      ['/search', undefined],
+      ['/asset/[did]', DID]
+    ]) {
+      const prompts = suggestionsFor(pathname, did).map((s) => s.prompt)
+      expect(prompts.some((p) => /prepare/i.test(p))).toBe(true)
+    }
   })
 })

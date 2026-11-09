@@ -21,18 +21,23 @@ The escrow also settled. After the paid job, 5 devEURAU were locked. The profile
 | New panel UI | Use the market in the browser (see the checklist below). | It behaves as described in the checklist. |
 
 **New panel UI: checklist.**
-- An "Ask AI" button appears in the header once the wallet is connected and the chat is configured.
+- An "AI Assistant" button appears in the header once the wallet is connected and the chat is configured. On the first visit, a note under it says what the assistant can do, until it is opened or dismissed.
+- The welcome leads with actions (search, buy and download, Compute-to-Data), and each page's suggestions include at least one action, not only questions. A line says what stays in the portal (publishing, editing, job results).
+- On the default panel width the title reads "Assistant", so it does not wrap next to "New chat"; the wider panel shows "AgrospAI Assistant".
 - On screens 1200 px or wider, the panel opens at the right and the page makes room for it. On narrower screens, the panel covers the page.
 - "Make wider" widens the panel. The page also makes room for the wider panel on screens 1600 px or wider.
 - On a phone, the panel fills the screen and the header shows only the icon.
 - ⌘/ (Ctrl+/ outside macOS) opens and closes the panel. Escape closes it. The focus goes to the message box when the panel opens. When it closes, the focus goes back to where it was if the panel was opened with the keyboard. If it was opened with the mouse, the focus is released, so the header button keeps no focus ring.
 - With no messages, the panel shows suggestions for the page:
-  - on an asset page, they ask about that asset;
-  - on the catalogue, catalogue searches;
-  - elsewhere, general questions.
+  - on an asset page, about that asset, including "Get this asset for me";
+  - on the catalogue, a search, a download and a Compute-to-Data job;
+  - elsewhere, the same mix with general searches.
 - The conversation stays when moving between pages.
 - The panel and its button are hidden while publishing (`/publish`).
-- "Sign out of chat" is in the ⋯ menu. "New conversation" deletes the saved one.
+- "New chat" (in the header, icon only below 400 px) deletes the conversation. "Undo" brings it back until the next message.
+- A conversation left more than 12 hours ago is put aside: the panel starts empty and offers "Continue it".
+- "Sign out and delete conversation" is in the ⋯ menu.
+- While a card is paying or starting a job, "New chat" and "Sign out" are disabled.
 
 ## Pending (not chat code)
 

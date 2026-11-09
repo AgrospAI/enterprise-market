@@ -193,6 +193,25 @@ describe('IntentCard', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('tells the conversation while it is running', async () => {
+    const onRunningChange = jest.fn()
+    render(
+      <IntentCard
+        intent={computeIntent()}
+        live
+        onRunningChange={onRunningChange}
+      />
+    )
+    await screen.findByRole('button', { name: 'Run the job' })
+    acceptTerms()
+    expect(onRunningChange).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Run the job' }))
+    await screen.findByText(/Job started/)
+
+    expect(onRunningChange.mock.calls).toEqual([[true], [false]])
+  })
+
   it('says the results are ready while the node is settling', async () => {
     jest.useFakeTimers()
     jest.mocked(getJobStatus).mockResolvedValue({
