@@ -283,12 +283,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.limits {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-size: 0.75rem;
-}
-
 .suggestions {
   display: flex;
   flex-direction: column;

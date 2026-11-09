@@ -431,10 +431,6 @@ function Conversation({
                 </li>
               ))}
             </ul>
-            <p className={styles.limits}>
-              Publishing and editing assets, and your job results, are in the
-              portal.
-            </p>
           </div>
         )}
         {messages.map((message, index) => (

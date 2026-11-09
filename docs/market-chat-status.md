@@ -22,7 +22,7 @@ The escrow also settled. After the paid job, 5 devEURAU were locked. The profile
 
 **New panel UI: checklist.**
 - An "AI Assistant" button appears in the header once the wallet is connected and the chat is configured. On the first visit, a note under it says what the assistant can do, until it is opened or dismissed.
-- The welcome leads with actions (search, buy and download, Compute-to-Data), and each page's suggestions include at least one action, not only questions. A line says what stays in the portal (publishing, editing, job results).
+- The welcome leads with actions (search, buy and download, Compute-to-Data), and each page's suggestions include at least one action, not only questions.
 - On the default panel width the title reads "Assistant", so it does not wrap next to "New chat"; the wider panel shows "AgrospAI Assistant".
 - On screens 1200 px or wider, the panel opens at the right and the page makes room for it. On narrower screens, the panel covers the page.
 - "Make wider" widens the panel. The page also makes room for the wider panel on screens 1600 px or wider.
