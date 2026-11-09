@@ -21,6 +21,7 @@ import type { ChatMessage, ChatStep } from 'src/@types/Chat'
 import type { ChatIntent } from 'src/@types/ChatIntent'
 import IntentCard from './IntentCard'
 import {
+  ArrowDownIcon,
   CloseIcon,
   CollapseIcon,
   ExpandIcon,
@@ -215,6 +216,8 @@ function PanelHeader({
 }
 
 const BUSY_REASON = 'Wait until the action in progress finishes'
+// How far from the end still counts as reading the latest message.
+const BOTTOM_SLACK_PX = 32
 
 function formatSavedAt(updatedAt?: number): string {
   if (!updatedAt) return 'an earlier visit'
@@ -344,11 +347,40 @@ function Conversation({
     setRunningCards((count) => Math.max(0, count + (running ? 1 : -1)))
   }, [])
   const endRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  // Follow new text only while the user is at the bottom: scrolling up to read
+  // must not be undone by every piece of the answer.
+  const followsLatest = useRef(true)
+  const [isAtBottom, setIsAtBottom] = useState(true)
 
   useEffect(() => {
+    if (followsLatest.current)
+      endRef.current?.scrollIntoView?.({ block: 'end' })
+  }, [messages, activeTool, isStreaming])
+
+  function handleScroll() {
+    const list = listRef.current
+    if (!list) return
+    const atBottom =
+      list.scrollHeight - list.scrollTop - list.clientHeight <= BOTTOM_SLACK_PX
+    followsLatest.current = atBottom
+    setIsAtBottom(atBottom)
+  }
+
+  function jumpToLatest() {
+    followsLatest.current = true
+    setIsAtBottom(true)
+    // Not smooth: the frames of the animation would read as scrolling up.
     endRef.current?.scrollIntoView?.({ block: 'end' })
-  }, [messages, activeTool])
+  }
+
+  /** Sends a message and follows the answer, wherever the user had scrolled. */
+  function sendAndFollow(text: string) {
+    followsLatest.current = true
+    setIsAtBottom(true)
+    send(text)
+  }
 
   // The message box grows with the text, up to a few lines.
   useEffect(() => {
@@ -363,7 +395,7 @@ function Conversation({
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
     if (!draft.trim() || isStreaming) return
-    send(draft)
+    sendAndFollow(draft)
     setDraft('')
   }
 
@@ -399,7 +431,13 @@ function Conversation({
         </>
       )}
 
-      <div className={styles.messages} aria-live="polite">
+      <div
+        ref={listRef}
+        className={styles.messages}
+        role="log"
+        aria-live="polite"
+        onScroll={handleScroll}
+      >
         {messages.length === 0 && previous && (
           <PreviousNotice previous={previous} onRestore={restorePrevious} />
         )}
@@ -424,7 +462,7 @@ function Conversation({
                   <button
                     type="button"
                     className={styles.suggestion}
-                    onClick={() => send(suggestion.prompt)}
+                    onClick={() => sendAndFollow(suggestion.prompt)}
                   >
                     {suggestion.label}
                   </button>
@@ -448,6 +486,16 @@ function Conversation({
           </div>
         )}
         {error && <Alert state="error" text={error} />}
+        {!isAtBottom && messages.length > 0 && (
+          <button
+            type="button"
+            className={styles.jumpToLatest}
+            onClick={jumpToLatest}
+          >
+            <ArrowDownIcon />
+            {isStreaming ? 'Follow the answer' : 'Jump to latest'}
+          </button>
+        )}
         <div ref={endRef} />
       </div>
 

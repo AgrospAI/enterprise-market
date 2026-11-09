@@ -69,6 +69,13 @@ export const CloseIcon = (props: IconProps): ReactElement => (
   </Icon>
 )
 
+export const ArrowDownIcon = (props: IconProps): ReactElement => (
+  <Icon {...props}>
+    <path d="M12 5v14" />
+    <path d="M19 12l-7 7-7-7" />
+  </Icon>
+)
+
 export const SendIcon = (props: IconProps): ReactElement => (
   <Icon {...props}>
     <path d="M12 19V5" />

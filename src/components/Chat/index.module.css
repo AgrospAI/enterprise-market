@@ -283,6 +283,39 @@
   font-weight: var(--font-weight-bold);
 }
 
+/* Stays at the bottom of the conversation while the user reads above. */
+.jumpToLatest {
+  position: sticky;
+  bottom: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--deck-blue);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-blue-10);
+  cursor: pointer;
+}
+
+.jumpToLatest:hover {
+  background: var(--deck-blue-8);
+}
+
+.jumpToLatest:focus-visible {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 2px;
+}
+
+.jumpToLatest svg {
+  width: 16px;
+  height: 16px;
+}
+
 .suggestions {
   display: flex;
   flex-direction: column;

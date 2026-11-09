@@ -84,6 +84,55 @@ function streamResponse(lines: unknown[]) {
   }
 }
 
+/** A response whose lines arrive when the test pushes them. */
+function controlledStream() {
+  const encoder = new TextEncoder()
+  const queue: Array<(chunk: { done: boolean; value?: Uint8Array }) => void> =
+    []
+  const pending: Array<{ done: boolean; value?: Uint8Array }> = []
+  const deliver = (chunk: { done: boolean; value?: Uint8Array }) => {
+    const reader = queue.shift()
+    if (reader) reader(chunk)
+    else pending.push(chunk)
+  }
+  return {
+    response: {
+      ok: true,
+      status: 200,
+      body: {
+        getReader: () => ({
+          read: () =>
+            new Promise((resolve) => {
+              const chunk = pending.shift()
+              if (chunk) resolve(chunk)
+              else queue.push(resolve)
+            })
+        })
+      }
+    },
+    push: (line: unknown) =>
+      deliver({
+        done: false,
+        value: encoder.encode(`${JSON.stringify(line)}\n`)
+      }),
+    end: () => deliver({ done: true })
+  }
+}
+
+/** Makes the conversation look scrolled up, as jsdom has no layout. */
+function scrollUp(list: HTMLElement) {
+  Object.defineProperty(list, 'scrollHeight', {
+    configurable: true,
+    value: 1000
+  })
+  Object.defineProperty(list, 'clientHeight', {
+    configurable: true,
+    value: 300
+  })
+  Object.defineProperty(list, 'scrollTop', { configurable: true, value: 100 })
+  fireEvent.scroll(list)
+}
+
 /** The panel and the header button that opens it, as the app renders them. */
 function renderChat() {
   return render(
@@ -283,6 +332,35 @@ describe('Chat', () => {
       renderChat()
       openPanel()
       expect(screen.getByText('Saved')).toBeInTheDocument()
+    })
+
+    it('lets the user scroll up while the answer is written', async () => {
+      const stream = controlledStream()
+      fetchMock.mockResolvedValue(stream.response)
+      renderChat()
+      openPanel()
+      sendMessage('hi')
+      stream.push({ type: 'text', delta: 'First part. ' })
+      await screen.findByText(/First part/)
+      const scrolls = jest.mocked(window.HTMLElement.prototype.scrollIntoView)
+
+      scrollUp(screen.getByRole('log'))
+      scrolls.mockClear()
+      stream.push({ type: 'text', delta: 'Second part.' })
+      await screen.findByText(/Second part/)
+      expect(scrolls).not.toHaveBeenCalled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Follow the answer' }))
+      expect(scrolls).toHaveBeenCalled()
+      expect(
+        screen.queryByRole('button', { name: 'Follow the answer' })
+      ).not.toBeInTheDocument()
+
+      scrolls.mockClear()
+      stream.push({ type: 'text', delta: ' Third part.' })
+      await screen.findByText(/Third part/)
+      expect(scrolls).toHaveBeenCalled()
+      stream.end()
     })
 
     it('deletes the conversation, and can undo it until a new message', async () => {
