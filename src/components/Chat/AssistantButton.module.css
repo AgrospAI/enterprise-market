@@ -1,0 +1,34 @@
+.button {
+  composes: button from '../@shared/atoms/Button/index.module.css';
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.text {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* On phones the header only has room for the icon. */
+@media screen and (max-width: 768px) {
+  .button {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .text {
+    display: none;
+  }
+}

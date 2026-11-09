@@ -1,0 +1,413 @@
+/*
+ * A drawer at the right, at full height. Wide screens make room for it (see
+ * App/index.module.css), narrower ones lay it over the page, phones fill the
+ * screen with it. Closed, it is only hidden: an answer in progress goes on.
+ */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: 26rem;
+  max-width: 100vw;
+  background: var(--card);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-blue-10);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.2s ease, width 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.2s ease, width 0.2s ease, visibility 0s;
+}
+
+.expanded {
+  width: 48rem;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .open {
+    transition: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .panel,
+  .expanded {
+    width: 100vw;
+    border-left: 0;
+  }
+
+  .expandButton {
+    display: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacer) / 4);
+  min-height: var(--menu-height);
+  padding: 0 calc(var(--spacer) / 3) 0 calc(var(--spacer) / 1.5);
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+  margin: 0;
+  color: var(--deck-blue);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.titleIcon {
+  color: var(--brand-secondary);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.iconButton:hover,
+.iconButton[aria-expanded='true'] {
+  background: var(--deck-blue-8);
+  color: var(--deck-blue);
+}
+
+.iconButton:focus-visible {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 1px;
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: none;
+}
+
+.more {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 1;
+  min-width: 11rem;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-blue-10);
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: none;
+  color: var(--foreground);
+  font-size: var(--font-size-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--deck-blue-8);
+  outline: none;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(var(--spacer) / 1.5);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 3);
+  overflow-wrap: anywhere;
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 3);
+  margin-top: auto;
+}
+
+.welcomeTitle {
+  margin: 0;
+  color: var(--deck-blue);
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--font-size-small);
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacer) / 4);
+  margin: calc(var(--spacer) / 6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.suggestion {
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--deck-blue);
+  font-size: var(--font-size-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background: var(--deck-blue-8-solid);
+  border-color: var(--control-border-hover);
+}
+
+.suggestion:focus-visible {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 2px;
+}
+
+.userMessage {
+  align-self: flex-end;
+  max-width: 85%;
+  margin: 0;
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  border-radius: var(--border-radius);
+  background: var(--brand-agrospai-light-25);
+  white-space: pre-wrap;
+}
+
+.steps {
+  margin-bottom: calc(var(--spacer) / 4);
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+}
+
+.steps summary {
+  cursor: pointer;
+}
+
+.steps ul {
+  margin: calc(var(--spacer) / 6) 0 0;
+  padding-left: calc(var(--spacer) / 1.5);
+}
+
+.assistantMessage {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+}
+
+.assistantMessage p,
+.assistantMessage ul,
+.assistantMessage ol {
+  margin: 0 0 calc(var(--spacer) / 3);
+}
+
+.assistantMessage li {
+  margin-bottom: calc(var(--spacer) / 6);
+}
+
+.assistantMessage li > p {
+  margin: 0;
+}
+
+/* The market's global headings are sized for pages, not for a side panel. */
+.assistantMessage h1,
+.assistantMessage h2,
+.assistantMessage h3,
+.assistantMessage h4,
+.assistantMessage h5,
+.assistantMessage h6 {
+  margin: calc(var(--spacer) / 3) 0 calc(var(--spacer) / 6);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height);
+}
+
+.assistantMessage a {
+  text-decoration: underline;
+}
+
+.assistantMessage hr {
+  margin: calc(var(--spacer) / 3) 0;
+}
+
+.assistantMessage > :first-child {
+  margin-top: 0;
+}
+
+.assistantMessage > :last-child {
+  margin-bottom: 0;
+}
+
+.assistantMessage ul,
+.assistantMessage ol {
+  padding-left: calc(var(--spacer) / 1.5);
+}
+
+/* The market's global lists have no markers. */
+.assistantMessage ul {
+  list-style: disc;
+}
+
+.assistantMessage ol {
+  list-style: decimal;
+}
+
+.assistantMessage li {
+  display: list-item;
+}
+
+.assistantMessage pre {
+  overflow-x: auto;
+}
+
+.assistantMessage table {
+  display: block;
+  overflow-x: auto;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+}
+
+.form {
+  padding: calc(var(--spacer) / 3) calc(var(--spacer) / 1.5)
+    calc(var(--spacer) / 2);
+  border-top: 1px solid var(--border);
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: calc(var(--spacer) / 4);
+  padding: 6px 6px 6px calc(var(--spacer) / 2.5);
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+}
+
+.composer:focus-within {
+  border-color: var(--input-hover);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  /* The box around it (.composer) draws the border and the focus ring, so the
+     market's global textarea height, border and ring are turned off here. */
+  min-height: 0;
+  max-height: 160px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  line-height: 1.4;
+  resize: none;
+}
+
+.input::placeholder {
+  color: var(--placeholder);
+}
+
+.sendButton {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--deck-blue);
+  color: var(--brand-white);
+  cursor: pointer;
+}
+
+.sendButton:hover {
+  background: var(--deck-blue-hover);
+}
+
+.sendButton:focus-visible {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 2px;
+}
+
+.sendButton:disabled {
+  background: var(--deck-blue-25);
+  cursor: default;
+}
+
+.disclaimer {
+  margin: calc(var(--spacer) / 4) 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.signIn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 1.5);
+}
+
+.signIn p {
+  margin: 0;
+}

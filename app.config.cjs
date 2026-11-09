@@ -292,5 +292,12 @@ module.exports = {
   centralIdpName:
     getEnv('NEXT_PUBLIC_CENTRAL_IDP_NAME') ||
     process.env.NEXT_PUBLIC_CENTRAL_IDP_NAME ||
+    null,
+
+  // Most the market chat may spend on one paid action, in token units (e.g. 50).
+  // Unset, the chat only runs free actions.
+  chatMaxSpend:
+    getEnv('NEXT_PUBLIC_CHAT_MAX_SPEND') ||
+    process.env.NEXT_PUBLIC_CHAT_MAX_SPEND ||
     null
 }

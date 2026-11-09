@@ -22,6 +22,19 @@
   background: var(--deck-surface-soft);
 }
 
+/* Room for the open assistant panel (Chat/index.module.css), when it fits. */
+@media screen and (min-width: 75rem) {
+  .withChat {
+    padding-right: 26rem;
+  }
+}
+
+@media screen and (min-width: 100rem) {
+  .withWideChat {
+    padding-right: 48rem;
+  }
+}
+
 .main {
   /* sticky footer technique */
   flex: 1;
