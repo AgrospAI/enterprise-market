@@ -6,7 +6,8 @@ The core is done and tested for real with the user's wallet on OP Sepolia:
 - SIWE sign-in;
 - questions about the catalogue;
 - free downloads and free jobs;
-- the purchase of a 1 devEURAU dataset from its page, after the exchange fix (see `known-issues/fixed-rate-exchange-address.md`);
+- the purchase of a 1 devEURAU dataset from its page, with the exchange fix now on `agrospai` (4bcab178, 4fa88e51; see `known-issues/fixed-rate-exchange-address.md`);
+- a paid download from the chat: "Valoración de activos agrícolas" (1 devEURAU) was bought and downloaded from the chat;
 - a job in the paid environment, with escrow;
 - a paid dataset in the free environment.
 
@@ -16,7 +17,6 @@ The escrow also settled. After the paid job, 5 devEURAU were locked. The profile
 
 | What | How to test it | What should happen |
 | --- | --- | --- |
-| Paid download from the chat | With `NEXT_PUBLIC_CHAT_MAX_SPEND` set, ask the chat to download "Fertilización, Producción y Condiciones Meteorológicas". | The card shows a total of 1.052 devEURAU. The wallet asks for 2 transactions (approve, then buy and order), then the download signatures. |
 | "Try again" reuses orders | Start a paid job, and reject the job-start signature after the orders are confirmed. Then press "Try again". | The bought asset shows "Already bought". The wallet does not ask for the approve or the purchase again. |
 | New panel UI | Use the market in the browser (see the checklist below). | It behaves as described in the checklist. |
 
@@ -40,9 +40,8 @@ The escrow also settled. After the paid job, 5 devEURAU were locked. The profile
   - rotate the production MCP token that was shown in a conversation;
   - give the market a non-admin Open WebUI service API key.
 - **Optional cleanup:** delete the `[compare-market-chat]` chats in Open WebUI.
-- **Commits,** when asked. Proposed split:
-  - `fix:` the fixed-rate exchange and swap fees, with its known-issue doc;
-  - `feat:` commits for the chat.
+- **Review and merge** the chat PR (`feat/mcp-chat` → `agrospai`). The exchange fix, its tests and the compute refactor are already on `agrospai`.
+- **Market search ignores words without their accents.** The node's index does not fold accents and the search needs 75 % of the words to match, so "Valoracion de activos agricolas" finds nothing in the market (`src/components/Search/utils.ts`). The MCP already retries an empty search approximately (`agrospai-on-mcp`, `docs/decisions.md` deviation 7), so the chat finds it. The market search is still to fix.
 - **Deployment:**
   - an MCP instance with `WALLET_MODE=user`, separate from the shared-wallet one;
   - the chat variables listed in `.env.example`;
