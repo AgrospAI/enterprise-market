@@ -30,8 +30,12 @@ import type {
   IntentPrice
 } from 'src/@types/ChatIntent'
 import {
+  DeclaredParameter,
+  ParameterValue,
   declaredParameters,
-  resolveConsumerParameters
+  initialParameterValues,
+  resolveConsumerParameters,
+  unknownParameters
 } from './consumerParameters'
 
 /** Active and unlisted assets can be consumed (as in agrospai-on-mcp). */
@@ -47,7 +51,15 @@ export interface VerifiedAsset {
   requiresSsi: boolean
   /** A policy-server session must be opened before consuming it. */
   needsSession: boolean
+  /**
+   * The values to send, checked against the DDO. Undefined when the asset
+   * declares none, or when a value is missing or invalid: the card asks for it.
+   */
   parameters?: IntentParameters
+  /** The consumer parameters the DDO declares, for the card's form. */
+  declaredParameters?: DeclaredParameter[]
+  /** What the form starts with: the intent's values, or else the defaults. */
+  initialParameters?: Record<string, ParameterValue>
   /**
    * The order to place before using the asset. None when it was bought
    * already, or when it is free and the job runs in the free environment.
@@ -417,13 +429,26 @@ function withParameters(
   given: IntentParameters | undefined,
   problems: string[]
 ): VerifiedAsset {
+  const declaredList = declaredParameters(declared)
+  // Names the asset does not have mean the intent is wrong: it is refused.
+  // A missing or invalid value is not: the user fixes it in the card.
+  const unknown = unknownParameters(declaredList, given)
+  if (unknown.length) {
+    problems.push(`${verified.name} does not accept: ${unknown.join(', ')}`)
+    return verified
+  }
+  if (declaredList.length === 0) return verified
   const { values, error } = resolveConsumerParameters(
-    declaredParameters(declared),
+    declaredList,
     given,
     verified.name
   )
-  if (error) problems.push(error)
-  return { ...verified, parameters: values }
+  return {
+    ...verified,
+    ...(error ? {} : { parameters: values }),
+    declaredParameters: declaredList,
+    initialParameters: initialParameterValues(declaredList, given)
+  }
 }
 
 /**

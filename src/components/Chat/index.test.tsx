@@ -6,7 +6,10 @@ import { ChatPanelProvider } from '@context/ChatPanel'
 import Chat, { suggestionsFor } from '.'
 import AssistantButton, { INTRO_SEEN_KEY } from './AssistantButton'
 import { CHAT_HISTORY_TTL_MS } from '@utils/chatHistory'
-import { computeIntent } from '../../../.jest/__fixtures__/chatIntents'
+import {
+  computeIntent,
+  jobResultAttachment
+} from '../../../.jest/__fixtures__/chatIntents'
 
 jest.mock('wagmi', () => ({
   useAccount: jest.fn(),
@@ -22,11 +25,29 @@ jest.mock('@oceanprotocol/lib', () => ({
 jest.mock('./IntentCard', () => ({
   __esModule: true,
   default: ({
-    onRunningChange
+    onRunningChange,
+    onAskAboutResults,
+    canAsk
   }: {
     onRunningChange?: (running: boolean) => void
+    onAskAboutResults?: (attachment: unknown, reports: unknown) => void
+    canAsk?: boolean
   }) => (
     <div>
+      <button
+        type="button"
+        disabled={!canAsk}
+        onClick={() =>
+          onAskAboutResults?.(
+            jest
+              .requireActual('../../../.jest/__fixtures__/chatIntents')
+              .jobResultAttachment(),
+            [{ name: 'report.html', url: 'blob:report' }]
+          )
+        }
+      >
+        Results
+      </button>
       <button type="button" onClick={() => onRunningChange?.(true)}>
         Pay
       </button>
@@ -441,6 +462,50 @@ describe('Chat', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Paid' }))
       expect(newChat).toBeEnabled()
+    })
+
+    it('asks about the results of a job with them attached', async () => {
+      fetchMock
+        .mockResolvedValueOnce(
+          streamResponse([
+            { type: 'text', delta: 'Review the card.' },
+            { type: 'intent', intent: computeIntent() },
+            { type: 'done' }
+          ])
+        )
+        .mockResolvedValueOnce(
+          streamResponse([
+            { type: 'text', delta: 'It has 1599 rows.' },
+            { type: 'done' }
+          ])
+        )
+      renderChat()
+      openPanel()
+      sendMessage('run it')
+      await screen.findByText('Review the card.')
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: 'Results' })).toBeEnabled()
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Results' }))
+      expect(await screen.findByText('It has 1599 rows.')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /^Results of Enhanced Exploratory Data Analysis on Red Wine Dataset/
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Open report.html' })
+      ).toHaveAttribute('href', 'blob:report')
+      expect(JSON.parse(fetchMock.mock.calls[1][1].body).messages).toEqual([
+        { role: 'user', content: 'run it' },
+        { role: 'assistant', content: 'Review the card.' },
+        {
+          role: 'user',
+          content: 'What do the results of this job show?',
+          attachment: jobResultAttachment()
+        }
+      ])
     })
 
     it('leaves the conversation when the server says the session ended', async () => {

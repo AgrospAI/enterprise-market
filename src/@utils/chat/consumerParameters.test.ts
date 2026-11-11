@@ -1,6 +1,9 @@
 import {
+  checkParameterValues,
   declaredParameters,
-  resolveConsumerParameters
+  initialParameterValues,
+  resolveConsumerParameters,
+  unknownParameters
 } from './consumerParameters'
 
 const declared = declaredParameters([
@@ -54,6 +57,47 @@ describe('consumer parameters', () => {
     expect(resolveConsumerParameters(required, {}, 'SIGPAC').error).toBe(
       'SIGPAC needs a value for "parcel"'
     )
+  })
+
+  it('reads the labels of the choices and the help text', () => {
+    const [param] = declaredParameters([
+      {
+        name: 'index',
+        type: 'select',
+        description: 'Vegetation index',
+        options: [{ ndvi: 'NDVI' }, { ndwi: 42 }]
+      }
+    ])
+    expect(param.choiceLabels).toEqual({ ndvi: 'NDVI', ndwi: 'ndwi' })
+    expect(param.description).toBe('Vegetation index')
+  })
+
+  it('starts a form with the values given, or else the defaults', () => {
+    expect(initialParameterValues(declared, { index: 'ndwi' })).toEqual({
+      lookbackDays: 60,
+      index: 'ndwi',
+      clip: 'false'
+    })
+  })
+
+  it('checks every field of a form, and leaves out empty optional ones', () => {
+    expect(
+      checkParameterValues(declared, {
+        lookbackDays: '',
+        index: 'evi',
+        clip: true,
+        note: ''
+      })
+    ).toEqual({
+      values: { clip: true },
+      problems: { lookbackDays: 'missing', index: 'invalid' }
+    })
+  })
+
+  it('names the parameters an asset does not declare', () => {
+    expect(unknownParameters(declared, { index: 'x', other: 1 })).toEqual([
+      'other'
+    ])
   })
 
   it('accepts no values when nothing is declared', () => {

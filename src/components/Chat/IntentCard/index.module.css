@@ -73,3 +73,194 @@
 .result {
   margin: 0;
 }
+
+/* A finished job: its status, the results button and the link, one below the other. */
+div.result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacer) / 4);
+}
+
+div.result p {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacer) / 4);
+}
+
+.reports {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reports a {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Consumer parameters: the values in a box with "Edit parameters", or a small form. */
+.parameterSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacer) / 4);
+  margin-top: calc(var(--spacer) / 4);
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
+  border-radius: var(--border-radius);
+  background: var(--background-highlight);
+}
+
+.parameterSummary .parameters {
+  margin: 0;
+}
+
+.parameterActions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+}
+
+/* As the market's small ghost buttons, with room for an icon. */
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 6);
+  padding: 4px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  color: var(--deck-blue);
+  font: inherit;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.editButton:hover {
+  border-color: var(--control-border-hover);
+  background: var(--deck-blue-8-solid);
+}
+
+.editButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.editedTag {
+  padding: 1px 8px;
+  border-radius: var(--radius-lg);
+  background: var(--deck-blue-8-solid);
+  color: var(--deck-blue);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.textButton {
+  margin-top: calc(var(--spacer) / 6);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.textButton:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.textButton:disabled {
+  color: var(--color-secondary);
+  cursor: not-allowed;
+}
+
+.parameterForm {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 3);
+  min-width: 0;
+  margin: calc(var(--spacer) / 4) 0 0;
+  padding: calc(var(--spacer) / 3);
+  border: var(--border-size) solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.parameterForm legend {
+  padding: 0 calc(var(--spacer) / 6);
+  font-size: var(--font-size-small);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 8);
+  font-size: var(--font-size-small);
+}
+
+.field label {
+  font-weight: var(--font-weight-bold);
+}
+
+/* A switch sits before its label. */
+.fieldInline {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: calc(var(--spacer) / 4);
+}
+
+.fieldInline label {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.fieldInline input {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+.fieldInline .fieldHelp,
+.fieldInline .fieldProblem {
+  grid-column: 1 / -1;
+}
+
+.fieldName {
+  margin-left: calc(var(--spacer) / 4);
+  font-weight: normal;
+  color: var(--color-secondary);
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 4);
+  border: var(--border-size) solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--background-content);
+  color: inherit;
+  font: inherit;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--brand-alert-red);
+}
+
+.fieldHelp {
+  color: var(--color-secondary);
+}
+
+.fieldProblem {
+  color: var(--brand-alert-red);
+}

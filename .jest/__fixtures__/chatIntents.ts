@@ -1,3 +1,4 @@
+import type { JobResultAttachment } from 'src/@types/Chat'
 import type { ComputeIntent, DownloadIntent } from 'src/@types/ChatIntent'
 
 export const USER = '0x23fDe279bdbA37a6Bcb501595Be4ba3ab679ccE8'
@@ -94,6 +95,29 @@ export function paidComputeIntent(overrides = {}): ComputeIntent {
       paymentToken: TOKEN,
       estimatedCost: { amount: '10', tokenSymbol: 'devEURAU' }
     },
+    ...overrides
+  }
+}
+
+/** The results of a finished job, as the card reads them for the assistant. */
+export function jobResultAttachment(
+  overrides: Partial<JobResultAttachment> = {}
+): JobResultAttachment {
+  return {
+    kind: 'jobResult',
+    jobId: 'env-hash-job-1',
+    dataset: 'Red Wine Dataset',
+    algorithm: 'Enhanced Exploratory Data Analysis',
+    succeeded: true,
+    files: [
+      {
+        name: 'outputs/report.html',
+        size: 4_500_000,
+        text: 'Overview\nNumber of variables | 12\nNumber of observations | 1599',
+        truncated: true
+      },
+      { name: 'outputs/chart.png', size: 2048, truncated: false }
+    ],
     ...overrides
   }
 }

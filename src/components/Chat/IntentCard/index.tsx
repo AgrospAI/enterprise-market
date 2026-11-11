@@ -1,4 +1,10 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import Link from 'next/link'
 import { useAccount, useSwitchChain } from 'wagmi'
 import type { ComputeJob } from '@oceanprotocol/lib'
@@ -12,6 +18,10 @@ import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute
 import { AssetActionCheckCredentials } from '@components/Asset/AssetActions/CheckCredentials'
 import { openPolicySession } from '@utils/wallet/policySession'
 import { getLicenseLink } from '@utils/chat/license'
+import {
+  ParameterValue,
+  checkParameterValues
+} from '@utils/chat/consumerParameters'
 import {
   Payment,
   VerifiedAsset,
@@ -27,11 +37,14 @@ import {
   runDownload,
   startComputeJob
 } from '@utils/chat/runIntent'
+import { JobReport, JobResults, readJobResults } from '@utils/chat/jobResults'
+import type { JobResultAttachment } from 'src/@types/Chat'
 import type {
   ChatIntent,
   IntentAssetRef,
   IntentParameters
 } from 'src/@types/ChatIntent'
+import ParameterForm from './ParameterForm'
 import styles from './index.module.css'
 
 type Plan = VerifiedCompute | VerifiedDownload
@@ -115,30 +128,15 @@ function stepText(step: ComputeStep): string {
   }
 }
 
-function Parameters({
-  values
-}: {
-  values?: IntentParameters
-}): ReactElement | null {
-  const entries = Object.entries(values ?? {})
-  if (entries.length === 0) return null
-  return (
-    <ul className={styles.parameters}>
-      {entries.map(([name, value]) => (
-        <li key={name}>
-          <code>{name}</code>: {String(value)}
-        </li>
-      ))}
-    </ul>
-  )
-}
-
 function AssetRow({
   label,
-  asset
+  asset,
+  children
 }: {
   label: string
   asset: VerifiedAsset
+  /** Its parameters, if it declares any. */
+  children?: ReactNode
 }): ReactElement {
   return (
     <div className={styles.row}>
@@ -148,10 +146,43 @@ function AssetRow({
           {asset.name}
         </Link>{' '}
         <span className={styles.free}>{priceLabel(asset)}</span>
-        <Parameters values={asset.parameters} />
+        {children}
       </div>
     </div>
   )
+}
+
+/** Where an asset sits in a plan, to keep the edits of its parameters. */
+type Role = 'dataset' | 'algorithm' | 'asset'
+
+function rolesOf(plan: Plan): [Role, VerifiedAsset][] {
+  return plan.kind === 'compute'
+    ? [
+        ['dataset', plan.dataset],
+        ['algorithm', plan.algorithm]
+      ]
+    : [['asset', plan.asset]]
+}
+
+/**
+ * The plan with the parameters the user set in the card. They were checked
+ * against the DDO the browser loaded, as the intent's values were.
+ */
+function withEditedParameters(
+  plan: Plan,
+  sendOf: (role: Role, asset: VerifiedAsset) => IntentParameters | undefined
+): Plan {
+  const edit = (role: Role, asset: VerifiedAsset): VerifiedAsset =>
+    asset.declaredParameters?.length
+      ? { ...asset, parameters: sendOf(role, asset) }
+      : asset
+  return plan.kind === 'compute'
+    ? {
+        ...plan,
+        dataset: edit('dataset', plan.dataset),
+        algorithm: edit('algorithm', plan.algorithm)
+      }
+    : { ...plan, asset: edit('asset', plan.asset) }
 }
 
 function PaymentRows({
@@ -208,12 +239,21 @@ function PaymentRows({
 export default function IntentCard({
   intent,
   live,
-  onRunningChange
+  onRunningChange,
+  onAskAboutResults,
+  canAsk = true
 }: {
   intent: ChatIntent
   live: boolean
   /** Told while the card sends orders, payments or the job, so the conversation is kept. */
   onRunningChange?: (running: boolean) => void
+  /** Sends the results of the finished job to the assistant, with links to its reports. */
+  onAskAboutResults?: (
+    attachment: JobResultAttachment,
+    reports: JobReport[]
+  ) => void
+  /** False while the assistant is answering: a new question would be dropped. */
+  canAsk?: boolean
 }): ReactElement {
   const { address, chainId } = useAccount()
   const { switchChain, isPending: isSwitching } = useSwitchChain()
@@ -233,6 +273,16 @@ export default function IntentCard({
   const [acceptsPayment, setAcceptsPayment] = useState(false)
   // Checking again, after a failure, gives fresh prices and orders.
   const [checks, setChecks] = useState(0)
+  // The parameters the user changed in the card, by asset.
+  const [edits, setEdits] = useState<
+    Partial<Record<Role, Record<string, ParameterValue>>>
+  >({})
+  const [openForms, setOpenForms] = useState<Partial<Record<Role, boolean>>>({})
+  // Read once: asking again needs no new signature.
+  const [results, setResults] = useState<JobResults>()
+  const [wantsReports, setWantsReports] = useState(false)
+  const [isReadingResults, setIsReadingResults] = useState(false)
+  const [resultsError, setResultsError] = useState<string>()
 
   const isPaid = isPaidIntent(intent)
   const title =
@@ -312,6 +362,64 @@ export default function IntentCard({
     return () => clearInterval(timer)
   }, [job?.jobId, job?.status, plan, resultsReady, signer])
 
+  const forms = new Map(
+    (plan ? rolesOf(plan) : []).map(([role, asset]) => {
+      const declared = asset.declaredParameters ?? []
+      const initial = asset.initialParameters ?? {}
+      const values = { ...initial, ...edits[role] }
+      const { values: send, problems } = checkParameterValues(declared, values)
+      const isEdited = Object.entries(edits[role] ?? {}).some(
+        ([name, value]) => value !== initial[name]
+      )
+      return [role, { declared, values, send, problems, isEdited }]
+    })
+  )
+  const hasParameterProblems = [...forms.values()].some(
+    (form) => Object.keys(form.problems).length > 0
+  )
+  const rolesToFix = [...forms.entries()]
+    .filter(([, form]) => Object.keys(form.problems).length > 0)
+    .map(([role]) => role)
+    .join(',')
+
+  // A form opened by a value to fix stays open while the user types: it closes
+  // with "Done", not as soon as the value becomes valid.
+  useEffect(() => {
+    if (!rolesToFix) return
+    setOpenForms((open) => ({
+      ...open,
+      ...Object.fromEntries(rolesToFix.split(',').map((role) => [role, true]))
+    }))
+  }, [rolesToFix])
+
+  function parameterForm(role: Role, asset: VerifiedAsset): ReactNode {
+    const form = forms.get(role)
+    if (!form?.declared.length) return null
+    const hasProblems = Object.keys(form.problems).length > 0
+    return (
+      <ParameterForm
+        assetName={asset.name}
+        declared={form.declared}
+        values={form.values}
+        problems={form.problems}
+        isEdited={form.isEdited}
+        // A value to fix keeps the form open.
+        isOpen={hasProblems || !!openForms[role]}
+        canEdit={phase === 'ready'}
+        onToggle={() =>
+          setOpenForms((open) => ({ ...open, [role]: !open[role] }))
+        }
+        onChange={(name, value) =>
+          setEdits((all) => ({
+            ...all,
+            [role]: { ...all[role], [name]: value }
+          }))
+        }
+        onReset={() => setEdits((all) => ({ ...all, [role]: {} }))}
+      />
+    )
+  }
+
   const pendingCredentials = plan
     ? assetsOf(plan).filter(
         (asset) =>
@@ -338,29 +446,67 @@ export default function IntentCard({
     [address, lookupVerifierSessionId, signer]
   )
 
+  /** Reads the results once: asking again or opening a report needs no new signature. */
+  async function loadResults(): Promise<JobResults | undefined> {
+    if (results) return results
+    if (plan?.kind !== 'compute' || !job || !signer) return
+    setResultsError(undefined)
+    setIsReadingResults(true)
+    try {
+      const read = await readJobResults({
+        providerUrl: plan.dataset.service.serviceEndpoint,
+        signer,
+        job,
+        dataset: plan.dataset.name,
+        algorithm: plan.algorithm.name
+      })
+      setResults(read)
+      return read
+    } catch (err) {
+      setResultsError(errorText(err))
+    } finally {
+      setIsReadingResults(false)
+    }
+  }
+
+  async function askAboutResults() {
+    if (!onAskAboutResults) return
+    const read = await loadResults()
+    if (read) onAskAboutResults(read.attachment, read.reports)
+  }
+
+  async function showReports() {
+    setWantsReports(true)
+    await loadResults()
+  }
+
   async function run() {
-    if (!plan || !signer || !address) return
+    if (!plan || !signer || !address || hasParameterProblems) return
+    const planToRun = withEditedParameters(plan, (role) => {
+      const send = forms.get(role)?.send ?? {}
+      return Object.keys(send).length ? send : undefined
+    })
     setPhase('running')
     setError(undefined)
     try {
-      if (plan.kind === 'compute') {
+      if (planToRun.kind === 'compute') {
         const sessions = {
-          dataset: await sessionFor(plan.dataset),
-          algorithm: await sessionFor(plan.algorithm)
+          dataset: await sessionFor(planToRun.dataset),
+          algorithm: await sessionFor(planToRun.algorithm)
         }
         setJob(
-          await startComputeJob(plan, signer, address, sessions, (step) =>
+          await startComputeJob(planToRun, signer, address, sessions, (step) =>
             setProgress(stepText(step))
           )
         )
       } else {
-        const sessionId = await sessionFor(plan.asset)
-        await runDownload(plan, signer, address, sessionId, () =>
+        const sessionId = await sessionFor(planToRun.asset)
+        await runDownload(planToRun, signer, address, sessionId, () =>
           setProgress(
-            plan.payment
+            planToRun.payment
               ? `Confirm the purchase (${amountOf(
-                  plan.payment.totalWei,
-                  plan.payment
+                  planToRun.payment.totalWei,
+                  planToRun.payment
                 )}) in your wallet: approve, then buy…`
               : 'Confirm the free order in your wallet (you pay gas)…'
           )
@@ -442,8 +588,12 @@ export default function IntentCard({
           <>
             {plan.kind === 'compute' ? (
               <>
-                <AssetRow label="Dataset" asset={plan.dataset} />
-                <AssetRow label="Algorithm" asset={plan.algorithm} />
+                <AssetRow label="Dataset" asset={plan.dataset}>
+                  {parameterForm('dataset', plan.dataset)}
+                </AssetRow>
+                <AssetRow label="Algorithm" asset={plan.algorithm}>
+                  {parameterForm('algorithm', plan.algorithm)}
+                </AssetRow>
                 <div className={styles.row}>
                   <span className={styles.label}>Runs</span>
                   <span>
@@ -457,7 +607,9 @@ export default function IntentCard({
               </>
             ) : (
               <>
-                <AssetRow label="Dataset" asset={plan.asset} />
+                <AssetRow label="Dataset" asset={plan.asset}>
+                  {parameterForm('asset', plan.asset)}
+                </AssetRow>
                 {!payment && (
                   <div className={styles.row}>
                     <span className={styles.label}>Order</span>
@@ -566,6 +718,7 @@ export default function IntentCard({
                   size="small"
                   disabled={
                     !signer ||
+                    hasParameterProblems ||
                     pendingCredentials.length > 0 ||
                     !acceptsTerms ||
                     !acceptsLicenses ||
@@ -619,6 +772,74 @@ export default function IntentCard({
                           : 'Waiting for its status…'
                       }`}
                 </p>
+                {resultsReady && (
+                  <>
+                    <div className={styles.actions}>
+                      {onAskAboutResults && (
+                        <Button
+                          type="button"
+                          style="primary"
+                          size="small"
+                          disabled={!signer || !canAsk || isReadingResults}
+                          onClick={askAboutResults}
+                        >
+                          Ask about the results
+                        </Button>
+                      )}
+                      {!results && (
+                        <Button
+                          type="button"
+                          style="ghost"
+                          size="small"
+                          disabled={!signer || isReadingResults}
+                          onClick={showReports}
+                        >
+                          Open the report
+                        </Button>
+                      )}
+                    </div>
+                    {isReadingResults ? (
+                      <div className={styles.status}>
+                        <Loader />
+                        <span>
+                          Sign in your wallet to read the results, then wait
+                          while they download…
+                        </span>
+                      </div>
+                    ) : resultsError ? (
+                      <Alert
+                        state="error"
+                        text={`The results could not be read: ${resultsError}`}
+                      />
+                    ) : !results ? (
+                      <p className={styles.muted}>
+                        You sign once in your wallet to read them. The assistant
+                        can then explain them, and HTML reports open from here.
+                      </p>
+                    ) : results.reports.length > 0 ? (
+                      <ul className={styles.reports}>
+                        {results.reports.map((report) => (
+                          <li key={report.url}>
+                            <a
+                              href={report.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open {report.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      wantsReports && (
+                        <p className={styles.muted}>
+                          The results have no HTML report. Download them from
+                          your compute jobs.
+                        </p>
+                      )
+                    )}
+                  </>
+                )}
                 <Link href="/profile?defaultTab=computeJobs">
                   See it and its results in your compute jobs
                 </Link>

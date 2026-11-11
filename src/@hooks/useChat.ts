@@ -11,9 +11,30 @@ import {
   CHAT_MAX_CONTEXT_MESSAGES,
   CHAT_MAX_MESSAGE_CHARS,
   ChatMessage,
-  ChatStep
+  ChatStep,
+  JobResultAttachment
 } from 'src/@types/Chat'
 import type { ChatIntent } from 'src/@types/ChatIntent'
+
+/** What the user asks when they send a job's results from its card. */
+export const RESULTS_QUESTION = 'What do the results of this job show?'
+
+/**
+ * The messages sent to the server. Only the latest job results go with them:
+ * older ones would fill the model's context, and the server takes one.
+ */
+export function toRequestMessages(history: ChatMessage[]) {
+  const recent = history
+    .filter((message) => message.content.trim())
+    .slice(-CHAT_MAX_CONTEXT_MESSAGES)
+  const withResults = recent.map((message) => !!message.attachment)
+  const latest = withResults.lastIndexOf(true)
+  return recent.map(({ role, content, attachment }, index) => ({
+    role,
+    content: content.slice(0, CHAT_MAX_MESSAGE_CHARS),
+    ...(attachment && index === latest ? { attachment } : {})
+  }))
+}
 
 function requestErrorMessage(status: number): string {
   if (status === 429) return 'Too many messages. Please wait a moment.'
@@ -66,7 +87,7 @@ export function useChat(
   useEffect(() => () => abortRef.current?.abort(), [])
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, attachment?: JobResultAttachment) => {
       const content = text.trim()
       if (!address || !content || isStreaming) return
       if (content.length > CHAT_MAX_MESSAGE_CHARS) {
@@ -74,7 +95,10 @@ export function useChat(
         return
       }
 
-      const history: ChatMessage[] = [...messages, { role: 'user', content }]
+      const history: ChatMessage[] = [
+        ...messages,
+        { role: 'user', content, ...(attachment ? { attachment } : {}) }
+      ]
       setMessages(history)
       // A new conversation replaces the one put aside when it is saved.
       setPrevious(undefined)
@@ -105,15 +129,7 @@ export function useChat(
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: history
-              .filter((message) => message.content.trim())
-              .slice(-CHAT_MAX_CONTEXT_MESSAGES)
-              .map(({ role, content }) => ({
-                role,
-                content: content.slice(0, CHAT_MAX_MESSAGE_CHARS)
-              }))
-          }),
+          body: JSON.stringify({ messages: toRequestMessages(history) }),
           signal: controller.signal
         })
         if (response.status === 401) {
@@ -171,6 +187,12 @@ export function useChat(
     [address, isStreaming, messages, onSessionLost]
   )
 
+  /** Asks the assistant about the results of a job, read by its card. */
+  const askAboutResults = useCallback(
+    (attachment: JobResultAttachment) => send(RESULTS_QUESTION, attachment),
+    [send]
+  )
+
   const stop = useCallback(() => abortRef.current?.abort(), [])
 
   /** Deletes the conversation. It can be brought back until a new message. */
@@ -201,6 +223,7 @@ export function useChat(
     activeTool,
     error,
     send,
+    askAboutResults,
     stop,
     clear,
     previous,

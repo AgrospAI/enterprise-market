@@ -8,7 +8,10 @@ import {
   writeChatHistory
 } from './chatHistory'
 import type { ChatMessage } from 'src/@types/Chat'
-import { computeIntent } from '../../.jest/__fixtures__/chatIntents'
+import {
+  computeIntent,
+  jobResultAttachment
+} from '../../.jest/__fixtures__/chatIntents'
 
 const ADDRESS = '0xAbCdEf0000000000000000000000000000000001'
 const OTHER = '0xAbCdEf0000000000000000000000000000000002'
@@ -24,6 +27,36 @@ describe('chat history', () => {
     expect(readChatHistory(ADDRESS)).toEqual([message])
     expect(readChatHistory(ADDRESS.toLowerCase())).toEqual([message])
     expect(readChatHistory(OTHER)).toEqual([])
+  })
+
+  it('keeps the job results sent with a message, so later questions have them', () => {
+    const asked: ChatMessage = {
+      role: 'user',
+      content: 'What do the results of this job show?',
+      attachment: jobResultAttachment()
+    }
+    writeChatHistory(ADDRESS, [asked])
+
+    expect(readChatHistory(ADDRESS)).toEqual([asked])
+  })
+
+  it('drops job results that are not valid', () => {
+    window.localStorage.setItem(
+      `chat:${ADDRESS.toLowerCase()}`,
+      JSON.stringify([
+        { ...message, attachment: { kind: 'jobResult', jobId: 1 } },
+        {
+          role: 'assistant',
+          content: 'ok',
+          attachment: jobResultAttachment()
+        }
+      ])
+    )
+
+    expect(readChatHistory(ADDRESS)).toEqual([
+      message,
+      { role: 'assistant', content: 'ok' }
+    ])
   })
 
   it('keeps only the latest messages', () => {

@@ -245,6 +245,32 @@ describe('verifyComputeIntent', () => {
     )
   })
 
+  it('gives the card the declared parameters and the values to start with', async () => {
+    const result = await verifyComputeIntent(computeIntent(), USER, token)
+    if (!('plan' in result)) throw new Error(result.problems.join())
+    const { algorithm } = result.plan
+    expect(algorithm.declaredParameters.map((param) => param.name)).toEqual([
+      'lookbackDays'
+    ])
+    expect(algorithm.initialParameters).toEqual({ lookbackDays: 45 })
+    expect(algorithm.parameters).toEqual({ lookbackDays: 45 })
+  })
+
+  it('leaves a missing value for the user to give in the card', async () => {
+    const intent = computeIntent()
+    const result = await verifyComputeIntent(
+      {
+        ...intent,
+        dataset: { ...intent.dataset, parameters: { province: '25' } }
+      },
+      USER,
+      token
+    )
+    if (!('plan' in result)) throw new Error(result.problems.join())
+    expect(result.plan.dataset.parameters).toBeUndefined()
+    expect(result.plan.dataset.initialParameters).toEqual({ province: '25' })
+  })
+
   it('flags an asset that asks for verifiable credentials', async () => {
     const credentials = {
       allow: [

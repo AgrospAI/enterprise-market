@@ -3,7 +3,8 @@ import {
   CHAT_MAX_CONTEXT_MESSAGES,
   CHAT_MAX_MESSAGE_CHARS,
   ChatMessage,
-  ChatStreamEvent
+  ChatStreamEvent,
+  parseJobResultAttachment
 } from 'src/@types/Chat'
 import {
   getSiweConfig,
@@ -26,7 +27,10 @@ const REQUEST_TIMEOUT_MS = 180_000
 let takeRateLimit: ReturnType<typeof createRateLimiter> | undefined
 const activeAddresses = new Set<string>()
 
-/** Accepts only user and assistant text: the client cannot set a system prompt. */
+/**
+ * Accepts only user and assistant text, and the results of one job on a user
+ * message: the client cannot set a system prompt.
+ */
 export function parseMessages(body: unknown): ChatMessage[] | undefined {
   const messages = (body as { messages?: unknown })?.messages
   if (
@@ -38,6 +42,7 @@ export function parseMessages(body: unknown): ChatMessage[] | undefined {
   }
 
   const parsed: ChatMessage[] = []
+  let attachments = 0
   for (const message of messages) {
     const { role, content } = message ?? {}
     if (
@@ -48,7 +53,14 @@ export function parseMessages(body: unknown): ChatMessage[] | undefined {
     ) {
       return undefined
     }
-    parsed.push({ role, content })
+    if (message.attachment === undefined) {
+      parsed.push({ role, content })
+      continue
+    }
+    // One set of results per request keeps the model's context bounded.
+    const attachment = parseJobResultAttachment(message.attachment)
+    if (role !== 'user' || !attachment || ++attachments > 1) return undefined
+    parsed.push({ role, content, attachment })
   }
   return parsed[parsed.length - 1].role === 'user' ? parsed : undefined
 }

@@ -1,5 +1,6 @@
 import {
   FormEvent,
+  Fragment,
   KeyboardEvent,
   ReactElement,
   ReactNode,
@@ -17,7 +18,12 @@ import { PreviousChat, useChat } from '@hooks/useChat'
 import { useChatPanel } from '@context/ChatPanel'
 import { useSiweSession } from '@hooks/useSiweSession'
 import { markdownToChatHtml } from '@utils/markdown'
-import type { ChatMessage, ChatStep } from 'src/@types/Chat'
+import type { JobReport } from '@utils/chat/jobResults'
+import type {
+  ChatMessage,
+  ChatStep,
+  JobResultAttachment
+} from 'src/@types/Chat'
 import type { ChatIntent } from 'src/@types/ChatIntent'
 import IntentCard from './IntentCard'
 import {
@@ -69,14 +75,43 @@ function Steps({ steps }: { steps: ChatStep[] }): ReactElement {
 function Message({
   message,
   isLiveIntent,
-  onRunningChange
+  onRunningChange,
+  onAskAboutResults,
+  canAsk,
+  reportsOf
 }: {
   message: ChatMessage
   isLiveIntent: (intent: ChatIntent) => boolean
   onRunningChange: (running: boolean) => void
+  onAskAboutResults: (
+    attachment: JobResultAttachment,
+    reports: JobReport[]
+  ) => void
+  canAsk: boolean
+  /** Links to the reports of a job read in this page; none after a reload. */
+  reportsOf: (jobId: string) => JobReport[]
 }): ReactElement {
   if (message.role === 'user') {
-    return <p className={styles.userMessage}>{message.content}</p>
+    const { attachment } = message
+    return (
+      <div className={styles.userMessage}>
+        <p>{message.content}</p>
+        {attachment && (
+          <p className={styles.attachment}>
+            {attachment.succeeded ? 'Results' : 'Log'} of {attachment.algorithm}{' '}
+            on {attachment.dataset}
+            {reportsOf(attachment.jobId).map((report) => (
+              <Fragment key={report.url}>
+                {' · '}
+                <a href={report.url} target="_blank" rel="noopener noreferrer">
+                  Open {report.name}
+                </a>
+              </Fragment>
+            ))}
+          </p>
+        )}
+      </div>
+    )
   }
   return (
     <div>
@@ -95,6 +130,8 @@ function Message({
           intent={intent}
           live={isLiveIntent(intent)}
           onRunningChange={onRunningChange}
+          onAskAboutResults={onAskAboutResults}
+          canAsk={canAsk}
         />
       ))}
     </div>
@@ -333,6 +370,7 @@ function Conversation({
     activeTool,
     error,
     send,
+    askAboutResults,
     stop,
     clear,
     previous,
@@ -381,6 +419,27 @@ function Conversation({
     setIsAtBottom(true)
     send(text)
   }
+
+  // Links to the reports of the jobs read in this page, for the messages that sent them.
+  const [reportsByJob, setReportsByJob] = useState<Record<string, JobReport[]>>(
+    {}
+  )
+  const reportsOf = useCallback(
+    (jobId: string) => reportsByJob[jobId] ?? [],
+    [reportsByJob]
+  )
+
+  const askAndFollow = useCallback(
+    (attachment: JobResultAttachment, reports: JobReport[]) => {
+      if (reports.length) {
+        setReportsByJob((known) => ({ ...known, [attachment.jobId]: reports }))
+      }
+      followsLatest.current = true
+      setIsAtBottom(true)
+      askAboutResults(attachment)
+    },
+    [askAboutResults]
+  )
 
   // The message box grows with the text, up to a few lines.
   useEffect(() => {
@@ -477,6 +536,9 @@ function Conversation({
             message={message}
             isLiveIntent={isLiveIntent}
             onRunningChange={onRunningChange}
+            onAskAboutResults={askAndFollow}
+            canAsk={!isStreaming}
+            reportsOf={reportsOf}
           />
         ))}
         {isStreaming && (

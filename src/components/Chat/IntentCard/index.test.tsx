@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { useEthersSigner } from '@hooks/useEthersSigner'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -12,11 +12,14 @@ import {
   startComputeJob
 } from '@utils/chat/runIntent'
 import { openPolicySession } from '@utils/wallet/policySession'
+import { readJobResults } from '@utils/chat/jobResults'
+import { declaredParameters } from '@utils/chat/consumerParameters'
 import IntentCard from '.'
 import {
   USER,
   computeIntent,
   downloadIntent,
+  jobResultAttachment,
   paidComputeIntent,
   paidDownloadIntent
 } from '../../../../.jest/__fixtures__/chatIntents'
@@ -41,6 +44,7 @@ jest.mock('@utils/chat/runIntent', () => ({
   runDownload: jest.fn(),
   startComputeJob: jest.fn()
 }))
+jest.mock('@utils/chat/jobResults', () => ({ readJobResults: jest.fn() }))
 jest.mock('@utils/wallet/policySession', () => ({
   openPolicySession: jest.fn()
 }))
@@ -85,13 +89,41 @@ function acceptTerms() {
   fireEvent.click(screen.getByRole('checkbox', { name: /license terms/ }))
 }
 
+const datasetParameters = declaredParameters([
+  { name: 'province', type: 'text', label: 'Province', required: true }
+])
+const algorithmParameters = declaredParameters([
+  {
+    name: 'lookbackDays',
+    type: 'number',
+    label: 'Days to look back',
+    description: 'How far back to search for scenes',
+    required: true,
+    default: 60
+  },
+  {
+    name: 'index',
+    type: 'select',
+    label: 'Index',
+    default: 'ndvi',
+    options: [{ ndvi: 'NDVI' }, { ndwi: 'NDWI' }]
+  },
+  { name: 'clip', type: 'boolean', label: 'Clip to the parcel', default: false }
+])
+
 function computePlan(overrides = {}) {
   return {
     kind: 'compute',
     mode: 'free',
-    dataset: verified('Checked dataset', { parameters: { province: '25' } }),
+    dataset: verified('Checked dataset', {
+      parameters: { province: '25' },
+      declaredParameters: datasetParameters,
+      initialParameters: { province: '25' }
+    }),
     algorithm: verified('Checked algorithm', {
-      parameters: { lookbackDays: 45 }
+      parameters: { lookbackDays: 45, index: 'ndvi', clip: false },
+      declaredParameters: algorithmParameters,
+      initialParameters: { lookbackDays: 45, index: 'ndvi', clip: false }
     }),
     environment: { id: 'env' },
     resources: {},
@@ -231,6 +263,376 @@ describe('IntentCard', () => {
       await screen.findByText('The job is done and its results are ready.')
     ).toBeInTheDocument()
     jest.useRealTimers()
+  })
+
+  describe('asking about the results', () => {
+    async function finishJob(
+      props: Partial<Parameters<typeof IntentCard>[0]> = {}
+    ) {
+      jest.useFakeTimers()
+      jest.mocked(getJobStatus).mockResolvedValue({
+        jobId: 'job-1',
+        status: 70,
+        statusText: 'Job finished',
+        results: [{ index: 0, type: 'output', filesize: 10 }]
+      } as never)
+      render(<IntentCard intent={computeIntent()} live {...props} />)
+      await screen.findByRole('button', { name: 'Run the job' })
+      acceptTerms()
+      fireEvent.click(screen.getByRole('button', { name: 'Run the job' }))
+      await screen.findByText(/Job started/)
+      await jest.advanceTimersByTimeAsync(10_000)
+      await screen.findByText('The job is done and its results are ready.')
+      jest.useRealTimers()
+    }
+
+    it('is offered only once the results are ready', async () => {
+      const onAskAboutResults = jest.fn()
+      render(
+        <IntentCard
+          intent={computeIntent()}
+          live
+          onAskAboutResults={onAskAboutResults}
+        />
+      )
+      await screen.findByRole('button', { name: 'Run the job' })
+      acceptTerms()
+      fireEvent.click(screen.getByRole('button', { name: 'Run the job' }))
+      await screen.findByText(/Job started/)
+
+      expect(
+        screen.queryByRole('button', { name: 'Ask about the results' })
+      ).not.toBeInTheDocument()
+    })
+
+    const reports = [{ name: 'report.html', url: 'blob:report' }]
+
+    it('reads the results once with the wallet and sends them', async () => {
+      const attachment = jobResultAttachment()
+      jest.mocked(readJobResults).mockResolvedValue({ attachment, reports })
+      const onAskAboutResults = jest.fn()
+      await finishJob({ onAskAboutResults })
+
+      const ask = screen.getByRole('button', { name: 'Ask about the results' })
+      fireEvent.click(ask)
+      await waitFor(() =>
+        expect(onAskAboutResults).toHaveBeenCalledWith(attachment, reports)
+      )
+      expect(
+        screen.getByRole('link', { name: 'Open report.html' })
+      ).toHaveAttribute('href', 'blob:report')
+      expect(readJobResults).toHaveBeenCalledWith({
+        providerUrl: expect.any(String),
+        signer,
+        job: expect.objectContaining({ jobId: 'job-1' }),
+        dataset: 'Checked dataset',
+        algorithm: 'Checked algorithm'
+      })
+
+      fireEvent.click(ask)
+      await waitFor(() => expect(onAskAboutResults).toHaveBeenCalledTimes(2))
+      expect(readJobResults).toHaveBeenCalledTimes(1)
+    })
+
+    it('opens the report without asking the assistant', async () => {
+      jest
+        .mocked(readJobResults)
+        .mockResolvedValue({ attachment: jobResultAttachment(), reports })
+      const onAskAboutResults = jest.fn()
+      await finishJob({ onAskAboutResults })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open the report' }))
+      const link = await screen.findByRole('link', { name: 'Open report.html' })
+      expect(link).toHaveAttribute('href', 'blob:report')
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(onAskAboutResults).not.toHaveBeenCalled()
+      expect(
+        screen.queryByRole('button', { name: 'Open the report' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('says when the results have no report to open', async () => {
+      jest
+        .mocked(readJobResults)
+        .mockResolvedValue({ attachment: jobResultAttachment(), reports: [] })
+      await finishJob({ onAskAboutResults: jest.fn() })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open the report' }))
+      expect(
+        await screen.findByText(/The results have no HTML report/)
+      ).toBeInTheDocument()
+    })
+
+    it('says why the results could not be read', async () => {
+      jest
+        .mocked(readJobResults)
+        .mockRejectedValue(
+          new Error('The node did not give the results (403).')
+        )
+      const onAskAboutResults = jest.fn()
+      await finishJob({ onAskAboutResults })
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Ask about the results' })
+      )
+      expect(
+        await screen.findByText(
+          'The results could not be read: The node did not give the results (403).'
+        )
+      ).toBeInTheDocument()
+      expect(onAskAboutResults).not.toHaveBeenCalled()
+    })
+
+    it('waits while the assistant is answering', async () => {
+      await finishJob({ onAskAboutResults: jest.fn(), canAsk: false })
+      expect(
+        screen.getByRole('button', { name: 'Ask about the results' })
+      ).toBeDisabled()
+    })
+  })
+
+  describe('parameters', () => {
+    const algorithmPlanOf = () =>
+      jest.mocked(startComputeJob).mock.calls[0][0].algorithm
+
+    it('lists the values to send, closed, with labels of the choices', async () => {
+      render(<IntentCard intent={computeIntent()} live />)
+      await screen.findByRole('button', { name: 'Run the job' })
+
+      expect(screen.getByText(/: NDVI$/)).toBeInTheDocument()
+      expect(screen.getByText(/: no$/)).toBeInTheDocument()
+      expect(
+        screen.queryByRole('spinbutton', { name: /Days to look back/ })
+      ).not.toBeInTheDocument()
+    })
+
+    it('runs the job with the values the user changed', async () => {
+      render(<IntentCard intent={computeIntent()} live />)
+      await screen.findByRole('button', { name: 'Run the job' })
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Edit the parameters of Checked algorithm'
+        })
+      )
+      fireEvent.change(
+        screen.getByRole('spinbutton', { name: /Days to look back/ }),
+        { target: { value: '90' } }
+      )
+      fireEvent.change(screen.getByRole('combobox', { name: /Index/ }), {
+        target: { value: 'ndwi' }
+      })
+      fireEvent.click(
+        screen.getByRole('checkbox', { name: /Clip to the parcel/ })
+      )
+      expect(
+        screen.getByText('How far back to search for scenes')
+      ).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Done' }))
+      expect(screen.getByText(/: NDWI$/)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {
+          name: 'Edit the parameters of Checked algorithm'
+        })
+      ).toHaveTextContent('Edit parameters')
+      expect(screen.getByText('Edited')).toBeInTheDocument()
+
+      acceptTerms()
+      fireEvent.click(screen.getByRole('button', { name: 'Run the job' }))
+      await screen.findByText(/Job started/)
+
+      expect(algorithmPlanOf().parameters).toEqual({
+        lookbackDays: 90,
+        index: 'ndwi',
+        clip: true
+      })
+      expect(
+        jest.mocked(startComputeJob).mock.calls[0][0].dataset.parameters
+      ).toEqual({ province: '25' })
+      // A job that started shows its values, without a way to change them.
+      expect(
+        screen.queryByRole('button', { name: /Edit the parameters/ })
+      ).not.toBeInTheDocument()
+    })
+
+    it('blocks the job until a required value is valid', async () => {
+      render(<IntentCard intent={computeIntent()} live />)
+      await screen.findByRole('button', { name: 'Run the job' })
+      acceptTerms()
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Edit the parameters of Checked algorithm'
+        })
+      )
+      const days = screen.getByRole('spinbutton', {
+        name: /Days to look back/
+      })
+
+      fireEvent.change(days, { target: { value: '' } })
+      expect(screen.getByText('Required: give it a value.')).toBeInTheDocument()
+      expect(days).toHaveAttribute('aria-invalid', 'true')
+      expect(screen.getByRole('button', { name: 'Run the job' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Done' })).toBeDisabled()
+
+      fireEvent.change(days, { target: { value: '30' } })
+      expect(screen.getByRole('button', { name: 'Run the job' })).toBeEnabled()
+    })
+
+    it('opens the form when a value is missing, and undoes changes', async () => {
+      jest.mocked(verifyComputeIntent).mockResolvedValue({
+        plan: computePlan({
+          dataset: verified('Checked dataset', {
+            declaredParameters: datasetParameters,
+            initialParameters: {}
+          })
+        })
+      } as never)
+      render(<IntentCard intent={computeIntent()} live />)
+      await screen.findByRole('button', { name: 'Run the job' })
+      acceptTerms()
+
+      const province = screen.getByRole('textbox', { name: /Province/ })
+      expect(screen.getByRole('button', { name: 'Run the job' })).toBeDisabled()
+      fireEvent.change(province, { target: { value: '08' } })
+      expect(screen.getByRole('button', { name: 'Run the job' })).toBeEnabled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo changes' }))
+      expect(screen.getByRole('button', { name: 'Run the job' })).toBeDisabled()
+    })
+  })
+
+  it('lets the user change the parameters of SIGPAC and Clip Raster', async () => {
+    // The declarations of the published assets, as the node indexes them.
+    const sigpac = declaredParameters([
+      {
+        name: 'province',
+        type: 'text',
+        label: 'Province',
+        required: true,
+        description: 'INE province code.',
+        default: '25'
+      },
+      {
+        name: 'municipality',
+        type: 'text',
+        label: 'Municipality',
+        required: true,
+        description: 'INE municipality code.',
+        default: '168'
+      },
+      {
+        name: 'aggregation',
+        type: 'text',
+        label: 'Aggregation',
+        required: false,
+        description: 'SIGPAC aggregation code (0 if none).',
+        default: '0'
+      },
+      {
+        name: 'zone',
+        type: 'text',
+        label: 'Zone',
+        required: false,
+        description: 'SIGPAC zone code (0 if none).',
+        default: '0'
+      },
+      {
+        name: 'polygon',
+        type: 'text',
+        label: 'Polygon',
+        required: true,
+        description: 'SIGPAC polygon number.',
+        default: '10'
+      },
+      {
+        name: 'parcel',
+        type: 'text',
+        label: 'Parcel',
+        required: true,
+        description: 'SIGPAC parcel number.',
+        default: '6'
+      },
+      {
+        name: 'precint',
+        type: 'text',
+        label: 'Precinct',
+        required: true,
+        description: 'SIGPAC precinct number within the parcel.',
+        default: '1'
+      }
+    ])
+    const clipRaster = declaredParameters([
+      {
+        name: 'lookbackDays',
+        type: 'number',
+        label: 'Search window (days)',
+        required: false,
+        description:
+          'How many days back to search for Sentinel-2 scenes (1-365).',
+        default: '60'
+      },
+      {
+        name: 'maxCloudCover',
+        type: 'number',
+        label: 'Maximum cloud cover in the parcel (%)',
+        required: false,
+        description:
+          'Maximum share of cloudy, shadowed or missing pixels inside the parcel (0-100). The newest scene under this limit is used; if none is, the clearest one.',
+        default: '20'
+      }
+    ])
+    const given = {
+      province: '25',
+      municipality: '168',
+      aggregation: '0',
+      zone: '0',
+      polygon: '10',
+      parcel: '6',
+      precint: '1'
+    }
+    jest.mocked(verifyComputeIntent).mockResolvedValue({
+      plan: computePlan({
+        dataset: verified('SIGPAC', {
+          parameters: given,
+          declaredParameters: sigpac,
+          initialParameters: given
+        }),
+        algorithm: verified('Clip Raster', {
+          parameters: { lookbackDays: 60, maxCloudCover: 20 },
+          declaredParameters: clipRaster,
+          initialParameters: { lookbackDays: '60', maxCloudCover: '20' }
+        })
+      })
+    } as never)
+    render(<IntentCard intent={computeIntent()} live />)
+    await screen.findByRole('button', { name: 'Run the job' })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Edit the parameters of SIGPAC' })
+    )
+    fireEvent.change(screen.getByRole('textbox', { name: /Parcel/ }), {
+      target: { value: '7' }
+    })
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Edit the parameters of Clip Raster'
+      })
+    )
+    fireEvent.change(
+      screen.getByRole('spinbutton', { name: /Search window/ }),
+      { target: { value: '30' } }
+    )
+    acceptTerms()
+    fireEvent.click(screen.getByRole('button', { name: 'Run the job' }))
+    await screen.findByText(/Job started/)
+
+    const [ran] = jest.mocked(startComputeJob).mock.calls[0]
+    expect(ran.dataset.parameters).toEqual({ ...given, parcel: '7' })
+    expect(ran.algorithm.parameters).toEqual({
+      lookbackDays: 30,
+      maxCloudCover: 20
+    })
   })
 
   it('explains a cancelled signature and offers to try again', async () => {

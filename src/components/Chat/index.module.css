@@ -357,6 +357,18 @@
   white-space: pre-wrap;
 }
 
+.userMessage p {
+  margin: 0;
+}
+
+/* The job results sent with the message: named, never shown as raw text. */
+.userMessage .attachment {
+  margin-top: calc(var(--spacer) / 6);
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+  white-space: normal;
+}
+
 .steps {
   margin-bottom: calc(var(--spacer) / 4);
   color: var(--color-secondary);

@@ -1,4 +1,8 @@
-import type { ChatMessage, ChatStep } from 'src/@types/Chat'
+import {
+  ChatMessage,
+  ChatStep,
+  parseJobResultAttachment
+} from 'src/@types/Chat'
 import { parseChatIntent } from 'src/@types/ChatIntent'
 
 export const CHAT_HISTORY_LIMIT = 50
@@ -43,12 +47,17 @@ function readMessage(message: ChatMessage): ChatMessage {
   const intents = Array.isArray(message.intents)
     ? message.intents.map(parseChatIntent).filter(Boolean)
     : []
+  const attachment =
+    message.role === 'user'
+      ? parseJobResultAttachment(message.attachment)
+      : undefined
   const { role, content } = message
   return {
     role,
     content,
     ...(steps.length ? { steps } : {}),
-    ...(intents.length ? { intents } : {})
+    ...(intents.length ? { intents } : {}),
+    ...(attachment ? { attachment } : {})
   }
 }
 
