@@ -1,0 +1,90 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.button {
+  composes: button from '../@shared/atoms/Button/index.module.css';
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.text {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.intro {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 17rem;
+  padding: 10px 8px 10px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--deck-blue);
+  color: var(--background);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+}
+
+/* The arrow, pointing at the button. */
+.intro::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 22px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.introClose {
+  flex-shrink: 0;
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.introClose svg {
+  width: 16px;
+  height: 16px;
+}
+
+.introClose:focus-visible {
+  outline: 2px solid var(--background);
+  outline-offset: 1px;
+}
+
+/* On phones the header only has room for the icon. */
+@media screen and (max-width: 768px) {
+  .button {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .text {
+    display: none;
+  }
+}

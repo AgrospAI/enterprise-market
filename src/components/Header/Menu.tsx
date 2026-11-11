@@ -16,6 +16,7 @@ import BurgerIcon from '@images/burgerIcon.svg' // You'll need to add a burger i
 import CloseIcon from '@images/closeIcon.svg' // You'll need to add a close icon
 import { useAuth } from '@hooks/useAuth'
 import AuthEntry from './AuthEntry'
+import AssistantButton from '@components/Chat/AssistantButton'
 
 const cx = classNames.bind(styles)
 
@@ -147,6 +148,8 @@ export default function Menu(): ReactElement {
               )}
             </div>
           </div>
+
+          <AssistantButton />
 
           {/* Mobile burger menu button */}
           <button className={styles.burgerButton} onClick={toggleMobileMenu}>

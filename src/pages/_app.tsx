@@ -6,6 +6,7 @@ import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
 import { SearchBarStatusProvider } from '@context/SearchBarStatus'
+import { ChatPanelProvider } from '@context/ChatPanel'
 import App from '../components/App'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
@@ -57,11 +58,13 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
                       <SsiWalletProvider>
                         <AuthProvider>
                           <PontusXIdentityProvider>
-                            <App>
-                              <AuthGuard>
-                                <Component {...pageProps} />
-                              </AuthGuard>
-                            </App>
+                            <ChatPanelProvider>
+                              <App>
+                                <AuthGuard>
+                                  <Component {...pageProps} />
+                                </AuthGuard>
+                              </App>
+                            </ChatPanelProvider>
                           </PontusXIdentityProvider>
                         </AuthProvider>
                       </SsiWalletProvider>
