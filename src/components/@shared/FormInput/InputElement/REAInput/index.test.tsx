@@ -20,9 +20,8 @@ const reaField = content.services.fields
   .fields.find((field) => field.type === 'rea') as {
   value: string
   label: string
-  endpoint: string
 }
-const { endpoint } = reaField
+const endpoint = 'https://rea.example.test/rea'
 
 function renderForm(url = '') {
   return render(

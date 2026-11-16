@@ -12,6 +12,7 @@ import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
 import DockerRegistryChecksum from '@shared/DockerRegistryChecksum'
 import { FormPublishData } from '../_types'
+import appConfig from 'app.config.cjs'
 import GeoMetadataFields from '@shared/GeoMetadataFields'
 
 export default function MetadataFields(): ReactElement {
@@ -80,11 +81,13 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.tags"
       />
-      <Field
-        {...getFieldContent('ontologyTerms', content.metadata.fields)}
-        component={Input}
-        name="metadata.ontologyTerms"
-      />
+      {appConfig.agroPortalEnabled && (
+        <Field
+          {...getFieldContent('ontologyTerms', content.metadata.fields)}
+          component={Input}
+          name="metadata.ontologyTerms"
+        />
+      )}
       <Field
         {...getFieldContent('author', content.metadata.fields)}
         component={Input}

@@ -50,6 +50,12 @@ declare global {
     publisherMarketOrderFee: string
     validProviderFees?: ProviderFees
     paymentCollector: string
+    /**
+     * The fixed-rate exchange contract this datatoken is actually priced on.
+     * A datatoken can be priced on a non-enterprise FixedPrice exchange even
+     * when the portal's global config points at FixedPriceEnterprise.
+     */
+    fixedRateExchangeAddress?: string
   }
   export interface PricePublishOptions {
     price: number

@@ -29,6 +29,7 @@ import { ConsumerParametersBuilder } from './ConsumerParameters/ConsumerParamete
 import InputKeyValue from './KeyValueInput'
 import TimeoutInput from './TimeoutInput'
 import type { KeyValuePair } from 'src/@types/KeyValuePair'
+import { edcApiUrl, reaApiUrl } from 'app.config.cjs'
 
 const cx = classNames.bind(styles)
 
@@ -180,14 +181,21 @@ const InputElement = forwardRef(
       }
       case 'tabs': {
         const tabs: any = []
-        props.fields.map((field: any, i) => {
+        props.fields.forEach((field: any, i) => {
+          if (field.type === 'edc' && !edcApiUrl) return
+          if (field.type === 'rea' && !reaApiUrl) return
           return tabs.push({
             title: field.title,
             field,
             props,
             content:
               field.type === 'rea' ? (
-                <REAInput key={`reaInput_${i}`} {...field} {...props} />
+                <REAInput
+                  key={`reaInput_${i}`}
+                  {...field}
+                  {...props}
+                  endpoint={reaApiUrl || ''}
+                />
               ) : field.type === 'edc' ? (
                 <EDCInput
                   key={`edcInput_${i}`}

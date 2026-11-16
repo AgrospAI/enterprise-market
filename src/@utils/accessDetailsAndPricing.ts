@@ -326,6 +326,7 @@ export async function getAccessDetails(
         type: 'fixed',
         addressOrId: exchangeId,
         price: exchange.fixedRate,
+        fixedRateExchangeAddress: freAddress,
         baseToken: {
           address: exchange.baseToken,
           name: tokenInfo?.name, // reuse the datatoken instance since it is ERC20
