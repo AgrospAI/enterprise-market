@@ -2392,7 +2392,7 @@ export default function Review({
                       }
                       isService={item.type === 'algorithm'}
                       infoMessage={
-                        !hasSsiPolicy
+                        !hasCredentialRules
                           ? i18n._('No credentials required (never expires)')
                           : undefined
                       }
@@ -2616,54 +2616,57 @@ export default function Review({
         )}
       </div>
 
-      {showCredentialsCheck && currentVerificationItem && (
-        <div className={styles.credentialsOverlay}>
-          <div className={styles.credentialsContainer}>
-            <div className={styles.credentialsHeader}>
-              <h3>
-                {currentVerificationItem.type === 'dataset' ? (
-                  <Trans id="Verify Dataset Credentials" />
-                ) : (
-                  <Trans id="Verify Algorithm Credentials" />
-                )}
-              </h3>
-              <button
-                className={styles.closeButton}
-                onClick={() => {
-                  setShowCredentialsCheck(false)
-                  setCurrentVerificationIndex(-1)
-                  setVerificationQueue((prev) =>
-                    prev.map((item, i) =>
-                      i === currentVerificationIndex
-                        ? { ...item, status: 'failed' as const }
-                        : item
+      {showCredentialsCheck &&
+        currentVerificationItem &&
+        appConfig.ssiEnabled &&
+        currentVerificationRequiresSsi && (
+          <div className={styles.credentialsOverlay}>
+            <div className={styles.credentialsContainer}>
+              <div className={styles.credentialsHeader}>
+                <h3>
+                  {currentVerificationItem.type === 'dataset' ? (
+                    <Trans id="Verify Dataset Credentials" />
+                  ) : (
+                    <Trans id="Verify Algorithm Credentials" />
+                  )}
+                </h3>
+                <button
+                  className={styles.closeButton}
+                  onClick={() => {
+                    setShowCredentialsCheck(false)
+                    setCurrentVerificationIndex(-1)
+                    setVerificationQueue((prev) =>
+                      prev.map((item, i) =>
+                        i === currentVerificationIndex
+                          ? { ...item, status: 'failed' as const }
+                          : item
+                      )
                     )
-                  )
-                }}
-              >
-                <Trans id="✕ Close" />{' '}
-              </button>
+                  }}
+                >
+                  <Trans id="✕ Close" />{' '}
+                </button>
+              </div>
+              <CredentialDialogProvider autoStart={true}>
+                {currentVerificationItem.type === 'dataset' ? (
+                  <AssetActionCheckCredentials
+                    asset={currentVerificationItem.asset}
+                    service={currentVerificationItem.service}
+                    onVerified={handleVerificationComplete}
+                    onError={handleVerificationError}
+                  />
+                ) : (
+                  <AssetActionCheckCredentialsAlgo
+                    asset={currentVerificationItem.asset}
+                    service={currentVerificationItem.service}
+                    onVerified={handleVerificationComplete}
+                    onError={handleVerificationError}
+                  />
+                )}
+              </CredentialDialogProvider>
             </div>
-            <CredentialDialogProvider autoStart={true}>
-              {currentVerificationItem.type === 'dataset' ? (
-                <AssetActionCheckCredentials
-                  asset={currentVerificationItem.asset}
-                  service={currentVerificationItem.service}
-                  onVerified={handleVerificationComplete}
-                  onError={handleVerificationError}
-                />
-              ) : (
-                <AssetActionCheckCredentialsAlgo
-                  asset={currentVerificationItem.asset}
-                  service={currentVerificationItem.service}
-                  onVerified={handleVerificationComplete}
-                  onError={handleVerificationError}
-                />
-              )}
-            </CredentialDialogProvider>
           </div>
-        </div>
-      )}
+        )}
     </div>
   )
 }
