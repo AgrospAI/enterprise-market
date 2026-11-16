@@ -5,13 +5,15 @@ import {
   PublishFeedback,
   StepContent
 } from './_types'
-import content from '../../../content/publish/form.json'
+import {
+  contentPublishForm as content,
+  contentPublishFeedback as contentFeedback
+} from '../../i18n/content'
 import PricingFields from './Pricing'
 import MetadataFields from './Metadata'
 import ServicesFields from './Services'
 import Preview from './Preview'
 import Submission from './Submission'
-import contentFeedback from '../../../content/publish/feedback.json'
 import { Compute } from 'src/@types/ddo/Service'
 import { AdditionalCredentials } from './AdditionalCredentials'
 import { AccessPolicies } from './AccessPolicies'
@@ -21,37 +23,51 @@ import { emptyGeoMetadata } from '@utils/dcat'
 export const wizardSteps: StepContent[] = [
   {
     step: 1,
-    title: content.metadata.title,
+    get title() {
+      return content.metadata.title
+    },
     component: <MetadataFields />
   },
   {
     step: 2,
-    title: content.policies.title,
+    get title() {
+      return content.policies.title
+    },
     component: <AccessPolicies />
   },
   {
     step: 3,
-    title: content.services.title,
+    get title() {
+      return content.services.title
+    },
     component: <ServicesFields />
   },
   {
     step: 4,
-    title: content.pricing.title,
+    get title() {
+      return content.pricing.title
+    },
     component: <PricingFields />
   },
   {
     step: 5,
-    title: content.additionalDdos.title,
+    get title() {
+      return content.additionalDdos.title
+    },
     component: <AdditionalCredentials />
   },
   {
     step: 6,
-    title: content.preview.title,
+    get title() {
+      return content.preview.title
+    },
     component: <Preview />
   },
   {
     step: 7,
-    title: content.submission.title,
+    get title() {
+      return content.submission.title
+    },
     component: <Submission />
   }
 ]

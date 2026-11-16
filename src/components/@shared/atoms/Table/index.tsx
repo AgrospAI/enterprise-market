@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import DataTable, { TableProps, TableColumn } from 'react-data-table-component'
 import Loader from '../Loader'
@@ -33,6 +34,8 @@ export default function Table({
   className,
   ...props
 }: TableOceanProps<any>): ReactElement {
+  useLingui()
+
   return (
     <div className={className}>
       <DataTable

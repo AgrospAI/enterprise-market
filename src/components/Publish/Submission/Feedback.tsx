@@ -1,15 +1,21 @@
+import { useLingui } from '@lingui/react'
 import { useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import { FormPublishData } from '../_types'
+import { contentPublishFeedback } from '../../../i18n/content'
 import styles from './Feedback.module.css'
 import TransactionCount from './TransactionCount'
 
 export function Feedback(): ReactElement {
+  const { i18n } = useLingui()
+
   const { values } = useFormikContext<FormPublishData>()
 
-  const items = Object.entries(values.feedback).map(([, value], index) => (
+  const items = Object.entries(values.feedback).map(([key, value], index) => (
     <li key={index} className={styles[value.status]}>
-      <h3 className={styles.title}>{value.name}</h3>
+      <h3 className={styles.title}>
+        {contentPublishFeedback[key]?.name || i18n._(value.name)}
+      </h3>
       <div className={styles.txs}>
         {value.txCount > 0 && (
           <TransactionCount
@@ -19,7 +25,9 @@ export function Feedback(): ReactElement {
           />
         )}
       </div>
-      <p className={styles.description}>{value.description}</p>
+      <p className={styles.description}>
+        {contentPublishFeedback[key]?.description || i18n._(value.description)}
+      </p>
       {value.errorMessage && (
         <span title={value.errorMessage} className={styles.errorMessage}>
           {value.errorMessage}

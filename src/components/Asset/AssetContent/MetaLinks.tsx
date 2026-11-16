@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import MetaItem from './MetaItem'
 import External from '@images/external.svg'
@@ -9,6 +11,8 @@ export default function MetaLinks({
 }: {
   links?: Record<string, string>
 }): ReactElement | null {
+  useLingui()
+
   // `metadata.links` is a title -> URL map of related links (website, demo, ...)
   const entries = Object.entries(links || {}).filter(
     ([title, url]) => title?.trim() && url?.trim()
@@ -19,7 +23,7 @@ export default function MetaLinks({
   return (
     <div className={styles.section}>
       <MetaItem
-        title="Links"
+        title={i18n._('Links')}
         content={
           <ul className={styles.list}>
             {entries.map(([title, url]) => (

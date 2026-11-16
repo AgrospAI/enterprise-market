@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import FormConsumerParameters from './FormConsumerParameters'
 import styles from './index.module.css'
@@ -51,6 +53,8 @@ export default function ConsumerParameters({
   flatServiceIndex?: number
   nameOverride?: string
 }): ReactElement {
+  useLingui()
+
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -75,7 +79,7 @@ export default function ConsumerParameters({
         hasValidParams(service.consumerParameters)
       ) {
         tabs.push({
-          title: `Dataset ${index + 1} Params`,
+          title: i18n._('Dataset {value0} Params', { value0: index + 1 }),
           content: (
             <FormConsumerParameters
               name={`datasetParams_${index}`}
@@ -93,7 +97,7 @@ export default function ConsumerParameters({
 
     if (algoSvc?.consumerParameters?.length > 0) {
       tabs.push({
-        title: 'Algo Service',
+        title: i18n._('Algo Service'),
         content: (
           <FormConsumerParameters
             name="algoServiceParams"
@@ -111,7 +115,7 @@ export default function ConsumerParameters({
 
     if (algoParams?.length > 0) {
       tabs.push({
-        title: 'Algo Params',
+        title: i18n._('Algo Params'),
         content: (
           <FormConsumerParameters
             name="algoParams"
@@ -123,7 +127,7 @@ export default function ConsumerParameters({
     }
 
     return tabs
-  }, [services, selectedAlgorithmAsset, svcIndex, isLoading, mode])
+  }, [services, selectedAlgorithmAsset, svcIndex, isLoading, mode, i18n.locale])
 
   useEffect(() => {
     setTabs(updateTabs())

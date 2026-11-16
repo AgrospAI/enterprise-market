@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement } from 'react'
 import DataTable, { TableProps, TableColumn } from 'react-data-table-component'
 import Loader from '../Loader'
@@ -64,6 +66,8 @@ export default function HistoryTable({
   allResults,
   ...props
 }: TableOceanProps<any>): ReactElement {
+  useLingui()
+
   const { networksList } = useNetworkMetadata()
   const revenueEntries = Object.entries(revenueByToken || {})
     .filter(
@@ -156,7 +160,7 @@ export default function HistoryTable({
       exportedAsset.Time = assetWithAccess.credentialSubject?.metadata?.created
         ? new Date(
             assetWithAccess.credentialSubject.metadata.created
-          ).toLocaleString()
+          ).toLocaleString(i18n.locale)
         : ''
       if (assetWithAccess.indexedMetadata?.event?.txid) {
         exportedAsset.publishTransactionId =
@@ -195,7 +199,7 @@ export default function HistoryTable({
         const serviceRevenue = serviceOrders * servicePrice
         const servicePriceDisplay =
           servicePrice === 0
-            ? 'Free'
+            ? i18n._('Free')
             : serviceBaseTokenSymbol
             ? `${servicePrice} ${serviceBaseTokenSymbol}`
             : servicePrice
@@ -240,9 +244,9 @@ export default function HistoryTable({
         } else if (col.name === 'Time') {
           exportedAsset[col.name as string] = asset.credentialSubject?.metadata
             ?.created
-            ? new Date(
-                asset.credentialSubject.metadata.created
-              ).toLocaleString()
+            ? new Date(asset.credentialSubject.metadata.created).toLocaleString(
+                i18n.locale
+              )
             : ''
         } else {
           exportedAsset[col.name as string] = value
@@ -304,15 +308,15 @@ export default function HistoryTable({
             onChangePage={handlePageChange}
           />
           <div className={styles.totalSummaryRow}>
-            <NumberUnit label="Total sales" value={sales} />
-            <NumberUnit label="Total published" value={items} />
+            <NumberUnit label={i18n._('Total sales')} value={sales} />
+            <NumberUnit label={i18n._('Total published')} value={items} />
           </div>
         </>
       )}
       {exportEnabled && !isLoading && (
         <div className={styles.buttonContainer}>
           <Button onClick={handleExport} style="primary">
-            Export data
+            <Trans id="Export data" />{' '}
           </Button>
         </div>
       )}

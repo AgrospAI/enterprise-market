@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement } from 'react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import Button from '@shared/atoms/Button'
@@ -9,11 +11,13 @@ export default function NetworkItem({
 }: {
   chainId: number
 }): ReactElement {
+  useLingui()
+
   const { chainId: connectedChainId } = useAccount()
   const { switchChain, switchChainAsync, isPending } = useSwitchChain()
 
   const isConnected = connectedChainId === chainId
-  const buttonLabel = isConnected ? 'Connected' : 'Connect'
+  const buttonLabel = isConnected ? i18n._('Connected') : i18n._('Connect')
   const buttonClassName = isConnected
     ? `${styles.connectButton} ${styles.connectedButton}`
     : styles.connectButton

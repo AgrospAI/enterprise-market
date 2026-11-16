@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import Time from '@shared/atoms/Time'
 import Table, { TableOceanColumn } from '@shared/atoms/Table'
@@ -16,6 +18,8 @@ import ComputeJobsSkeleton from './Skeleton'
 // import { decodeBuyComputeJob } from '../../../../@types/invoice/buyInvoice'
 
 function Status({ children }: { children: string }): ReactElement {
+  useLingui()
+
   return <div className={styles.status}>{children}</div>
 }
 
@@ -30,6 +34,8 @@ export default function ComputeJobs({
   isLoading?: boolean
   refetchJobs?: any
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const { chainIds } = useUserPreferences()
 
@@ -132,7 +138,7 @@ export default function ComputeJobs({
 
   const columns: TableOceanColumn<ComputeJobMetaData>[] = [
     {
-      name: 'Algorithm',
+      name: i18n._('Algorithm'),
       selector: (row) => (
         <AssetListTitle
           did={row.algorithm ? row.algorithm.documentId : null}
@@ -141,15 +147,15 @@ export default function ComputeJobs({
       )
     },
     {
-      name: 'Network',
+      name: i18n._('Network'),
       selector: (row) => <NetworkName networkId={row.networkId} />
     },
     {
-      name: 'Provider',
+      name: i18n._('Provider'),
       selector: (row) => <span title={row.providerUrl}>{row.providerUrl}</span>
     },
     {
-      name: 'Created',
+      name: i18n._('Created'),
       selector: (row) =>
         row.dateFinished ? (
           <Time
@@ -166,7 +172,7 @@ export default function ComputeJobs({
         )
     },
     {
-      name: 'Finished',
+      name: i18n._('Finished'),
       selector: (row) =>
         row.dateFinished ? (
           <Time
@@ -183,11 +189,11 @@ export default function ComputeJobs({
         )
     },
     {
-      name: 'Status',
+      name: i18n._('Status'),
       selector: (row) => <Status>{row.statusText}</Status>
     },
     {
-      name: 'Actions',
+      name: i18n._('Actions'),
       selector: (row) => <Details job={row} />
     }
     // {
@@ -286,13 +292,13 @@ export default function ComputeJobs({
         <Button
           style="text"
           size="small"
-          title="Refresh compute jobs"
+          title={i18n._('Refresh compute jobs')}
           onClick={async () => await refetchJobs(true)}
           disabled={isLoading}
           className={styles.refresh}
         >
           <Refresh />
-          Refresh
+          <Trans id="Refresh" />{' '}
         </Button>
       )}
       {isLoading && !jobs?.length ? (
@@ -304,12 +310,16 @@ export default function ComputeJobs({
           isLoading={isLoading}
           defaultSortFieldId="row.dateCreated"
           defaultSortAsc={false}
-          emptyMessage={chainIds.length === 0 ? 'No network selected' : null}
+          emptyMessage={
+            chainIds.length === 0 ? i18n._('No network selected') : null
+          }
           onChangePage={async () => await refetchJobs(true)}
         />
       )}
     </>
   ) : (
-    <div>Please connect your wallet.</div>
+    <div>
+      <Trans id="Please connect your wallet." />
+    </div>
   )
 }

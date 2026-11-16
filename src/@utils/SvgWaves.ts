@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { computeControlPoints } from './bezier-spline'
 import { randomIntFromInterval } from './numbers'
 
@@ -149,7 +150,10 @@ export class SvgWaves {
     // add path curves
     for (let i = 0; i < xPoints.length - 1; i++) {
       path +=
-        `C${xControlPoints.p1[i]},${yControlPoints.p1[i]} ` +
+        i18n._('C{value0},{value1} ', {
+          value0: xControlPoints.p1[i],
+          value1: yControlPoints.p1[i]
+        }) +
         `${xControlPoints.p2[i]},${yControlPoints.p2[i]} ` +
         `${xPoints[i + 1]},${yPoints[i + 1]}`
     }

@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { FileItem } from '@utils/fileItem'
 import styles from './index.module.css'
@@ -31,6 +34,8 @@ export function FileUpload({
   showProgressBar = false,
   maxFileSizeKB
 }: FileUploadProps): ReactElement {
+  useLingui()
+
   const {
     fileInputRef,
     currentFileName,
@@ -81,7 +86,9 @@ export function FileUpload({
             {hasUploadedFile && (
               <div className={styles.confirmedStatus}>
                 <CircleCheckIcon className={styles.successIcon} />
-                <span className={styles.confirmedText}>File confirmed</span>
+                <span className={styles.confirmedText}>
+                  <Trans id="File confirmed" />
+                </span>
                 {confirmedSize && (
                   <span className={styles.confirmedMeta}>{confirmedSize}</span>
                 )}
@@ -101,7 +108,7 @@ export function FileUpload({
             onClick={handleResetClick}
             disabled={isResetting}
             loading={isResetting}
-            loadingText="Deleting..."
+            loadingText={i18n._('Deleting...')}
           />
         )}
       </div>
@@ -110,7 +117,9 @@ export function FileUpload({
         <div className={styles.progressBarWrapper}>
           <div className={styles.progressBarHeader}>
             <span className={styles.progressBarTitle}>
-              {uploadProgress < 100 ? 'Uploading to IPFS...' : 'Finalizing...'}
+              {uploadProgress < 100
+                ? i18n._('Uploading to IPFS...')
+                : i18n._('Finalizing...')}
             </span>
             <span className={styles.progressPercentage}>{uploadProgress}%</span>
           </div>
@@ -125,7 +134,7 @@ export function FileUpload({
           <div className={styles.progressBarDetails}>
             <span className={styles.progressFileName}>{currentFileName}</span>
             <span className={styles.progressFileSize}>
-              {confirmedSize || 'Calculating size...'}
+              {confirmedSize || i18n._('Calculating size...')}
             </span>
           </div>
         </div>
@@ -154,7 +163,9 @@ export function FileUpload({
               strokeLinecap="round"
             />
           </svg>
-          <span className={styles.errorMessageText}>{errorMessage}</span>
+          <span className={styles.errorMessageText}>
+            {translate(errorMessage)}
+          </span>
         </div>
       )}
     </div>

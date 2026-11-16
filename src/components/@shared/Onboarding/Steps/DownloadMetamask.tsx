@@ -1,10 +1,14 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import { OnboardingStep } from '..'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
-import content from '../../../../../content/onboarding/steps/downloadMetamask.json'
+import { contentOnboardingStepsDownloadMetamask as content } from '../../../../i18n/content'
 
 export default function DownloadMetamask(): ReactElement {
+  useLingui()
+
   const { title, subtitle, body, image, buttonLabel }: OnboardingStep = content
   const [isMetaMaskDetected, setIsMetaMaskDetected] = useState(false)
 
@@ -18,13 +22,15 @@ export default function DownloadMetamask(): ReactElement {
     window.open(
       'https://metamask.io/download/',
       '_blank',
-      'noopener noreferrer'
+      i18n._('noopener noreferrer')
     )
 
   const actions = isMetaMaskDetected
     ? [
         {
-          buttonLabel: '✅ MetaMask is already available in your browser',
+          buttonLabel: i18n._(
+            '✅ MetaMask is already available in your browser'
+          ),
           buttonAction: () => {},
           loading: false,
           completed: true

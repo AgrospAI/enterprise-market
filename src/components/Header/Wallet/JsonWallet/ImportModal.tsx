@@ -1,3 +1,6 @@
+import { translate } from '../../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useCallback, useRef, useState } from 'react'
 import Modal from '@shared/atoms/Modal'
 import Button from '@shared/atoms/Button'
@@ -26,6 +29,8 @@ export default function ImportModal({
   isOpen,
   onClose
 }: ImportModalProps): ReactElement {
+  useLingui()
+
   const connectors = useConnectors()
   const { connectAsync } = useConnect()
   const { chain } = useAccount()
@@ -83,12 +88,12 @@ export default function ImportModal({
       reader.onload = (event) => {
         const content = event.target?.result as string
         if (!isValidEncryptedWalletJson(content)) {
-          setError('Invalid encrypted wallet JSON file.')
+          setError(i18n._('Invalid encrypted wallet JSON file.'))
           return
         }
         const address = getAddressFromJsonWallet(content)
         if (!address) {
-          setError('Could not extract address from wallet file.')
+          setError(i18n._('Could not extract address from wallet file.'))
           return
         }
         setRawJson(content)
@@ -96,7 +101,7 @@ export default function ImportModal({
       }
       reader.readAsText(file)
     },
-    []
+    [i18n.locale]
   )
 
   const handleDecrypt = useCallback(async () => {
@@ -117,8 +122,8 @@ export default function ImportModal({
       setError(
         failResult.error.includes('incorrect password') ||
           failResult.error.includes('invalid password')
-          ? 'Incorrect password.'
-          : 'Failed to decrypt wallet file.'
+          ? i18n._('Incorrect password.')
+          : i18n._('Failed to decrypt wallet file.')
       )
       setDecryptProgress(0)
       setIsDecrypting(false)
@@ -157,14 +162,21 @@ export default function ImportModal({
       const connectedChain = chains.find(
         (c) => c.id === (connectedChainId ?? chain?.id)
       )
-      const chainLabel = connectedChain ? ` on ${connectedChain.name}` : ''
+      const chainLabel = connectedChain
+        ? i18n._(' on {value0}', { value0: connectedChain.name })
+        : ''
       const truncated = accountTruncate(displayAddress || '')
-      toast.success(`Wallet ${truncated} connected${chainLabel}.`)
+      toast.success(
+        i18n._('Wallet {truncated} connected{chainLabel}.', {
+          truncated,
+          chainLabel
+        })
+      )
       reset()
       onClose()
     } catch (e: unknown) {
       const message =
-        e instanceof Error ? e.message : 'Failed to connect wallet.'
+        e instanceof Error ? e.message : i18n._('Failed to connect wallet.')
       LoggerInstance.error('[ImportModal] Connect failed:', e)
       setError(message)
       setDecryptProgress(0)
@@ -183,7 +195,8 @@ export default function ImportModal({
     reset,
     onClose,
     chain?.id,
-    chains
+    chains,
+    i18n.locale
   ])
 
   const handleRemoveStored = useCallback(async () => {
@@ -201,14 +214,18 @@ export default function ImportModal({
     }
 
     setEncryptedWalletJson('')
-    toast.info('Stored wallet removed.')
+    toast.info(i18n._('Stored wallet removed.'))
     reset()
     onClose()
-  }, [setEncryptedWalletJson, connectors, reset, onClose])
+  }, [setEncryptedWalletJson, connectors, reset, onClose, i18n.locale])
 
   return (
     <Modal
-      title={isUnlockMode ? 'Unlock JSON Wallet' : 'Import JSON Wallet'}
+      title={
+        isUnlockMode
+          ? i18n._('Unlock JSON Wallet')
+          : i18n._('Import JSON Wallet')
+      }
       isOpen={isOpen}
       onToggleModal={handleClose}
       className={styles.importModal}
@@ -223,7 +240,7 @@ export default function ImportModal({
               onClick={() => fileInputRef.current?.click()}
             >
               <span className={styles.uploadLabel}>
-                Click to select an encrypted JSON wallet file
+                <Trans id="Click to select an encrypted JSON wallet file" />{' '}
               </span>
             </button>
             <input
@@ -237,7 +254,9 @@ export default function ImportModal({
         ) : (
           <>
             <div className={styles.addressPreview}>
-              <strong>Wallet Address</strong>
+              <strong>
+                <Trans id="Wallet Address" />
+              </strong>
               {walletAddress || storedAddress}
             </div>
 
@@ -252,13 +271,18 @@ export default function ImportModal({
                   />
                 </div>
                 <span className={styles.progressText}>
-                  Decrypting… {Math.round(decryptProgress * 100)}%
+                  <Trans
+                    id="Decrypting… {progress}%"
+                    values={{ progress: Math.round(decryptProgress * 100) }}
+                  />
                 </span>
               </div>
             ) : (
               <>
                 <div className={styles.passwordField}>
-                  <label htmlFor="json-wallet-password">Password</label>
+                  <label htmlFor="json-wallet-password">
+                    <Trans id="Password" />
+                  </label>
                   <input
                     id="json-wallet-password"
                     type="password"
@@ -267,7 +291,7 @@ export default function ImportModal({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleDecrypt()
                     }}
-                    placeholder="Enter wallet password"
+                    placeholder={i18n._('Enter wallet password')}
                     autoFocus
                   />
                 </div>
@@ -280,7 +304,7 @@ export default function ImportModal({
                       onClick={handleRemoveStored}
                       type="button"
                     >
-                      Remove Wallet
+                      <Trans id="Remove Wallet" />{' '}
                     </Button>
                   ) : (
                     <Button
@@ -289,7 +313,7 @@ export default function ImportModal({
                       onClick={reset}
                       type="button"
                     >
-                      Back
+                      <Trans id="Back" />{' '}
                     </Button>
                   )}
                   <Button
@@ -299,7 +323,9 @@ export default function ImportModal({
                     disabled={!password}
                     type="button"
                   >
-                    {isUnlockMode ? 'Unlock' : 'Decrypt & Connect'}
+                    {isUnlockMode
+                      ? i18n._('Unlock')
+                      : i18n._('Decrypt & Connect')}
                   </Button>
                 </div>
               </>
@@ -307,7 +333,7 @@ export default function ImportModal({
           </>
         )}
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p className={styles.error}>{translate(error)}</p>}
       </div>
     </Modal>
   )

@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useConfig, useConnect } from 'wagmi'
 import { useRouter } from 'next/router'
@@ -133,11 +134,11 @@ export function useDfnsConnect() {
     }
 
     if (!response.ok || !data.ssoRedirectUrl) {
-      throw new Error(data.error || 'Failed to start Dfns SSO login.')
+      throw new Error(data.error || i18n._('Failed to start Dfns SSO login.'))
     }
 
     redirectToDfnsSso(data.ssoRedirectUrl)
-  }, [])
+  }, [i18n.locale])
 
   const connect = useCallback(
     async (chainId?: number, code?: string) => {
@@ -185,7 +186,11 @@ export function useDfnsConnect() {
         }
 
         toast.error(
-          error instanceof Error ? error.message : 'Dfns wallet failed.'
+          i18n._(
+            error instanceof Error
+              ? error.message
+              : i18n._('Dfns wallet failed.')
+          )
         )
       } finally {
         setIsConnecting(false)
@@ -197,7 +202,8 @@ export function useDfnsConnect() {
       connectAsync,
       dfnsWagmiConnector,
       startSso,
-      user
+      user,
+      i18n.locale
     ]
   )
 
@@ -285,7 +291,7 @@ export function useDfnsSsoReturnHandler(connect: DfnsConnect) {
       return
     }
 
-    toast.error('Dfns SSO login failed. Please try again.')
+    toast.error(i18n._('Dfns SSO login failed. Please try again.'))
     const nextQuery = { ...router.query }
     delete nextQuery.dfns
     router.replace({ pathname: router.pathname, query: nextQuery }, undefined, {

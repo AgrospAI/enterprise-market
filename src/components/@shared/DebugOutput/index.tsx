@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import CopyIconButton from '@shared/atoms/CopyIconButton'
 import styles from './index.module.css'
@@ -13,6 +14,8 @@ export default function DebugOutput({
   large?: boolean
   headerLeft?: ReactNode
 }): ReactElement {
+  useLingui()
+
   const jsonString = JSON.stringify(output, null, 2)
 
   return (

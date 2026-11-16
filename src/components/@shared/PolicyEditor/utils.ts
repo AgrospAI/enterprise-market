@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import {
   CustomPolicy,
   CustomUrlPolicy,
@@ -175,6 +176,8 @@ export function convertToPolicyType(data: any, type?: string): PolicyType {
   }
 
   throw new Error(
-    `Type is not convertible to PolicyType: ${JSON.stringify(data)}`
+    i18n._('Type is not convertible to PolicyType: {value0}', {
+      value0: JSON.stringify(data)
+    })
   )
 }

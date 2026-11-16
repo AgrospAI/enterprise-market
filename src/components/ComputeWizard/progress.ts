@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 export type ComputeStartProgressPhase =
   | 'escrow'
   | `dataset:${number}`
@@ -40,23 +41,27 @@ export function createComputeStartProgress({
   return [
     {
       id: 'escrow',
-      label: 'Approve and deposit funds in escrow if necessary',
-      shortLabel: 'Escrow',
+      label: i18n._('Approve and deposit funds in escrow if necessary'),
+      shortLabel: i18n._('Escrow'),
       status: 'pending'
     },
     ...datasets.map(({ name }, index) => ({
       id: getDatasetProgressPhase(index),
-      label: `Approve and buy dataset${name ? `: ${name}` : ` ${index + 1}`}`,
-      shortLabel: capitalizeFirstLetter(name || `Dataset ${index + 1}`),
+      label: i18n._('Approve and buy dataset{value0}', {
+        value0: name ? `: ${name}` : ` ${index + 1}`
+      }),
+      shortLabel: capitalizeFirstLetter(
+        name || i18n._('Dataset {value0}', { value0: index + 1 })
+      ),
       status: 'pending' as const
     })),
     ...(algorithm
       ? [
           {
             id: 'algorithm' as const,
-            label: `Approve and buy algorithm${
-              algorithm.name ? `: ${algorithm.name}` : ''
-            }`,
+            label: i18n._('Approve and buy algorithm{value0}', {
+              value0: algorithm.name ? `: ${algorithm.name}` : ''
+            }),
             shortLabel: capitalizeFirstLetter(algorithm.name || 'Algorithm'),
             status: 'pending' as const
           }
@@ -64,8 +69,8 @@ export function createComputeStartProgress({
       : []),
     {
       id: 'create',
-      label: 'Creating job in progress',
-      shortLabel: 'Create job',
+      label: i18n._('Creating job in progress'),
+      shortLabel: i18n._('Create job'),
       status: 'pending'
     }
   ]

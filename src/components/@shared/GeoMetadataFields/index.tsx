@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Input from '@shared/FormInput'
@@ -13,8 +15,10 @@ export default function GeoMetadataFields({
   name: string
   fields: FormFieldContent[]
 }): ReactElement {
+  useLingui()
+
   return (
-    <SectionContainer title="Geographic Information">
+    <SectionContainer title={i18n._('Geographic Information')}>
       <Field
         {...getFieldContent('boundingBox', fields)}
         component={Input}

@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useCallback, useRef, useState } from 'react'
 import {
   ComputeEnvironment,
@@ -393,14 +394,14 @@ export function useComputeInitialization({
         }
       } catch (error) {
         const message =
-          (error as Error)?.message || 'Provider initialization failed.'
+          (error as Error)?.message || i18n._('Provider initialization failed.')
         setInitError(message)
         throw error
       } finally {
         setIsInitLoading(false)
       }
     },
-    [web3Provider]
+    [web3Provider, i18n.locale]
   )
 
   return {

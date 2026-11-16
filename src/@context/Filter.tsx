@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   createContext,
   useContext,
@@ -31,6 +32,8 @@ interface FilterValue {
 const FilterContext = createContext({} as FilterValue)
 
 function FilterProvider({ children }: { children: ReactNode }): ReactElement {
+  useLingui()
+
   const [filters, setFilters] = useState<Filters>({
     accessType: [],
     serviceType: [],

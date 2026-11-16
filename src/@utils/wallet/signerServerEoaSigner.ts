@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import {
   AbstractSigner,
   hexlify,
@@ -108,7 +109,11 @@ export class SignerServerEoaSigner extends AbstractSigner<JsonRpcProvider> {
 
     const chain = init.chainsById.get(init.chainId)
     if (!chain) {
-      throw new Error(`Missing viem Chain for chainId ${init.chainId}.`)
+      throw new Error(
+        i18n._('Missing viem Chain for chainId {value0}.', {
+          value0: init.chainId
+        })
+      )
     }
 
     this.address = getAddress(init.address)
@@ -123,7 +128,11 @@ export class SignerServerEoaSigner extends AbstractSigner<JsonRpcProvider> {
   }) {
     const chain = input.chainsById.get(input.chainId)
     if (!chain) {
-      throw new Error(`Missing viem Chain for chainId ${input.chainId}.`)
+      throw new Error(
+        i18n._('Missing viem Chain for chainId {value0}.', {
+          value0: input.chainId
+        })
+      )
     }
 
     return new SignerServerEoaSigner({
@@ -185,7 +194,10 @@ export class SignerServerEoaSigner extends AbstractSigner<JsonRpcProvider> {
 
     if (recoveredAddress !== this.address) {
       throw new Error(
-        `Signer server returned a signature for ${recoveredAddress}, expected ${this.address}.`
+        i18n._(
+          'Signer server returned a signature for {recoveredAddress}, expected {value1}.',
+          { recoveredAddress, value1: this.address }
+        )
       )
     }
 

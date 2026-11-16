@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import NetworkName from '@shared/NetworkName'
 import styles from './Network.module.css'
@@ -10,6 +11,8 @@ export default function Network({
 }: {
   chainId: number
 }): ReactElement {
+  useLingui()
+
   const { networksList } = useNetworkMetadata()
 
   function changeNetwork(chainId: number) {

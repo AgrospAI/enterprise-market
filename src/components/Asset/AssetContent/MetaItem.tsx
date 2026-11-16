@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import cs from 'classnames'
 import styles from './MetaItem.module.css'
@@ -11,6 +12,8 @@ export default function MetaItem({
   content: ReactNode
   horizontal?: boolean
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={cs(styles.metaItem, horizontal && styles.horizontal)}>
       <h3 className={styles.title}>{title}</h3>

@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { assetStateToString } from '@utils/assetState'
 import { FileInfo, LoggerInstance } from '@oceanprotocol/lib'
 import { parseConsumerParameters, timeoutSecondsToFormValue } from '@utils/ddo'
@@ -434,8 +435,8 @@ export const getNewServiceInitialValues = (
     defaultServiceComputeOptions
   )
   return {
-    name: 'New Service',
-    description: 'New description',
+    name: i18n._('New Service'),
+    description: i18n._('New description'),
     language: '',
     direction: '',
     access: 'access',

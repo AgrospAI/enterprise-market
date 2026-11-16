@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
 import { FormPublishData } from '../_types'
@@ -17,6 +18,8 @@ const FALLBACK_POLICIES = [
 const uniquePolicies = (items: string[]): string[] => Array.from(new Set(items))
 
 export function AccessPolicies(): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const [defaultPolicies, setDefaultPolicies] =
     useState<string[]>(FALLBACK_POLICIES)

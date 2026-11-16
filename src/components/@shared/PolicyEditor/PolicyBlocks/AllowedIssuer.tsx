@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import cs from 'classnames'
@@ -5,7 +6,7 @@ import Button from '../../atoms/Button'
 import Input from '../../FormInput'
 import { getFieldContent } from '@utils/form'
 import styles from './Block.module.css'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 import DeleteButton from '../../DeleteButton/DeleteButton'
 
 interface AllowedIssuerPolicyBlockProps {
@@ -25,6 +26,8 @@ export default function AllowedIssuerPolicyBlock({
   onDelete,
   onValueChange
 }: AllowedIssuerPolicyBlockProps): ReactElement {
+  useLingui()
+
   function newArgument() {
     if (!policy.args) {
       policy.args = []
@@ -78,7 +81,7 @@ export default function AllowedIssuerPolicyBlock({
           onClick={newArgument}
           className={styles.newArgument}
         >
-          New {getFieldContent('issuerDid', fields).label}
+          <Trans id="New" /> {getFieldContent('issuerDid', fields).label}
         </Button>
       </div>
     </div>

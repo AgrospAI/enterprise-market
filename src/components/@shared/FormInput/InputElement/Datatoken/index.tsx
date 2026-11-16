@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { useField } from 'formik'
 import { ReactElement, useEffect } from 'react'
 import { InputProps } from '@shared/FormInput'
@@ -10,12 +12,14 @@ export default function Datatoken({
   randomize,
   ...props
 }: InputProps & { randomize?: boolean }): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField(props?.name)
 
   async function generateName() {
     const datatokenOptions = randomize
       ? generateDtName()
-      : { name: 'Access Token', symbol: 'OEAT' }
+      : { name: i18n._('Access Token'), symbol: 'OEAT' }
     helpers.setValue({ ...datatokenOptions })
   }
 

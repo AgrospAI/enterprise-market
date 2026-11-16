@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useFormikContext } from 'formik'
@@ -152,6 +153,8 @@ export default function Steps({
   baseTokenAddress,
   setBaseTokenAddress
 }: StepsProps): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const { values } = useFormikContext<FormComputeData>()
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
@@ -434,10 +437,16 @@ export default function Steps({
             setIsBalanceSufficient={setIsBalanceSufficient}
           />
         ) : (
-          <div>Invalid step</div>
+          <div>
+            <Trans id="Invalid step" />
+          </div>
         )
       default:
-        return <div>Invalid step: {currentStep}</div>
+        return (
+          <div>
+            <Trans id="Invalid step:" /> {currentStep}
+          </div>
+        )
     }
   }
 
@@ -613,10 +622,16 @@ export default function Steps({
               setIsBalanceSufficient={setIsBalanceSufficient}
             />
           ) : (
-            <div>Invalid step</div>
+            <div>
+              <Trans id="Invalid step" />
+            </div>
           )
         default:
-          return <div>Invalid step: {currentStep}</div>
+          return (
+            <div>
+              <Trans id="Invalid step:" /> {currentStep}
+            </div>
+          )
       }
     }
 
@@ -766,10 +781,16 @@ export default function Steps({
             tokenInfo={tokenInfo}
           />
         ) : (
-          <div>Invalid step</div>
+          <div>
+            <Trans id="Invalid step" />
+          </div>
         )
       default:
-        return <div>Invalid step: {currentStep}</div>
+        return (
+          <div>
+            <Trans id="Invalid step:" /> {currentStep}
+          </div>
+        )
     }
   }
 

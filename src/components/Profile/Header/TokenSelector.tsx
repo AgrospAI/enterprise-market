@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useMemo } from 'react'
 import InputElement from '@components/@shared/FormInput/InputElement'
 import styles from './index.module.css'
@@ -33,6 +34,8 @@ export default function TokenSelector({
   selectedToken?: string
   onTokenChange: (token: string) => void
 }): ReactElement {
+  useLingui()
+
   const { revenue, revenueByNetwork, escrowFundsByToken } = useProfile()
   const { approvedBaseTokens } = useMarketMetadata()
   const activeChainId = useChainId()
@@ -113,7 +116,7 @@ export default function TokenSelector({
     return (
       <div className={styles.selectorColumn}>
         <div className={styles.tokenPlaceholder}>
-          No tokens detected for this profile.
+          <Trans id="No tokens detected for this profile." />{' '}
         </div>
       </div>
     )
@@ -126,7 +129,9 @@ export default function TokenSelector({
 
   return (
     <div className={styles.selectorColumn}>
-      <div className={styles.selectorLabel}>Select a token</div>
+      <div className={styles.selectorLabel}>
+        <Trans id="Select a token" />
+      </div>
       <InputElement
         name="tokenSelect"
         type="select"

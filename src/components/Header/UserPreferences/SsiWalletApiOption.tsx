@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -8,6 +10,8 @@ import { useAccount } from 'wagmi'
 import styles from './SsiWalletApiOption.module.css'
 
 export default function SsiWalletApiOption(): ReactElement {
+  useLingui()
+
   const { isConnected } = useAccount()
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
   const { isSsiSessionHydrating } = useSsiWallet()
@@ -30,8 +34,8 @@ export default function SsiWalletApiOption(): ReactElement {
 
   return (
     <Input
-      label="Ssi Wallet API"
-      help="Set a new SSI wallet API."
+      label={i18n._('Ssi Wallet API')}
+      help={i18n._('Set a new SSI wallet API.')}
       name="ssiWalletApi"
       type="checkbox"
       options={['Update SSI Wallet API']}
@@ -42,7 +46,9 @@ export default function SsiWalletApiOption(): ReactElement {
         isSsiSessionHydrating ? (
           <div className={styles.loadingRow}>
             <Loader variant="primary" noMargin />
-            <span>Connecting SSI...</span>
+            <span>
+              <Trans id="Connecting SSI..." />
+            </span>
           </div>
         ) : undefined
       }

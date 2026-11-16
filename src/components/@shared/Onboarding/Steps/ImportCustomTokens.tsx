@@ -1,9 +1,11 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
-import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
+import { contentOnboardingStepsImportCustomTokens as content } from '../../../../i18n/content'
 import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import { addTokenToWallet } from '@utils/wallet'
 import { tokenLogos } from '@components/Header/NetworkMenu/AddTokenList'
@@ -12,6 +14,8 @@ import { getSupportedChainIds } from '../../../../../chains.config.cjs'
 import { getErrorMessage } from '@utils/onboarding'
 
 export default function ImportCustomTokens(): ReactElement {
+  useLingui()
+
   const { title, subtitle, body, image }: OnboardingStep = content
 
   const { address: accountId } = useAccount()
@@ -44,11 +48,13 @@ export default function ImportCustomTokens(): ReactElement {
       setCompleted(true)
     } catch (error) {
       toast.error(
-        getErrorMessage({
-          accountId,
-          web3Provider: !!web3Provider,
-          networkId: chainId
-        })
+        i18n._(
+          getErrorMessage({
+            accountId,
+            web3Provider: !!web3Provider,
+            networkId: chainId
+          })
+        )
       )
       if (error.message) console.error(error.message)
     } finally {

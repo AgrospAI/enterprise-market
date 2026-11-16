@@ -1,3 +1,6 @@
+import { translate } from '../../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 /* eslint-disable camelcase */
 import { useSsiWallet } from '@context/SsiWallet'
 import { toast } from 'react-toastify'
@@ -90,6 +93,8 @@ export function AssetActionCheckCredentials({
   onVerified?: () => void
   onError?: () => void
 }) {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const signer = useEthersSigner()
   const credentialDialog = useCredentialDialog()
@@ -173,14 +178,20 @@ export function AssetActionCheckCredentials({
             // Check if we have a valid presentation result
             if (!presentationResult || !presentationResult.openid4vc) {
               console.error('No presentation result or openid4vc URL received')
-              toast.error('No credential requirements found for this asset')
+              toast.error(
+                i18n._('No credential requirements found for this asset')
+              )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
             if (typeof openid4vcMessage.redirectUri !== 'string') {
               toast.error(
-                openid4vcMessage.errorMessage ||
-                  'Invalid presentation request response from policy server'
+                i18n._(
+                  openid4vcMessage.errorMessage ||
+                    i18n._(
+                      'Invalid presentation request response from policy server'
+                    )
+                )
               )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
@@ -234,7 +245,9 @@ export function AssetActionCheckCredentials({
               if (exchangeStateData.verifiableCredentials.length > 0) {
                 setShowVpDialog(true)
               } else {
-                toast.info('No more credentials found in your ssi wallet')
+                toast.info(
+                  i18n._('No more credentials found in your ssi wallet')
+                )
                 setCheckCredentialState(CheckCredentialState.ReadDids)
               }
             } else {
@@ -263,7 +276,9 @@ export function AssetActionCheckCredentials({
             )
 
             if (selectedCredentials.length === 0) {
-              toast.error('You must select at least one credential to present')
+              toast.error(
+                i18n._('You must select at least one credential to present')
+              )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
@@ -316,7 +331,7 @@ export function AssetActionCheckCredentials({
                 const errorMessage = buildSsiValidationErrorMessage(details)
                 setError(errorMessage)
                 handleResetWalletCache()
-                toast.error(errorMessage)
+                toast.error(translate(errorMessage))
                 onError?.()
               } else {
                 cacheVerifierSessionId(
@@ -335,7 +350,7 @@ export function AssetActionCheckCredentials({
               const errorMessage = buildSsiValidationErrorMessage(details)
               setError(errorMessage)
               handleResetWalletCache()
-              toast.error(errorMessage)
+              toast.error(translate(errorMessage))
               onError?.()
             }
             setExchangeStateData(newExchangeStateData())
@@ -417,18 +432,28 @@ export function AssetActionCheckCredentials({
     }
 
     if (isRetrying) {
-      return `Retrying credential check for ${assetName}...`
+      return i18n._('Retrying credential check for {assetName}...', {
+        assetName
+      })
     }
 
     switch (checkCredentialState) {
       case CheckCredentialState.StartCredentialExchange:
-        return `Connecting to policy server for ${assetName}...`
+        return i18n._('Connecting to policy server for {assetName}...', {
+          assetName
+        })
       case CheckCredentialState.ReadDids:
-        return `Selecting credentials for ${serviceName}...`
+        return i18n._('Selecting credentials for {serviceName}...', {
+          serviceName
+        })
       case CheckCredentialState.ResolveCredentials:
-        return `Verifying access to ${assetName}...`
+        return i18n._('Verifying access to {assetName}...', {
+          assetName
+        })
       default:
-        return `Checking credentials for ${assetName}...`
+        return i18n._('Checking credentials for {assetName}...', {
+          assetName
+        })
     }
   }
 
@@ -470,7 +495,7 @@ export function AssetActionCheckCredentials({
               {error && (
                 <>
                   <div className={styles.marginTop1}>
-                    <Alert state="error" text={error} />
+                    <Alert state="error" text={translate(error)} />
                   </div>
                   <Button
                     type="button"
@@ -478,7 +503,7 @@ export function AssetActionCheckCredentials({
                     style="accent"
                     className={styles.retryButton}
                   >
-                    Retry
+                    <Trans id="Retry" />{' '}
                   </Button>
                 </>
               )}
@@ -491,7 +516,9 @@ export function AssetActionCheckCredentials({
                     <div className={styles.walletWarningAlert}>
                       <Alert
                         state="warning"
-                        text="No credentials found for this wallet. Switch SSI wallet to one that holds the required credentials."
+                        text={i18n._(
+                          'No credentials found for this wallet. Switch SSI wallet to one that holds the required credentials.'
+                        )}
                       />
                     </div>
                     <div className={styles.leftAlign}>
@@ -500,14 +527,14 @@ export function AssetActionCheckCredentials({
                         style="primary"
                         onClick={() => setShowSsiWalletModule(true)}
                       >
-                        Switch SSI Wallet
+                        <Trans id="Switch SSI Wallet" />{' '}
                       </Button>
                     </div>
                   </div>
                 ) : (
                   <>
                     <div className={styles.marginTop1}>
-                      <Alert state="error" text={error} />
+                      <Alert state="error" text={translate(error)} />
                     </div>
                     <Button
                       type="button"
@@ -515,7 +542,7 @@ export function AssetActionCheckCredentials({
                       style="accent"
                       className={styles.retryButton}
                     >
-                      Retry
+                      <Trans id="Retry" />{' '}
                     </Button>
                   </>
                 )
@@ -542,7 +569,7 @@ export function AssetActionCheckCredentials({
                     )
                   }
                 >
-                  Check Credentials
+                  <Trans id="Check Credentials" />{' '}
                 </Button>
               )}
             </>
@@ -602,7 +629,7 @@ export function AssetActionCheckCredentials({
               })}
             {showVerifiedRibbon && (
               <div className={styles.marginTop1}>
-                <Alert state="success" text="Credentials verified." />
+                <Alert state="success" text={i18n._('Credentials verified.')} />
               </div>
             )}
           </div>
@@ -619,7 +646,9 @@ export function AssetActionCheckCredentials({
           <div className={styles.marginTop1}>
             <Alert
               state="warning"
-              text="No required credentials found in your SSI wallet. Obtain the listed credentials, then press Check Credentials again."
+              text={i18n._(
+                'No required credentials found in your SSI wallet. Obtain the listed credentials, then press Check Credentials again.'
+              )}
             />
           </div>
         )}

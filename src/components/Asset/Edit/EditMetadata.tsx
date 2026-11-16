@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
 import { LoggerInstance, Nft } from '@oceanprotocol/lib'
@@ -8,7 +11,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import Web3Feedback from '@shared/Web3Feedback'
 import FormEditMetadata from './FormEditMetadata'
 import styles from './index.module.css'
-import content from '../../../../content/pages/editMetadata.json'
+import { contentPagesEditMetadata as content } from '../../../i18n/content'
 import DebugEditMetadata from './DebugEditMetadata'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
@@ -39,6 +42,8 @@ export default function Edit({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
   const { address: accountId } = useAccount()
@@ -55,7 +60,7 @@ export default function Edit({
     asset.id,
     asset.credentialSubject?.services[0]?.serviceEndpoint,
     asset.credentialSubject?.credentials,
-    'The OPA server URL has changed. Save this asset to update it.'
+    i18n._('The OPA server URL has changed. Save this asset to update it.')
   )
 
   async function handleSubmit(values: MetadataEditForm, resetForm: () => void) {
@@ -262,11 +267,11 @@ export default function Edit({
         isSubmitting || hasFeedback ? (
           <EditFeedback
             loading="Updating asset with new metadata..."
-            error={error}
+            error={translate(error)}
             success={success}
             setError={setError}
             successAction={{
-              name: 'Back to Asset',
+              name: i18n._('Back to Asset'),
               onClick: async () => {
                 await fetchAsset()
               },

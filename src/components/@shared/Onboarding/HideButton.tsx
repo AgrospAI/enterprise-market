@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Button from '../atoms/Button'
 import styles from './HideButton.module.css'
@@ -5,9 +6,11 @@ import Tooltip from '../atoms/Tooltip'
 import Markdown from '../Markdown'
 // import Cross from '@images/x-cross.svg'
 import { useUserPreferences } from '@context/UserPreferences'
-import content from '../../../../content/onboarding/index.json'
+import { contentOnboardingIndex as content } from '../../../i18n/content'
 
 export default function HideButton(): ReactElement {
+  useLingui()
+
   const { setShowOnboardingModule } = useUserPreferences()
 
   return (
@@ -17,7 +20,8 @@ export default function HideButton(): ReactElement {
         style="text"
         onClick={() => setShowOnboardingModule(false)}
       >
-        {/* <Cross /> */}x
+        {/* <Cross /> */}
+        <Trans id="x" />{' '}
       </Button>
     </Tooltip>
   )

@@ -1,3 +1,5 @@
+import { i18n } from '../../../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Link from 'next/link'
 import styles from './index.module.css'
@@ -11,6 +13,8 @@ interface TagsProps {
 }
 
 const Tag = ({ tag, noLinks }: { tag: string; noLinks?: boolean }) => {
+  useLingui()
+
   const urlEncodedTag = encodeURIComponent(tag)
   return noLinks ? (
     <span className={styles.tag}>{tag}</span>
@@ -32,6 +36,8 @@ export default function Tags({
   className,
   noLinks
 }: TagsProps): ReactElement {
+  useLingui()
+
   // safeguard against faults in the metadata
   if (!(items instanceof Array)) return null
 
@@ -44,7 +50,9 @@ export default function Tags({
 
   return (
     <div className={classes}>
-      <span className={styles.title}>Tags:</span>
+      <span className={styles.title}>
+        <Trans id="Tags:" />
+      </span>
       {tags?.map((tag, i) => (
         <span key={tag + i}>
           <Tag tag={tag} noLinks={noLinks} />
@@ -52,7 +60,9 @@ export default function Tags({
         </span>
       ))}
       {shouldShowMore && (
-        <span className={styles.more}>{`+ ${items.length - max} more`}</span>
+        <span className={styles.more}>
+          {i18n._('+ {value0} more', { value0: items.length - max })}
+        </span>
       )}
     </div>
   )

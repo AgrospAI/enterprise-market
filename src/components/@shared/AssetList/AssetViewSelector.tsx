@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import GridIcon from '@images/grid-view-icon.svg'
 import ListIcon from '@images/list-view-icon.svg'
@@ -13,6 +15,8 @@ export default function AssetViewSelector({
   onViewChange: (view: AssetViewOptions) => void
   className?: string
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={`${styles.viewSelectorContainer} ${className || ''}`}>
       <button
@@ -21,8 +25,8 @@ export default function AssetViewSelector({
           activeView === AssetViewOptions.Grid ? styles.selected : ''
         }`}
         onClick={() => onViewChange(AssetViewOptions.Grid)}
-        title="Grid view"
-        aria-label="Grid view"
+        title={i18n._('Grid view')}
+        aria-label={i18n._('Grid view')}
         aria-pressed={activeView === AssetViewOptions.Grid}
       >
         <GridIcon aria-hidden="true" />
@@ -33,8 +37,8 @@ export default function AssetViewSelector({
           activeView === AssetViewOptions.List ? styles.selected : ''
         }`}
         onClick={() => onViewChange(AssetViewOptions.List)}
-        title="List view"
-        aria-label="List view"
+        title={i18n._('List view')}
+        aria-label={i18n._('List view')}
         aria-pressed={activeView === AssetViewOptions.List}
       >
         <ListIcon aria-hidden="true" />

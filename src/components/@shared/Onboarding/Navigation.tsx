@@ -1,3 +1,5 @@
+import { i18n } from '../../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import styles from './Navigation.module.css'
@@ -22,6 +24,8 @@ export default function Navigation({
   setNavigationDirection: (direction: NavigationDirections) => void
   totalStepsCount: number
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const web3Provider = usePublicClient()
   const chainId = useChainId()
@@ -36,11 +40,13 @@ export default function Navigation({
     if (currentStep === totalStepsCount - 1) return
     if (currentStep === totalStepsCount - 2 && !onboardingCompleted) {
       toast.error(
-        getErrorMessage({
-          accountId,
-          web3Provider: !!web3Provider,
-          networkId: chainId
-        })
+        i18n._(
+          getErrorMessage({
+            accountId,
+            web3Provider: !!web3Provider,
+            networkId: chainId
+          })
+        )
       )
       return
     }
@@ -57,7 +63,7 @@ export default function Navigation({
         })}
         onClick={handlePreviousStep}
       >
-        Previous Step
+        <Trans id="Previous Step" />{' '}
       </Button>
       <Button
         style="primary"
@@ -66,7 +72,7 @@ export default function Navigation({
           hidden: currentStep === totalStepsCount - 1
         })}
       >
-        Next Step
+        <Trans id="Next Step" />{' '}
       </Button>
     </div>
   )

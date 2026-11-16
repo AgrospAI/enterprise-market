@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import { Field, useField } from 'formik'
 import Input, { InputProps } from '../..'
@@ -27,6 +29,8 @@ export const paramTypes: FormConsumerParameter['type'][] = [
 ]
 
 export function ConsumerParameters(props: InputProps): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField<FormConsumerParameter[]>(props.name)
 
   const [tabIndex, setTabIndex] = useState(0)
@@ -46,7 +50,7 @@ export function ConsumerParameters(props: InputProps): ReactElement {
             title:
               param?.name?.length > 15
                 ? `${param?.name?.slice(0, 15)}...`
-                : param?.name || 'New parameter',
+                : param?.name || i18n._('New parameter'),
             content: (
               <div>
                 {props.fields?.map((subField: InputProps) => {

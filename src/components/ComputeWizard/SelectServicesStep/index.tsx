@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useEffect, useMemo, useRef, useState, ReactElement } from 'react'
 import { useFormikContext } from 'formik'
 import StepTitle from '@shared/StepTitle'
@@ -161,7 +163,7 @@ function normalizeDatasets(raw: DatasetItem[] = []): NormalizedAsset[] {
       id: s.serviceId,
       title: s.serviceName,
       name: s.serviceName,
-      description: s.serviceDescription || 'No description',
+      description: s.serviceDescription || i18n._('No description'),
       type: s.serviceType,
       duration: Number(s.serviceDuration ?? 0),
       price: Number(s.price ?? d.datasetPrice ?? 0),
@@ -260,6 +262,8 @@ function Row({
   onToggleExpand: (id: string) => void
   isDatasetFlow: boolean
 }) {
+  useLingui()
+
   const checkboxRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -345,6 +349,8 @@ function List({
   isDatasetFlow: boolean
   isLoading?: boolean
 }): ReactElement {
+  useLingui()
+
   const headerTitle = title
   const servicesColumnTitle = isDatasetFlow ? 'SERVICE' : 'SERVICES'
   const skeletonItems = Array.from({ length: 3 })
@@ -361,11 +367,21 @@ function List({
           <div className={styles.header}>
             <div className={styles.checkboxColumn} />
             <div className={styles.servicesColumn}>{servicesColumnTitle}</div>
-            <div className={styles.titleColumn}>TITLE</div>
-            <div className={styles.descriptionColumn}>DESCRIPTION</div>
-            <div className={styles.typeColumn}>TYPE</div>
-            <div className={styles.durationColumn}>DURATION</div>
-            <div className={styles.priceColumn}>PRICE</div>
+            <div className={styles.titleColumn}>
+              <Trans id="TITLE" />
+            </div>
+            <div className={styles.descriptionColumn}>
+              <Trans id="DESCRIPTION" />
+            </div>
+            <div className={styles.typeColumn}>
+              <Trans id="TYPE" />
+            </div>
+            <div className={styles.durationColumn}>
+              <Trans id="DURATION" />
+            </div>
+            <div className={styles.priceColumn}>
+              <Trans id="PRICE" />
+            </div>
           </div>
         </div>
 
@@ -455,7 +471,9 @@ function List({
                               <button
                                 type="button"
                                 className={styles.updateInfoButton}
-                                aria-label="Why is this service unavailable?"
+                                aria-label={i18n._(
+                                  'Why is this service unavailable?'
+                                )}
                               >
                                 <InfoIcon className={styles.updateInfoIcon} />
                               </button>
@@ -490,6 +508,8 @@ export default function SelectServicesStep({
   flow: ComputeFlow
   ddoListAlgorithms?: Asset[]
 }): ReactElement {
+  useLingui()
+
   const isDatasetFlow = flow === 'dataset'
   const singleSelection = isDatasetFlow
   const { values, setFieldValue } = useFormikContext<FormValues>()
@@ -561,7 +581,8 @@ export default function SelectServicesStep({
           title: extractString(svc.name) || svc.type,
           name: extractString(svc.name) || svc.type,
           description:
-            extractString(svc.description) || `Service for ${svc.type}`,
+            extractString(svc.description) ||
+            i18n._('Service for {value0}', { value0: svc.type }),
           type: svc.type,
           serviceEndpoint: svc.serviceEndpoint,
           duration: Number(svc.timeout ?? 0),
@@ -583,7 +604,7 @@ export default function SelectServicesStep({
           id: assetDdo.id,
           name:
             extractString(assetDdo.credentialSubject?.metadata?.name) ||
-            'Selected Algorithm',
+            i18n._('Selected Algorithm'),
           expanded: true,
           checked: true,
           services: normalizedServices
@@ -595,7 +616,7 @@ export default function SelectServicesStep({
           name: normalized.name,
           description:
             extractString(assetDdo.credentialSubject?.metadata?.description) ||
-            'Algorithm service',
+            i18n._('Algorithm service'),
           expanded: true,
           checked: true,
           services: normalizedServices.map((svc) => ({
@@ -755,8 +776,10 @@ export default function SelectServicesStep({
   if (isDatasetFlow && assets.length === 0 && !isLoading) {
     return (
       <div className={styles.container}>
-        <StepTitle title="Select Algorithm Service" />
-        <p>Please select an algorithm first</p>
+        <StepTitle title={i18n._('Select Algorithm Service')} />
+        <p>
+          <Trans id="Please select an algorithm first" />
+        </p>
       </div>
     )
   }
@@ -764,7 +787,11 @@ export default function SelectServicesStep({
   return (
     <div className={styles.listWrapper}>
       <List
-        title={isDatasetFlow ? 'Select Algorithm Service' : 'Select Services'}
+        title={
+          isDatasetFlow
+            ? i18n._('Select Algorithm Service')
+            : i18n._('Select Services')
+        }
         assets={assets}
         onToggleAsset={handleToggleAsset}
         onToggleService={handleToggleService}
@@ -774,7 +801,11 @@ export default function SelectServicesStep({
       />
       <LoaderOverlay
         visible={isLoading}
-        message={isDatasetFlow ? 'Loading services...' : 'Loading services...'}
+        message={
+          isDatasetFlow
+            ? i18n._('Loading services...')
+            : i18n._('Loading services...')
+        }
       />
     </div>
   )

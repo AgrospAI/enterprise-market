@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   useContext,
   useState,
@@ -35,6 +36,8 @@ interface ConsentProviderValue {
 const ConsentContext = createContext({} as ConsentProviderValue)
 
 function ConsentProvider({ children }: { children: ReactNode }): ReactElement {
+  useLingui()
+
   const cookies = useGdprMetadata()
 
   const { appConfig } = useMarketMetadata()

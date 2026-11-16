@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { Field, Formik } from 'formik'
 import REAInput from './index'
 import TabsFile from '@shared/atoms/TabsFile'
-import content from '../../../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../../../i18n/content'
 
 jest.mock('@shared/FormInput', () => ({
   __esModule: true,

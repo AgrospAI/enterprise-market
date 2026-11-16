@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import Link from 'next/link'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
@@ -18,6 +20,8 @@ export default function AssetListTitle({
   openInNewTab?: boolean
   maxTitleLength?: number
 }): ReactElement {
+  useLingui()
+
   const { appConfig } = useMarketMetadata()
   const [assetTitle, setAssetTitle] = useState<string>(title)
   const [assetTitleTrimmed, setAssetTitleTrimmed] = useState(title)
@@ -72,7 +76,7 @@ export default function AssetListTitle({
         <Link
           href={assetHref}
           target={openInNewTab ? '_blank' : undefined}
-          rel={openInNewTab ? 'noopener noreferrer' : undefined}
+          rel={openInNewTab ? i18n._('noopener noreferrer') : undefined}
         >
           {titleContent}
         </Link>

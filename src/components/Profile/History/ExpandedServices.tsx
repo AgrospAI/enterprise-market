@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import {
@@ -87,7 +89,7 @@ function getServicePrice(
 
 function formatPrice(value: number, tokenSymbol?: string): string {
   const amount = Number.isFinite(value) ? value : 0
-  if (amount === 0) return 'Free'
+  if (amount === 0) return i18n._('Free')
   return tokenSymbol ? `${amount} ${tokenSymbol}` : `${amount}`
 }
 
@@ -102,6 +104,8 @@ export default function ExpandedServices({
 }: {
   data: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const { approvedBaseTokens } = useMarketMetadata()
   const services = data.credentialSubject?.services || []
   const [fetchedTokenSymbols, setFetchedTokenSymbols] = useState<
@@ -179,7 +183,9 @@ export default function ExpandedServices({
   if (!services.length) {
     return (
       <div className={styles.expanded}>
-        <div className={styles.servicesCard}>No services for this asset.</div>
+        <div className={styles.servicesCard}>
+          <Trans id="No services for this asset." />
+        </div>
       </div>
     )
   }
@@ -188,13 +194,27 @@ export default function ExpandedServices({
     <div className={styles.expanded}>
       <div className={styles.servicesCard}>
         <div className={styles.expandedHeader}>
-          <div className={styles.expandedNameHeader}>Service name</div>
-          <div className={styles.expandedServiceId}>Service ID</div>
-          <div className={styles.expandedType}>Type</div>
-          <div className={styles.expandedDatatoken}>Datatoken</div>
-          <div className={styles.expandedSales}>Sales</div>
-          <div className={styles.expandedPrice}>Price</div>
-          <div className={styles.expandedRevenue}>Revenue</div>
+          <div className={styles.expandedNameHeader}>
+            <Trans id="Service name" />
+          </div>
+          <div className={styles.expandedServiceId}>
+            <Trans id="Service ID" />
+          </div>
+          <div className={styles.expandedType}>
+            <Trans id="Type" />
+          </div>
+          <div className={styles.expandedDatatoken}>
+            <Trans id="Datatoken" />
+          </div>
+          <div className={styles.expandedSales}>
+            <Trans id="Sales" />
+          </div>
+          <div className={styles.expandedPrice}>
+            <Trans id="Price" />
+          </div>
+          <div className={styles.expandedRevenue}>
+            <Trans id="Revenue" />
+          </div>
         </div>
         {services.map((service, index) => {
           const serviceStats = getServiceStats(
@@ -213,7 +233,7 @@ export default function ExpandedServices({
           const sales = serviceStats?.orders || 0
           const revenue = sales * price.value
           const isCompute = service.type === 'compute'
-          const typeLabel = isCompute ? 'Compute' : 'Download'
+          const typeLabel = isCompute ? i18n._('Compute') : i18n._('Download')
 
           return (
             <div
@@ -222,7 +242,8 @@ export default function ExpandedServices({
             >
               <div className={styles.expandedName}>
                 <span className={styles.serviceNameText} title={service.name}>
-                  {service.name || `Service ${index + 1}`}
+                  {service.name ||
+                    i18n._('Service {value0}', { value0: index + 1 })}
                 </span>
               </div>
               <div className={styles.expandedServiceId}>

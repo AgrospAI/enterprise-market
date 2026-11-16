@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useContext } from 'react'
 import { useAsset } from '@context/Asset'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -12,6 +13,8 @@ export default function Nft({
 }: {
   isBlockscoutExplorer: boolean
 }) {
+  useLingui()
+
   const { asset } = useAsset()
   const nftMetadata = decodeTokenURI(asset?.indexedMetadata.nft?.tokenURI)
 

@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import {
   ReactElement,
   useState,
@@ -79,6 +82,8 @@ function SectionRadioOption({
   label: string
   onChange: () => void
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.sectionHeader}>
       <input
@@ -112,6 +117,8 @@ function QueueWaitSection({
   onChange: (value: string) => void
   onUnitChange: (value: QueueWaitTimeUnit) => void
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.queueSection}>
       <div className={styles.queueToggleRow}>
@@ -126,14 +133,15 @@ function QueueWaitSection({
             onChange={(e) => onToggle(e.target.checked)}
             className={styles.queueCheckbox}
           />
-          <span>Allow job to be queued</span>
+          <span>
+            <Trans id="Allow job to be queued" />
+          </span>
         </label>
         <Tooltip
           placement="top"
           content={
             <div className={styles.queueTooltipContent}>
-              If not enough compute resources are currently available, the job
-              will wait in queue until resources become available.
+              <Trans id="If not enough compute resources are currently available, the job will wait in queue until resources become available." />{' '}
             </div>
           }
         />
@@ -145,7 +153,7 @@ function QueueWaitSection({
             htmlFor="queue-max-wait-time"
             className={styles.queueInputLabel}
           >
-            Maximum waiting time in queue
+            <Trans id="Maximum waiting time in queue" />{' '}
           </label>
           <div className={styles.queueInputRow}>
             <input
@@ -169,19 +177,34 @@ function QueueWaitSection({
                 onUnitChange(e.target.value as QueueWaitTimeUnit)
               }
               className={`${styles.input} ${styles.inputSmall} ${styles.queueUnitSelect}`}
-              aria-label="Maximum waiting time unit"
+              aria-label={i18n._('Maximum waiting time unit')}
             >
-              <option value="seconds">Seconds</option>
-              <option value="minutes">Minutes</option>
-              <option value="hours">Hours</option>
+              <option value="seconds">
+                <Trans id="Seconds" />
+              </option>
+              <option value="minutes">
+                <Trans id="Minutes" />
+              </option>
+              <option value="hours">
+                <Trans id="Hours" />
+              </option>
             </select>
           </div>
           <p id="queue-max-wait-time-help" className={styles.queueInputHint}>
-            Enter at least 1 {queueMaxWaitTimeUnit.slice(0, -1)}.
+            <Trans
+              id="Enter at least {duration}."
+              values={{
+                duration: i18n.number(1, {
+                  style: 'unit',
+                  unit: queueMaxWaitTimeUnit.slice(0, -1),
+                  unitDisplay: 'long'
+                })
+              }}
+            />
           </p>
           {error && (
             <p id="queue-max-wait-time-error" className={styles.queueError}>
-              {error}
+              {translate(error)}
             </p>
           )}
         </div>
@@ -237,6 +260,8 @@ function ResourceRow({
   fee,
   tooltip
 }: ResourceRowProps): ReactElement {
+  useLingui()
+
   const { minValue, maxValue, step = 1 } = getLimits(resourceId, isFree)
   const currentValue = isFree
     ? freeValues[resourceId as keyof ResourceValues]
@@ -254,7 +279,10 @@ function ResourceRow({
   const handleBlur = () => {
     if (inputValue === '') {
       setError(
-        `Value cannot be empty. Please enter a number between ${minValue} and ${maxValue}.`
+        i18n._(
+          'Value cannot be empty. Please enter a number between {minValue} and {maxValue}.',
+          { minValue, maxValue }
+        )
       )
       setInputValue(currentValue)
       return
@@ -263,14 +291,22 @@ function ResourceRow({
     const numValue = Number(inputValue)
     if (isNaN(numValue)) {
       setError(
-        `Please enter a valid number between ${minValue} and ${maxValue}.`
+        i18n._(
+          'Please enter a valid number between {minValue} and {maxValue}.',
+          { minValue, maxValue }
+        )
       )
       setInputValue(currentValue)
       return
     }
 
     if (numValue < minValue || numValue > maxValue) {
-      setError(`Please enter a value between ${minValue} and ${maxValue}.`)
+      setError(
+        i18n._('Please enter a value between {minValue} and {maxValue}.', {
+          minValue,
+          maxValue
+        })
+      )
       setInputValue(currentValue)
       return
     }
@@ -311,7 +347,9 @@ function ResourceRow({
         )}
       </div>
       <div className={styles.sliderSection}>
-        <span className={styles.minLabel}>min</span>
+        <span className={styles.minLabel}>
+          <Trans id="min" />
+        </span>
         <div className={styles.sliderContainer}>
           <input
             type="range"
@@ -331,7 +369,9 @@ function ResourceRow({
           />
           <div className={styles.sliderLine}></div>
         </div>
-        <span className={styles.maxLabel}>max</span>
+        <span className={styles.maxLabel}>
+          <Trans id="max" />
+        </span>
       </div>
       <div className={styles.inputSection}>
         <input
@@ -353,7 +393,7 @@ function ResourceRow({
           className={`${styles.input} ${styles.inputSmall} ${
             error ? styles.inputError : ''
           }`}
-          placeholder="value..."
+          placeholder={i18n._('value...')}
           disabled={!isActive}
         />
         <span className={styles.unit}>{unit}</span>
@@ -361,20 +401,22 @@ function ResourceRow({
       {error && (
         <div className={styles.errorOverlay}>
           <div className={styles.errorPopup}>
-            <span className={styles.errorMessage}>{error}</span>
+            <span className={styles.errorMessage}>{translate(error)}</span>
             <button className={styles.closeButton} onClick={handleCloseError}>
-              &times;
+              <Trans id="&times;" />{' '}
             </button>
           </div>
         </div>
       )}
       {!isFree && resourceId !== 'jobDuration' && (
         <div className={styles.resourcePriceSection}>
-          <span className={styles.priceLabel}>price per time unit</span>
+          <span className={styles.priceLabel}>
+            <Trans id="price per time unit" />
+          </span>
           <input
             type="text"
             className={`${styles.input} ${styles.inputSmall}`}
-            placeholder="value..."
+            placeholder={i18n._('value...')}
             readOnly
             disabled={!isActive}
             value={fee?.prices?.find((p) => p.id === resourceId)?.price ?? 0}
@@ -400,6 +442,8 @@ export default function ConfigureEnvironment({
   showEnvironmentSummary?: boolean
   stepMode?: 'resources' | 'storage'
 }): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const chainId = useChainId()
   const { escrowFundsByToken } = useProfile()
@@ -455,9 +499,9 @@ export default function ConfigureEnvironment({
   const baseTokenOptions = useMemo(
     () =>
       isTokenListLoading
-        ? ['Loading tokens...']
+        ? [i18n._('Loading tokens...')]
         : supportedTokensFromEnv.map((addr) => symbolMap[addr] || addr),
-    [supportedTokensFromEnv, symbolMap, isTokenListLoading]
+    [supportedTokensFromEnv, symbolMap, isTokenListLoading, i18n.locale]
   )
 
   const displaySymbol = symbolMap[values.baseToken] ?? ''
@@ -860,7 +904,7 @@ export default function ConfigureEnvironment({
   if (stepMode === 'storage') {
     return (
       <div className={`${styles.container} ${styles.storageContainer}`}>
-        <StepTitle title="Job Results Storage" />
+        <StepTitle title={i18n._('Job Results Storage')} />
         <div className={styles.resourceSection}>
           <SectionRadioOption
             id="store-on-node"
@@ -869,7 +913,7 @@ export default function ConfigureEnvironment({
               resetCurrentStorageStepCompletion()
               setFieldValue('outputStorageEnabled', false)
             }}
-            label="Store the job results on the node"
+            label={i18n._('Store the job results on the node')}
           />
 
           <SectionRadioOption
@@ -879,7 +923,9 @@ export default function ConfigureEnvironment({
               resetCurrentStorageStepCompletion()
               setFieldValue('outputStorageEnabled', true)
             }}
-            label="Store the job results on node and on a remote storage"
+            label={i18n._(
+              'Store the job results on node and on a remote storage'
+            )}
           />
         </div>
 
@@ -888,11 +934,9 @@ export default function ConfigureEnvironment({
         ) : (
           <div className={styles.outputStorageCard}>
             <p className={styles.outputStorageHint}>
-              The compute job results will remain on the node storage for 30
-              days.
+              <Trans id="The compute job results will remain on the node storage for 30 days." />{' '}
               <br />
-              Select the remote storage option if you want to export encrypted
-              results also to your own destination.
+              <Trans id="Select the remote storage option if you want to export encrypted results also to your own destination." />{' '}
             </p>
           </div>
         )}
@@ -903,8 +947,10 @@ export default function ConfigureEnvironment({
   if (!values.computeEnv) {
     return (
       <div className={styles.container}>
-        <StepTitle title="C2D Environment Configuration" />
-        <p>Please select an environment first</p>
+        <StepTitle title={i18n._('C2D Environment Configuration')} />
+        <p>
+          <Trans id="Please select an environment first" />
+        </p>
       </div>
     )
   }
@@ -1003,7 +1049,7 @@ export default function ConfigureEnvironment({
       paidValue: formatLimitRange('disk', 'GB', false)
     },
     {
-      label: 'JOB DURATION',
+      label: i18n._('JOB DURATION'),
       freeValue: freeAvailable
         ? formatLimitRange('jobDuration', 'min', true)
         : null,
@@ -1014,28 +1060,32 @@ export default function ConfigureEnvironment({
   const queueWaitTimeError = !queueWaitingEnabled
     ? undefined
     : queueMaxWaitTime === null || queueMaxWaitTime === undefined
-    ? 'Enter a maximum waiting time.'
+    ? i18n._('Enter a maximum waiting time.')
     : !Number.isFinite(Number(queueMaxWaitTime))
-    ? 'Enter a valid waiting time.'
+    ? i18n._('Enter a valid waiting time.')
     : Number(queueMaxWaitTime) < 1
-    ? 'Maximum waiting time must be at least 1.'
+    ? i18n._('Maximum waiting time must be at least 1.')
     : undefined
 
   const queueWaitTimeLabel =
     queueWaitingEnabled && !queueWaitTimeError && queueMaxWaitTime
-      ? `${queueMaxWaitTime} ${queueMaxWaitTimeUnit}`
-      : 'the configured queue max wait time'
+      ? i18n.number(Number(queueMaxWaitTime), {
+          style: 'unit',
+          unit: queueMaxWaitTimeUnit.slice(0, -1),
+          unitDisplay: 'long'
+        })
+      : i18n._('the configured queue max wait time')
 
   return (
     <div className={styles.container}>
-      <StepTitle title="C2D Environment Configuration" />
+      <StepTitle title={i18n._('C2D Environment Configuration')} />
 
       {showEnvironmentSummary && (
         <details className={styles.environmentSummaryCard}>
           <summary className={styles.environmentSummaryToggle}>
             <div className={styles.environmentSummaryHeading}>
               <span className={styles.environmentSummaryEyebrow}>
-                Selected environment
+                <Trans id="Selected environment" />{' '}
               </span>
               <div className={styles.environmentSummaryContent}>
                 <h3 className={styles.environmentSummaryTitle} title={env.id}>
@@ -1052,7 +1102,7 @@ export default function ConfigureEnvironment({
               </div>
             </div>
             <span className={styles.environmentSummaryAction}>
-              More details
+              <Trans id="More details" />{' '}
             </span>
           </summary>
 
@@ -1060,15 +1110,15 @@ export default function ConfigureEnvironment({
             <div className={styles.environmentDetailsTable}>
               <div className={styles.environmentDetailsTableHeader}>
                 <span className={styles.environmentDetailsTableLabel}>
-                  Resource
+                  <Trans id="Resource" />{' '}
                 </span>
                 {freeAvailable && (
                   <span className={styles.environmentDetailsTableLabel}>
-                    Free
+                    <Trans id="Free" />{' '}
                   </span>
                 )}
                 <span className={styles.environmentDetailsTableLabel}>
-                  Paid
+                  <Trans id="Paid" />{' '}
                 </span>
               </div>
 
@@ -1096,14 +1146,14 @@ export default function ConfigureEnvironment({
       )}
 
       <Field
-        label="Price Token"
+        label={i18n._('Price Token')}
         component={Input}
         name="baseToken"
         type="select"
         options={baseTokenOptions}
         value={
           isTokenListLoading
-            ? 'Loading tokens...'
+            ? i18n._('Loading tokens...')
             : symbolMap[values.baseToken] || values.baseToken || ''
         }
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1149,13 +1199,13 @@ export default function ConfigureEnvironment({
             id="free-resources"
             checked={mode === 'free'}
             onChange={() => setMode('free')}
-            label="Free compute resources"
+            label={i18n._('Free compute resources')}
           />
 
           <div className={styles.resourceContent}>
             <ResourceRow
               resourceId="cpu"
-              label="CPU"
+              label={i18n._('CPU')}
               unit="Units"
               isFree={true}
               isActive={mode === 'free'}
@@ -1169,7 +1219,7 @@ export default function ConfigureEnvironment({
             {gpuAvailable && (
               <ResourceRow
                 resourceId="gpu"
-                label="GPU"
+                label={i18n._('GPU')}
                 unit="Units"
                 isFree={true}
                 isActive={mode === 'free'}
@@ -1183,7 +1233,7 @@ export default function ConfigureEnvironment({
             )}
             <ResourceRow
               resourceId="ram"
-              label="RAM"
+              label={i18n._('RAM')}
               unit="GB"
               isFree={true}
               isActive={mode === 'free'}
@@ -1195,7 +1245,7 @@ export default function ConfigureEnvironment({
             />
             <ResourceRow
               resourceId="disk"
-              label="DISK"
+              label={i18n._('DISK')}
               unit="GB"
               isFree={true}
               isActive={mode === 'free'}
@@ -1207,7 +1257,7 @@ export default function ConfigureEnvironment({
             />
             <ResourceRow
               resourceId="jobDuration"
-              label="JOB DURATION"
+              label={i18n._('JOB DURATION')}
               unit="Minutes"
               isFree={true}
               isActive={mode === 'free'}
@@ -1226,13 +1276,13 @@ export default function ConfigureEnvironment({
           id="paid-resources"
           checked={mode === 'paid'}
           onChange={() => setMode('paid')}
-          label="Paid compute resources"
+          label={i18n._('Paid compute resources')}
         />
 
         <div className={styles.resourceContent}>
           <ResourceRow
             resourceId="cpu"
-            label="CPU"
+            label={i18n._('CPU')}
             unit="Units"
             isFree={false}
             isActive={mode === 'paid'}
@@ -1246,7 +1296,7 @@ export default function ConfigureEnvironment({
           {gpuAvailable && (
             <ResourceRow
               resourceId="gpu"
-              label="GPU"
+              label={i18n._('GPU')}
               unit="Units"
               isFree={false}
               isActive={mode === 'paid'}
@@ -1260,7 +1310,7 @@ export default function ConfigureEnvironment({
           )}
           <ResourceRow
             resourceId="ram"
-            label="RAM"
+            label={i18n._('RAM')}
             unit="GB"
             isFree={false}
             isActive={mode === 'paid'}
@@ -1272,7 +1322,7 @@ export default function ConfigureEnvironment({
           />
           <ResourceRow
             resourceId="disk"
-            label="DISK"
+            label={i18n._('DISK')}
             unit="GB"
             isFree={false}
             isActive={mode === 'paid'}
@@ -1284,7 +1334,7 @@ export default function ConfigureEnvironment({
           />
           <ResourceRow
             resourceId="jobDuration"
-            label="JOB DURATION"
+            label={i18n._('JOB DURATION')}
             unit="Minutes"
             isFree={false}
             isActive={mode === 'paid'}
@@ -1298,7 +1348,9 @@ export default function ConfigureEnvironment({
       </div>
 
       <div className={styles.priceSection}>
-        <h3 className={styles.priceTitle}>C2D Environment Price</h3>
+        <h3 className={styles.priceTitle}>
+          <Trans id="C2D Environment Price" />
+        </h3>
         <div className={styles.priceDisplay}>
           <input
             type="text"
@@ -1310,8 +1362,7 @@ export default function ConfigureEnvironment({
           {mode === 'paid' && (
             <div className={styles.priceInfo}>
               <span>
-                Calculated based on the unit price for each resource and the Job
-                duration selected
+                <Trans id="Calculated based on the unit price for each resource and the Job duration selected" />{' '}
               </span>
             </div>
           )}
@@ -1322,11 +1373,10 @@ export default function ConfigureEnvironment({
         <div className={styles.messagesContainer}>
           {queueWaitingEnabled && (
             <div className={styles.queueNotice}>
-              The C2D job is placed in a waiting queue until adequate processing
-              resources are allocated, with a maximum wait duration of{' '}
-              {queueWaitTimeLabel}. Ensure that, upon expiration of this
-              interval, your access entitlements for all job-related assets
-              remain valid.
+              <Trans
+                id="The C2D job is placed in a waiting queue until adequate processing resources are allocated, with a maximum wait duration of {waitTime}. Ensure that, upon expiration of this interval, your access entitlements for all job-related assets remain valid."
+                values={{ waitTime: queueWaitTimeLabel }}
+              />
             </div>
           )}
 
@@ -1334,9 +1384,10 @@ export default function ConfigureEnvironment({
             <div className={styles.gpuWarning}>
               <div className={styles.gpuWarningIcon}>⚠️</div>
               <div className={styles.gpuWarningContent}>
-                <strong>Please Attention!</strong> You selected an environment
-                with allocated GPU units. Ensure the GPU type is compatible with
-                the GPU libraries used in the algorithm`s Docker image.
+                <strong>
+                  <Trans id="Please Attention!" />
+                </strong>{' '}
+                <Trans id="You selected an environment with allocated GPU units. Ensure the GPU type is compatible with the GPU libraries used in the algorithm`s Docker image." />{' '}
               </div>
             </div>
           )}
@@ -1358,16 +1409,20 @@ export default function ConfigureEnvironment({
                       className={`${styles.queueNotice} ${styles.insufficientEscrow}`}
                     >
                       <p>
-                        Insufficient escrow balance. An additional{' '}
-                        <strong>
-                          {deltaDisplay} {displaySymbol}
-                        </strong>{' '}
-                        will be added to your escrow account to cover this job.
+                        <Trans
+                          id="Insufficient escrow balance. An additional <0>{amount} {symbol}</0> will be added to your escrow account to cover this job."
+                          values={{
+                            amount: deltaDisplay,
+                            symbol: displaySymbol
+                          }}
+                          components={{ 0: <strong /> }}
+                        />{' '}
                       </p>
                       <p className={styles.escrowBreakdown}>
-                        Job cost: {jobPrice.toFixed(3)} {displaySymbol} |
-                        Available escrow: {escrowAvailableFundsDisplay}{' '}
-                        {displaySymbol} | Additional needed: {deltaDisplay}{' '}
+                        <Trans id="Job cost:" /> {jobPrice.toFixed(3)}{' '}
+                        {displaySymbol} <Trans id="| Available escrow:" />{' '}
+                        {escrowAvailableFundsDisplay} {displaySymbol}{' '}
+                        <Trans id="| Additional needed:" /> {deltaDisplay}{' '}
                         {displaySymbol}
                       </p>
                     </div>
@@ -1376,11 +1431,13 @@ export default function ConfigureEnvironment({
 
                 return (
                   <div className={styles.sufficientEscrow}>
-                    <p>Sufficient escrow balance available for this job.</p>
+                    <p>
+                      <Trans id="Sufficient escrow balance available for this job." />
+                    </p>
                     <p className={styles.escrowBreakdown}>
-                      Job cost: {jobPrice.toFixed(3)} {displaySymbol} |
-                      Available escrow: {escrowAvailableFundsDisplay}{' '}
-                      {displaySymbol}
+                      <Trans id="Job cost:" /> {jobPrice.toFixed(3)}{' '}
+                      {displaySymbol} <Trans id="| Available escrow:" />{' '}
+                      {escrowAvailableFundsDisplay} {displaySymbol}
                     </p>
                   </div>
                 )

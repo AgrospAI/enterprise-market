@@ -1,6 +1,7 @@
+import { i18n } from '../../../i18n/index'
 import { useField, useFormikContext } from 'formik'
 import { createElement, useEffect, useMemo, useState } from 'react'
-import content from '../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../i18n/content'
 import { getFieldContent } from '@utils/form'
 import { deleteIpfsFile, uploadFileItemToIPFS } from '@utils/ipfs'
 import { FileItem } from '@utils/fileItem'
@@ -134,11 +135,11 @@ export default function useMetadata() {
       })),
       {
         name: 'custom',
-        title: 'Custom',
+        title: i18n._('Custom'),
         checked: values.metadata.dockerImage === 'custom'
       }
     ],
-    [values.metadata.dockerImage]
+    [values.metadata.dockerImage, i18n.locale]
   )
 
   useEffect(() => {
@@ -206,7 +207,7 @@ export default function useMetadata() {
 
       setFieldValue('metadata.uploadedLicense', license)
     } catch (error) {
-      toast.error('Could not upload file')
+      toast.error(i18n._('Could not upload file'))
       LoggerInstance.error(error)
       setFieldValue('metadata.uploadedLicense', undefined)
       onError()
@@ -236,7 +237,7 @@ export default function useMetadata() {
       }
       await setAdditionalFiles(additionalFiles)
     } catch (error) {
-      toast.error('Could not upload file')
+      toast.error(i18n._('Could not upload file'))
       LoggerInstance.error(error)
 
       const additionalFiles = getAdditionalFilesSnapshot()

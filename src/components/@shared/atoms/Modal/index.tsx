@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import styles from './index.module.css'
@@ -29,6 +30,8 @@ export default function Modal({
   overlayClassName,
   ...props
 }: ModalProps): ReactElement {
+  useLingui()
+
   return (
     <ReactModal
       contentLabel={title}
@@ -41,7 +44,7 @@ export default function Modal({
         onClick={onToggleModal}
         data-testid="closeModal"
       >
-        &times;
+        <Trans id="&times;" />{' '}
       </button>
 
       <header className={styles.header}>

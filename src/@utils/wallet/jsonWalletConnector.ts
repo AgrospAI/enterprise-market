@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { createConnector } from 'wagmi'
 import {
   type Address,
@@ -140,8 +141,9 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
           (config as any).transports?.[activeChain.id]
         if (!configuredTransport) {
           throw new Error(
-            `No transport configured for chain ${activeChain.id}. ` +
-              `Ensure NEXT_PUBLIC_NODE_URI_MAP is set.`
+            i18n._('No transport configured for chain {value0}. ', {
+              value0: activeChain.id
+            }) + i18n._('Ensure NEXT_PUBLIC_NODE_URI_MAP is set.')
           )
         }
 
@@ -263,7 +265,12 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
             const [{ chainId: hexChainId }] = params as [{ chainId: string }]
             const newChainId = Number(hexChainId)
             const newChain = config.chains.find((c) => c.id === newChainId)
-            if (!newChain) throw new Error(`Chain ${newChainId} not supported.`)
+            if (!newChain)
+              throw new Error(
+                i18n._('Chain {newChainId} not supported.', {
+                  newChainId
+                })
+              )
             currentChainId = newChainId
             persistState()
             config.emitter.emit('change', { chainId: newChainId })
@@ -278,8 +285,9 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
             const t = (config as any).transports?.[activeChain.id]
             if (!t) {
               throw new Error(
-                `No transport configured for chain ${activeChain.id}. ` +
-                  `Ensure NEXT_PUBLIC_NODE_URI_MAP is set.`
+                i18n._('No transport configured for chain {value0}. ', {
+                  value0: activeChain.id
+                }) + i18n._('Ensure NEXT_PUBLIC_NODE_URI_MAP is set.')
               )
             }
             const transport = t({
@@ -335,7 +343,7 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
         return JSON_WALLET_CONNECTOR_ID
       },
       get name() {
-        return 'JSON Wallet'
+        return i18n._('JSON Wallet')
       },
       get icon() {
         return '/images/json-wallet.svg'
@@ -456,7 +464,8 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
 
       async switchChain({ chainId }) {
         const chain = config.chains.find((c) => c.id === chainId)
-        if (!chain) throw new Error(`Chain ${chainId} not supported.`)
+        if (!chain)
+          throw new Error(i18n._('Chain {chainId} not supported.', { chainId }))
 
         currentChainId = chainId
         persistState()

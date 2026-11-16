@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { FormEvent, ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
@@ -5,11 +7,13 @@ import { getErrorMessage } from '@utils/onboarding'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
 import { useAccount, useChainId, usePublicClient } from 'wagmi'
-import content from '../../../../../content/onboarding/steps/connectAccount.json'
+import { contentOnboardingStepsConnectAccount as content } from '../../../../i18n/content'
 import { useModal } from 'connectkit'
 import { getRuntimeConfig } from '@utils/runtimeConfig'
 
 export default function ConnectAccount(): ReactElement {
+  useLingui()
+
   const {
     title,
     subtitle,
@@ -28,8 +32,12 @@ export default function ConnectAccount(): ReactElement {
   const isSSIEnabled = getRuntimeConfig().NEXT_PUBLIC_SSI_ENABLED === 'true'
 
   const computedSubtitle = isSSIEnabled
-    ? 'Now that you created an account with MetaMask, you are ready to connect to the Portal with both web3 and SSI wallets.'
-    : 'Now that you created an account with MetaMask, you are ready to connect to the portal.'
+    ? i18n._(
+        'Now that you created an account with MetaMask, you are ready to connect to the Portal with both web3 and SSI wallets.'
+      )
+    : i18n._(
+        'Now that you created an account with MetaMask, you are ready to connect to the portal.'
+      )
 
   const shortenAddress = (address: string) =>
     `${address.slice(0, 6)}...${address.slice(-4)}`
@@ -50,11 +58,13 @@ export default function ConnectAccount(): ReactElement {
       setOpen(true)
     } catch (error) {
       toast.error(
-        getErrorMessage({
-          accountId,
-          web3Provider: !!web3Provider,
-          networkId: chainId
-        })
+        i18n._(
+          getErrorMessage({
+            accountId,
+            web3Provider: !!web3Provider,
+            networkId: chainId
+          })
+        )
       )
       console.error(error.message)
     } finally {
@@ -89,7 +99,10 @@ export default function ConnectAccount(): ReactElement {
               fontWeight: 500
             }}
           >
-            <strong>Connected wallet:</strong> {shortenAddress(accountId)}
+            <strong>
+              <Trans id="Connected wallet:" />
+            </strong>{' '}
+            {shortenAddress(accountId)}
           </div>
         )}
       </StepBody>

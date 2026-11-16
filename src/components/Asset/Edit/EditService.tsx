@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import {
@@ -11,7 +14,7 @@ import { getServiceInitialValues } from './_constants'
 import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
-import content from '../../../../content/pages/editService.json'
+import { contentPagesEditService as content } from '../../../i18n/content'
 import { isAddress, Signer, toBeHex } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
@@ -56,6 +59,8 @@ export default function EditService({
   service: Service
   accessDetails: AccessDetails | undefined
 }): ReactElement {
+  useLingui()
+
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
@@ -76,7 +81,9 @@ export default function EditService({
     `${asset.id}-${service.id}`,
     service.serviceEndpoint,
     service.credentials,
-    'The OPA server URL has changed. Save this service to update it in the asset.'
+    i18n._(
+      'The OPA server URL has changed. Save this service to update it in the asset.'
+    )
   )
 
   useEffect(() => {
@@ -338,11 +345,11 @@ export default function EditService({
         isSubmitting || hasFeedback ? (
           <EditFeedback
             loading="Updating service..."
-            error={error}
+            error={translate(error)}
             success={success}
             setError={setError}
             successAction={{
-              name: 'Back to Asset',
+              name: i18n._('Back to Asset'),
               onClick: async () => {
                 await fetchAsset()
               },

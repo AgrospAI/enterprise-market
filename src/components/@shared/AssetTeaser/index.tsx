@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import Link from 'next/link'
 import removeMarkdown from 'remove-markdown'
@@ -23,11 +25,13 @@ export default function AssetTeaser({
   noPublisher,
   noDescription
 }: AssetTeaserProps): ReactElement {
+  useLingui()
+
   const { name, type, description, additionalInformation } =
     asset.credentialSubject.metadata
   const spatial = additionalInformation?.['dct:spatial']
   const hasGeoCoverage = Boolean(spatial?.['dcat:bbox']?.['@value'])
-  const geoLabel = spatial?.['skos:prefLabel'] || 'Geographic coverage'
+  const geoLabel = spatial?.['skos:prefLabel'] || i18n._('Geographic coverage')
   const isSaas = isSaasAsset(asset)
   const services = asset.credentialSubject?.services
   const hasServiceTypes = services?.some((service) =>
@@ -89,7 +93,8 @@ export default function AssetTeaser({
                   'N/A'
                 ) : (
                   <>
-                    <strong>{orders}</strong> {orders === 1 ? 'sale' : 'sales'}
+                    <strong>{orders}</strong>{' '}
+                    {orders === 1 ? i18n._('sale') : i18n._('sales')}
                   </>
                 )}
               </span>
@@ -101,7 +106,7 @@ export default function AssetTeaser({
                 ) : (
                   <>
                     <strong>{asset.views}</strong>{' '}
-                    {asset.views === 1 ? 'view' : 'views'}
+                    {asset.views === 1 ? i18n._('view') : i18n._('views')}
                   </>
                 )}
               </span>

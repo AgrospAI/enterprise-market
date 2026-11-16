@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { FormEvent, ReactElement } from 'react'
 import Modal from '@shared/atoms/Modal'
 import Button from '@shared/atoms/Button'
@@ -20,6 +22,8 @@ export default function DfnsRegistrationModal({
   onSubmit,
   onClose
 }: DfnsRegistrationModalProps): ReactElement {
+  useLingui()
+
   if (!isOpen) return null
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -30,17 +34,17 @@ export default function DfnsRegistrationModal({
 
   return (
     <Modal
-      title="Enter registration code"
+      title={i18n._('Enter registration code')}
       isOpen
       onToggleModal={onClose}
       shouldCloseOnOverlayClick
     >
       <form className={styles.form} onSubmit={handleSubmit}>
         <p className={styles.description}>
-          Use the Dfns registration code for this account.
+          <Trans id="Use the Dfns registration code for this account." />{' '}
         </p>
         <label className={styles.label} htmlFor="dfns-registration-code">
-          Registration code
+          <Trans id="Registration code" />{' '}
         </label>
         <input
           id="dfns-registration-code"
@@ -52,14 +56,14 @@ export default function DfnsRegistrationModal({
         />
         <div className={styles.actions}>
           <Button type="button" style="text" onClick={onClose}>
-            Cancel
+            <Trans id="Cancel" />{' '}
           </Button>
           <Button
             type="submit"
             style="primary"
             disabled={!registrationCode.trim() || isConnecting}
           >
-            {isConnecting ? 'Connecting…' : 'Continue'}
+            {isConnecting ? i18n._('Connecting…') : i18n._('Continue')}
           </Button>
         </div>
       </form>

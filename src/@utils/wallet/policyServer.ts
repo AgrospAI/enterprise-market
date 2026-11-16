@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 /* eslint-disable camelcase */
 import { LoggerInstance, ProviderInstance } from '@oceanprotocol/lib'
 import appConfig, { customProviderUrl } from 'app.config.cjs'
@@ -175,7 +176,7 @@ export async function checkVerifierSessionId(
 
     if (typeof response.data === 'string' && response.data.length === 0) {
       // eslint-disable-next-line no-throw-literal
-      throw { success: false, message: 'Invalid session id' }
+      throw { success: false, message: i18n._('Invalid session id') }
     }
 
     return response.data
@@ -262,7 +263,7 @@ export function extractFailedPolicyDetails(
     const credential =
       typeof entry?.credential === 'string' && entry.credential.length > 0
         ? entry.credential
-        : 'Unknown credential'
+        : i18n._('Unknown credential')
 
     if (!Array.isArray(entry?.policyResults)) return accumulator
 
@@ -273,7 +274,7 @@ export function extractFailedPolicyDetails(
           typeof policyResult?.policy === 'string' &&
           policyResult.policy.length > 0
             ? policyResult.policy
-            : 'Unknown policy'
+            : i18n._('Unknown policy')
         const policyArgs = isPolicyServerPolicyArgs(policyResult?.args)
           ? policyResult.args
           : undefined
@@ -335,7 +336,7 @@ export async function getPd(
       // eslint-disable-next-line no-throw-literal
       throw {
         success: false,
-        message: 'Could not read presentation definition'
+        message: i18n._('Could not read presentation definition')
       }
     }
 

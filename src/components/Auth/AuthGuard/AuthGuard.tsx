@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useEffect, ReactNode, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth, verifyAuthSessionDetailed } from '@hooks/useAuth'
@@ -8,6 +9,8 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
+  useLingui()
+
   const { isAuthenticated, isLoading, authEnabled, clearLocalSession } =
     useAuth()
   const router = useRouter()

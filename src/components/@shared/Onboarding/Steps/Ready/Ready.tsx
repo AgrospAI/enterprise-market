@@ -1,7 +1,9 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import styles from './index.module.css'
-import content from '../../../../../../content/onboarding/steps/ready.json'
+import { contentOnboardingStepsReady as content } from '../../../../../i18n/content'
 import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Button from '@shared/atoms/Button'
 
@@ -12,6 +14,8 @@ interface ReadyStep {
 }
 
 export default function Ready(): ReactElement {
+  useLingui()
+
   const { title, body, image }: ReadyStep = content
   const router = useRouter()
 
@@ -26,17 +30,17 @@ export default function Ready(): ReactElement {
   return (
     <div className={styles.container}>
       <SuccessConfetti success={body} className={styles.body} />
-      <img src={image} alt="Ready" className={styles.image} />
+      <img src={image} alt={i18n._('Ready')} className={styles.image} />
       <div className={styles.footer}>
         <h3 className={styles.title}>{title}</h3>
 
         <div className={styles.buttonsWrapper}>
           <Button onClick={handlePublish} style="primary" size="small">
-            Publish New Asset
+            <Trans id="Publish New Asset" />{' '}
           </Button>
 
           <Button onClick={handleCatalogue} style="primary" size="small">
-            View Catalogue
+            <Trans id="View Catalogue" />{' '}
           </Button>
         </div>
       </div>

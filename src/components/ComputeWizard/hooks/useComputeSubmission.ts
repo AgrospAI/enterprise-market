@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useCallback, useState } from 'react'
 import {
   ComputeAlgorithm,
@@ -191,7 +192,11 @@ export function useComputeSubmission() {
             algorithmAsset
           )
           if (!allowed)
-            throw new Error(`Dataset ${ds.asset.id} is not orderable.`)
+            throw new Error(
+              i18n._('Dataset {value0} is not orderable.', {
+                value0: ds.asset.id
+              })
+            )
         }
 
         setComputeStatusText(
@@ -253,7 +258,11 @@ export function useComputeSubmission() {
           )
 
           if (!datasetOrderTx)
-            throw new Error(`Failed to order dataset ${ds.asset.id}.`)
+            throw new Error(
+              i18n._('Failed to order dataset {value0}.', {
+                value0: ds.asset.id
+              })
+            )
           setComputeProgressStep(datasetProgressPhase, 'completed')
 
           const paramsPayload = Array.isArray(
@@ -410,7 +419,7 @@ export function useComputeSubmission() {
         }
 
         const message =
-          (error as Error)?.message || 'Failed to start compute job.'
+          (error as Error)?.message || i18n._('Failed to start compute job.')
         setSubmitError(message)
         setRetry(true)
         throw error
@@ -418,7 +427,7 @@ export function useComputeSubmission() {
         setIsOrdering(false)
       }
     },
-    [setActiveComputeProgressError, setComputeProgressStep]
+    [setActiveComputeProgressError, setComputeProgressStep, i18n.locale]
   )
 
   return {

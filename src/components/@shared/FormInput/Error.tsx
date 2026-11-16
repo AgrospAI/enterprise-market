@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { i18n } from '../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { FieldMetaProps } from 'formik'
 import { ReactElement } from 'react'
 import stylesInput from '@shared/FormInput/index.module.css'
@@ -7,6 +10,8 @@ export default function Error({
 }: {
   meta: FieldMetaProps<any>
 }): ReactElement {
+  useLingui()
+
   if (!meta.error) return null
 
   let errorMessage: string
@@ -24,5 +29,5 @@ export default function Error({
     errorMessage = String(meta.error)
   }
 
-  return <div className={stylesInput.error}>{errorMessage}</div>
+  return <div className={stylesInput.error}>{translate(errorMessage)}</div>
 }

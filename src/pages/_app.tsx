@@ -1,4 +1,5 @@
 'use client'
+import { LocaleProvider } from '../i18n/Provider'
 import type { AppProps } from 'next/app'
 import Script from 'next/script'
 import { ReactElement, useEffect, useState } from 'react'
@@ -41,39 +42,41 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Script src="/runtime-config.js" strategy="beforeInteractive" />
-      <WagmiProvider config={wagmiConfig}>
-        <ConnectKitProvider
-          options={{ initialChainId: 0 }}
-          customTheme={connectKitTheme}
-        >
-          <MarketMetadataProvider>
-            <UrqlProvider>
-              <UserPreferencesProvider>
-                <ConsentProvider>
-                  <SearchBarStatusProvider>
-                    <FilterProvider>
-                      <SsiWalletProvider>
-                        <AuthProvider>
-                          <PontusXIdentityProvider>
-                            <App>
-                              <AuthGuard>
-                                <Component {...pageProps} />
-                              </AuthGuard>
-                            </App>
-                          </PontusXIdentityProvider>
-                        </AuthProvider>
-                      </SsiWalletProvider>
-                    </FilterProvider>
-                  </SearchBarStatusProvider>
-                </ConsentProvider>
-              </UserPreferencesProvider>
-            </UrqlProvider>
-          </MarketMetadataProvider>
-        </ConnectKitProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+    <LocaleProvider>
+      <QueryClientProvider client={queryClient}>
+        <Script src="/runtime-config.js" strategy="beforeInteractive" />
+        <WagmiProvider config={wagmiConfig}>
+          <ConnectKitProvider
+            options={{ initialChainId: 0 }}
+            customTheme={connectKitTheme}
+          >
+            <MarketMetadataProvider>
+              <UrqlProvider>
+                <UserPreferencesProvider>
+                  <ConsentProvider>
+                    <SearchBarStatusProvider>
+                      <FilterProvider>
+                        <SsiWalletProvider>
+                          <AuthProvider>
+                            <PontusXIdentityProvider>
+                              <App>
+                                <AuthGuard>
+                                  <Component {...pageProps} />
+                                </AuthGuard>
+                              </App>
+                            </PontusXIdentityProvider>
+                          </AuthProvider>
+                        </SsiWalletProvider>
+                      </FilterProvider>
+                    </SearchBarStatusProvider>
+                  </ConsentProvider>
+                </UserPreferencesProvider>
+              </UrqlProvider>
+            </MarketMetadataProvider>
+          </ConnectKitProvider>
+        </WagmiProvider>
+      </QueryClientProvider>
+    </LocaleProvider>
   )
 }
 

@@ -1,0 +1,23 @@
+.container {
+  position: relative;
+  flex-shrink: 0;
+  width: max-content;
+}
+
+.container .select {
+  width: auto;
+  background-color: transparent;
+  padding-left: 2.25rem;
+  cursor: pointer;
+}
+
+.globe {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--foreground);
+  transform: translateY(-50%);
+  pointer-events: none;
+}

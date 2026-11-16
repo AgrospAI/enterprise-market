@@ -1,3 +1,5 @@
+import { i18n } from '../../../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 import UrlInput from '../URLInput'
@@ -11,6 +13,8 @@ import {
 } from '@utils/docker'
 
 export default function ContainerInput(props: InputProps): ReactElement {
+  useLingui()
+
   const [field] = useField(props.name)
   const [checksumField, , helpersChecksum] = useField(
     'metadata.dockerImageCustomChecksum'
@@ -71,7 +75,7 @@ export default function ContainerInput(props: InputProps): ReactElement {
         />
       ) : (
         <UrlInput
-          submitText="Use"
+          submitText={i18n._('Use')}
           {...props}
           name={field.name}
           checkUrl={false}

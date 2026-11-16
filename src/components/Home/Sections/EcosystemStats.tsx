@@ -1,11 +1,14 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
-import content from '../../../../content/pages/home/content.json'
+import { contentPagesHomeContent as content } from '../../../i18n/content'
 import shared from './shared.module.css'
 import styles from './EcosystemStats.module.css'
 import { useReveal } from './useReveal'
 
 // rendered twice back to back so the banner can loop seamlessly
 function LogoList({ hidden }: { hidden?: boolean }): ReactElement {
+  useLingui()
+
   return (
     <ul className={styles.logos} aria-hidden={hidden || undefined}>
       {content.ecosystem.partners.map((partner) => (
@@ -35,6 +38,8 @@ function LogoList({ hidden }: { hidden?: boolean }): ReactElement {
 
 // social proof at the foot of the navy hero: a running partner logo banner
 export default function EcosystemStats(): ReactElement {
+  useLingui()
+
   const { title, titleMuted } = content.ecosystem
   const [ref, reveal] = useReveal<HTMLElement>(0.1)
 

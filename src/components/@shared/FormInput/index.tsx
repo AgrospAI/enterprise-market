@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import {
   ChangeEvent,
   CSSProperties,
@@ -145,6 +147,8 @@ function checkError(form: any, field: FieldInputProps<any>) {
 }
 
 export default function Input(props: Partial<InputProps>): ReactElement {
+  useLingui()
+
   const {
     label,
     help,
@@ -190,7 +194,7 @@ export default function Input(props: Partial<InputProps>): ReactElement {
         <Label htmlFor={props.name}>
           {label}
           {props.required && (
-            <span title="Required" className={styles.required}>
+            <span title={i18n._('Required')} className={styles.required}>
               *
             </span>
           )}

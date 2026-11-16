@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   ArweaveFileObject,
   ComputeAlgorithm,
@@ -197,7 +198,7 @@ export async function getEncryptedFiles(
       chainId
     })
     LoggerInstance.error('[Provider Encrypt] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
     throw error
   }
 }
@@ -217,7 +218,7 @@ export async function getFileDidInfo(
     )
     return response
   } catch (error) {
-    const message = 'Failed to fetch file info from provider'
+    const message = i18n._('Failed to fetch file info from provider')
     LoggerInstance.warn('[Provider File Info] Request failed', {
       did,
       serviceId,
@@ -261,7 +262,7 @@ export async function getFileInfo(
       } catch (error: any) {
         const message = getErrorMessage(error.message)
         LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
+        toast.error(i18n._(message))
       }
       break
     }
@@ -279,7 +280,7 @@ export async function getFileInfo(
       } catch (error: any) {
         const message = getErrorMessage(error.message)
         LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
+        toast.error(i18n._(message))
       }
       break
     }
@@ -296,7 +297,7 @@ export async function getFileInfo(
       } catch (error: any) {
         const message = getErrorMessage(error.message)
         LoggerInstance.error('[S3 File Validation] Error:', message)
-        toast.error(message)
+        toast.error(i18n._(message))
         throw error
       }
       break
@@ -315,7 +316,7 @@ export async function getFileInfo(
       } catch (error: any) {
         const message = getErrorMessage(error.message)
         LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
+        toast.error(i18n._(message))
       }
       break
     }
@@ -335,7 +336,7 @@ export async function getFileInfo(
       } catch (error: any) {
         const message = getErrorMessage(error.message)
         LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
+        toast.error(i18n._(message))
       }
       break
     }
@@ -415,7 +416,7 @@ export async function downloadFile(
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Get download url] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
     return
   }
 
@@ -436,7 +437,7 @@ export async function downloadFile(
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Download File Error]', message)
-    toast.error(message)
+    toast.error(i18n._(message))
   }
 }
 
@@ -449,7 +450,7 @@ export async function checkValidProvider(
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Check] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
   }
 }
 

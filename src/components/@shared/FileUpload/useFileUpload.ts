@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { ChangeEvent, useRef, useState } from 'react'
 import crypto from 'crypto'
 import { FileItem } from '@utils/fileItem'
@@ -175,7 +176,9 @@ export default function useFileUpload({
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : 'Upload failed. Please check your connection and try again.'
+            : i18n._(
+                'Upload failed. Please check your connection and try again.'
+              )
         )
         setUploadFileName('')
         setUploadMeta({})

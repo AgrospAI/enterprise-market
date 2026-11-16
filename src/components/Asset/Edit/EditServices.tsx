@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import EditService from './EditService'
 import AddService from './AddService'
@@ -11,6 +13,8 @@ export default function EditServices({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const [selectedService, setSelectedService] = useState<number | undefined>() // -1 is the new service, undefined is none
 
   return (
@@ -34,8 +38,11 @@ export default function EditServices({
           <div className={styles.servicesHeader}>
             <h3>
               {selectedService === -1
-                ? 'Add a new service'
-                : `Edit service ${asset.credentialSubject?.services[selectedService].name}`}
+                ? i18n._('Add a new service')
+                : i18n._('Edit service {value0}', {
+                    value0:
+                      asset.credentialSubject?.services[selectedService].name
+                  })}
             </h3>
           </div>
 

@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { downloadRemoteSourceFromIpfs, IpfsRemoteDocument } from '@utils/ipfs'
 import appConfig from 'app.config.cjs'
 import { RemoteSource } from '../../../@types/ddo/RemoteSource'
@@ -16,6 +17,8 @@ export function IpfsRemoteSource({
   className = '',
   name
 }: IpfsRemoteSourceProps): ReactElement {
+  useLingui()
+
   const [document, setDocument] = useState<IpfsRemoteDocument>()
 
   useEffect(() => {
@@ -48,6 +51,8 @@ export function IpfsRemoteSource({
   ) : noDocumentLabel ? (
     <span className={className}>{noDocumentLabel}</span>
   ) : (
-    <span className={className}>No document</span>
+    <span className={className}>
+      <Trans id="No document" />
+    </span>
   )
 }

@@ -1,10 +1,11 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Button from '../../atoms/Button'
 import Input from '../../FormInput'
 import { getFieldContent } from '@utils/form'
 import styles from './Block.module.css'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 import DeleteButton from '../../DeleteButton/DeleteButton'
 import { credentialFieldOptions } from '../constant/credentialFields'
 
@@ -27,6 +28,8 @@ export default function CustomPolicyBlock({
   onValueChange,
   credentialType
 }: CustomPolicyBlockProps): ReactElement {
+  useLingui()
+
   function newRule() {
     if (!policy.rules) {
       policy.rules = []
@@ -60,7 +63,8 @@ export default function CustomPolicyBlock({
           <div key={ruleIndex} className={styles.ruleRow}>
             <div className={styles.fieldContainer}>
               <label htmlFor={`customPolicy.rules.${index}.leftValue`}>
-                Credential field<span className={styles.required}>*</span>
+                <Trans id="Credential field" />
+                <span className={styles.required}>*</span>
               </label>
               <Field
                 as="select"
@@ -68,7 +72,9 @@ export default function CustomPolicyBlock({
                 className={styles.ruleInput}
                 required
               >
-                <option value="">Select field</option>
+                <option value="">
+                  <Trans id="Select field" />
+                </option>
                 {options.map((field) => (
                   <option key={field} value={field}>
                     {field}
@@ -98,7 +104,7 @@ export default function CustomPolicyBlock({
           onClick={newRule}
           className={styles.newArgument}
         >
-          New rule
+          <Trans id="New rule" />{' '}
         </Button>
       </div>
     </div>

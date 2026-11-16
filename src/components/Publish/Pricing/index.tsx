@@ -1,15 +1,19 @@
+import { i18n } from '../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import Tabs from '@shared/atoms/Tabs'
 import { FormPublishData } from '../_types'
 import Fixed from './Fixed'
 import Free from './Free'
-import content from '../../../../content/price.json'
+import { contentPrice as content } from '../../../i18n/content'
 import styles from './index.module.css'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { useChainId } from 'wagmi'
 
 export default function PricingFields(): ReactElement {
+  useLingui()
+
   const { appConfig } = useMarketMetadata()
   const chainId = useChainId()
   const { approvedBaseTokens } = useMarketMetadata()
@@ -71,7 +75,8 @@ export default function PricingFields(): ReactElement {
   }, [
     appConfig.allowFixedPricing,
     appConfig.allowFreePricing,
-    approvedBaseTokens
+    approvedBaseTokens,
+    i18n.locale
   ])
 
   const [tabs, setTabs] = useState(updateTabs())

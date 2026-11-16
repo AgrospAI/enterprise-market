@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
@@ -1470,7 +1471,9 @@ export async function getDownloadAssets(
             dtSymbol:
               downloadedServices.length === 1
                 ? downloadedServices[0].datatokenSymbol
-                : `${downloadedServices.length} services`,
+                : i18n._('{value0} services', {
+                    value0: downloadedServices.length
+                  }),
             downloadedServices,
             timestamp: latestServiceTimestamp
           }

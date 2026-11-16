@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, ReactNode, useState } from 'react'
 import { useDisconnect, useAccount, useSwitchChain } from 'wagmi'
 import styles from './Details.module.css'
@@ -44,6 +46,8 @@ function MenuRow({
   disabled = false,
   className
 }: MenuRowProps): ReactElement {
+  useLingui()
+
   return (
     <button
       type="button"
@@ -79,6 +83,8 @@ function ActionButton({
   tone = 'default',
   isLoading = false
 }: ActionButtonProps): ReactElement {
+  useLingui()
+
   const isDanger = tone === 'danger'
   const hasDescription = Boolean(description)
 
@@ -113,6 +119,8 @@ export default function Details({
   onRequestClose,
   onRequestWalletChoice
 }: DetailsProps): ReactElement {
+  useLingui()
+
   const {
     connector: activeConnector,
     address: accountId,
@@ -149,10 +157,11 @@ export default function Details({
 
   const isWalletConnected = Boolean(accountId)
   const hasMarketplaceSession = authEnabled && isAuthenticated && Boolean(user)
-  const walletLabel = activeConnector?.name || 'Web3 wallet disconnected'
+  const walletLabel =
+    activeConnector?.name || i18n._('Web3 wallet disconnected')
   const walletDescription = isWalletConnected
     ? formatWalletAddress(accountId)
-    : 'Connect your web3 wallet to restore marketplace actions'
+    : i18n._('Connect your web3 wallet to restore marketplace actions')
   const showTokenList =
     isWalletConnected && activeConnector?.name === 'MetaMask'
   const showActionDescriptions = showOnboardingModule
@@ -206,13 +215,13 @@ export default function Details({
               <span className={styles.placeholderAvatar} aria-hidden="true" />
             )
           }
-          label="View Profile"
+          label={i18n._('View Profile')}
           onClick={() => handleNavigation('/profile')}
           disabled={!isWalletConnected}
         />
         <MenuRow
           icon={<Bookmark />}
-          label="View Bookmarks"
+          label={i18n._('View Bookmarks')}
           onClick={() => handleNavigation('/bookmarks')}
           disabled={!isWalletConnected}
           className={styles.bookmarksRow}
@@ -237,7 +246,9 @@ export default function Details({
 
         {isJsonWallet && isWalletConnected && chains.length > 0 && (
           <div className={styles.chainSwitcher}>
-            <span className={styles.chainSwitcherLabel}>Switch Network</span>
+            <span className={styles.chainSwitcherLabel}>
+              <Trans id="Switch Network" />
+            </span>
             <div className={styles.chainList}>
               {chains.map((chain) => (
                 <button
@@ -252,10 +263,16 @@ export default function Details({
                       { chainId: chain.id },
                       {
                         onSuccess: (data) =>
-                          toast.success(`Switched to ${data.name}`),
+                          toast.success(
+                            i18n._('Switched to {value0}', {
+                              value0: data.name
+                            })
+                          ),
                         onError: (err) =>
                           toast.error(
-                            `Failed to switch network: ${err.message}`
+                            i18n._('Failed to switch network: {value0}', {
+                              value0: err.message
+                            })
                           )
                       }
                     )
@@ -273,13 +290,19 @@ export default function Details({
         <ActionButton
           icon={<DisconnectWallet className={styles.actionGlyph} />}
           title={
-            isWalletConnected ? 'Disconnect web3 wallet' : 'Connect web3 wallet'
+            isWalletConnected
+              ? i18n._('Disconnect web3 wallet')
+              : i18n._('Connect web3 wallet')
           }
           description={
             showActionDescriptions
               ? isWalletConnected
-                ? 'Stop the active wallet connection for this browser session.'
-                : 'Reconnect your wallet to restore web3 actions in the marketplace.'
+                ? i18n._(
+                    'Stop the active wallet connection for this browser session.'
+                  )
+                : i18n._(
+                    'Reconnect your wallet to restore web3 actions in the marketplace.'
+                  )
               : undefined
           }
           onClick={
@@ -290,16 +313,16 @@ export default function Details({
         {isJsonWallet && isWalletConnected && (
           <ActionButton
             icon={<DisconnectWallet className={styles.actionGlyph} />}
-            title="Remove JSON wallet"
+            title={i18n._('Remove JSON wallet')}
             description={
               showActionDescriptions
-                ? 'Remove the stored wallet file and disconnect.'
+                ? i18n._('Remove the stored wallet file and disconnect.')
                 : undefined
             }
             onClick={() => {
               disconnect()
               clearEncryptedWalletJson()
-              toast.info('Wallet removed.')
+              toast.info(i18n._('Wallet removed.'))
             }}
             tone="danger"
           />
@@ -308,12 +331,14 @@ export default function Details({
         {hasMarketplaceSession && (
           <ActionButton
             icon={<LogoutIcon className={styles.actionGlyph} />}
-            title="Sign out of marketplace"
+            title={i18n._('Sign out of marketplace')}
             description={
               showActionDescriptions
                 ? isWalletConnected
-                  ? 'End your marketplace session and disconnect this linked wallet.'
-                  : 'End your marketplace session on this browser.'
+                  ? i18n._(
+                      'End your marketplace session and disconnect this linked wallet.'
+                    )
+                  : i18n._('End your marketplace session on this browser.')
                 : undefined
             }
             onClick={handleLogout}
@@ -327,7 +352,10 @@ export default function Details({
         <div className={styles.userInfo}>
           <div className={styles.userEmail}>{user.email}</div>
           <div className={styles.userProvider}>
-            Signed in with {user.authProvider}
+            <Trans
+              id="Signed in with {provider}"
+              values={{ provider: user.authProvider }}
+            />
           </div>
         </div>
       )}

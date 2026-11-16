@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { useField } from 'formik'
@@ -13,12 +14,18 @@ import styles from './index.module.css'
 // Leaflet touches `window` on import, so the map is client-only
 const MapWithDraw = dynamic(() => import('./MapWithDraw'), {
   ssr: false,
-  loading: () => <div className={styles.loading}>Loading map...</div>
+  loading: () => (
+    <div className={styles.loading}>
+      <Trans id="Loading map..." />
+    </div>
+  )
 })
 
 type BoundingBoxValue = FormGeoMetadata['boundingBox']
 
 export default function BoundingBoxMap({ ...props }: InputProps): ReactElement {
+  useLingui()
+
   const { name } = props
   const [field, , helpers] = useField<BoundingBoxValue>(name)
   const wkt = field.value?.wkt || ''
@@ -43,7 +50,9 @@ export default function BoundingBoxMap({ ...props }: InputProps): ReactElement {
       <MapWithDraw bounds={bounds} onChange={handleChange} />
       {wkt && (
         <div className={styles.wktDisplay}>
-          <span className={styles.wktLabel}>WKT</span>
+          <span className={styles.wktLabel}>
+            <Trans id="WKT" />
+          </span>
           <code className={styles.wktValue}>{wkt}</code>
         </div>
       )}

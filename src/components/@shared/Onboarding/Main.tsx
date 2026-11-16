@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useEffect } from 'react'
 import { animated, useSpringRef, useTransition } from '@react-spring/web'
 import styles from './Main.module.css'
@@ -22,6 +23,8 @@ export default function Main({
     component: ReactElement
   }[]
 }): ReactElement {
+  useLingui()
+
   const {
     fromTranslateLeft,
     fromTranslateRight,

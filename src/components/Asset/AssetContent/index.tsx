@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import {
   ReactElement,
   useState,
@@ -19,7 +21,7 @@ import DebugOutput from '@shared/DebugOutput'
 import MetaMain from './MetaMain'
 import styles from './index.module.css'
 import NetworkName from '@shared/NetworkName'
-import content from '../../../../content/purgatory.json'
+import { contentPurgatory as content } from '../../../i18n/content'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
@@ -41,6 +43,8 @@ export default function AssetContent({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
   const { address: accountId, isConnected } = useAccount()
@@ -113,13 +117,13 @@ export default function AssetContent({
     processedRerunJobRef.current = rerunJobQuery
 
     if (Number(asset?.indexedMetadata?.nft?.state) !== 0) {
-      toast.error('Algorithm is not available.')
+      toast.error(i18n._('Algorithm is not available.'))
       clearRerunQueryFromUrl()
       return
     }
 
     if (computeServiceIndex === undefined || computeServiceIndex < 0) {
-      toast.error('Algorithm is not available.')
+      toast.error(i18n._('Algorithm is not available.'))
       clearRerunQueryFromUrl()
       return
     }
@@ -226,7 +230,9 @@ export default function AssetContent({
             {isInPurgatory === true ? (
               <Alert
                 title={content.asset.title}
-                badge={`Reason: ${purgatoryData?.reason}`}
+                badge={i18n._('Reason: {value0}', {
+                  value0: purgatoryData?.reason
+                })}
                 text={content.asset.description}
                 state="error"
               />
@@ -254,7 +260,7 @@ export default function AssetContent({
                       className={styles.toggle}
                       onClick={() => setExpanded(!expanded)}
                     >
-                      {expanded ? 'Show less' : 'Show more'}
+                      {expanded ? i18n._('Show less') : i18n._('Show more')}
                     </span>
                   )}
                 </div>
@@ -287,7 +293,7 @@ export default function AssetContent({
                       className={styles.toggle}
                       onClick={() => setExpanded(!expanded)}
                     >
-                      {expanded ? 'Show less' : 'Show more'}
+                      {expanded ? i18n._('Show less') : i18n._('Show more')}
                     </span>
                   )}
                 </div>
@@ -296,7 +302,7 @@ export default function AssetContent({
             )}
             <MetaFull ddo={asset} />
             {debug === true ? (
-              <DebugOutput title="DDO" output={asset} />
+              <DebugOutput title={i18n._('DDO')} output={asset} />
             ) : (
               <>
                 {showDdo ? (
@@ -309,7 +315,7 @@ export default function AssetContent({
                         onClick={() => setShowDdo((isVisible) => !isVisible)}
                         aria-expanded={showDdo}
                       >
-                        DDO
+                        <Trans id="DDO" />{' '}
                       </button>
                     }
                   />
@@ -320,7 +326,7 @@ export default function AssetContent({
                     onClick={() => setShowDdo((isVisible) => !isVisible)}
                     aria-expanded={showDdo}
                   >
-                    DDO
+                    <Trans id="DDO" />{' '}
                   </button>
                 )}
               </>
@@ -349,7 +355,9 @@ export default function AssetContent({
             />
           )}
           {!asset.accessDetails ? (
-            <p>Loading access details...</p>
+            <p>
+              <Trans id="Loading access details..." />
+            </p>
           ) : (
             <>
               {asset?.indexedMetadata?.nft?.state === 0 ? (
@@ -357,7 +365,9 @@ export default function AssetContent({
                   <>
                     {availableServices.length > 0 ? (
                       <div className={styles.serviceDisplay}>
-                        <h4>Choose service to see Price:</h4>
+                        <h4>
+                          <Trans id="Choose service to see Price:" />
+                        </h4>
                         <div className={styles.servicesGrid}>
                           {availableServices.map((service, index) => {
                             const isPublished = Boolean(
@@ -376,8 +386,8 @@ export default function AssetContent({
                                 className={`
                 ${
                   isClickable
-                    ? 'cursor-pointer hover:opacity-100'
-                    : 'opacity-50 cursor-not-allowed'
+                    ? i18n._('cursor-pointer hover:opacity-100')
+                    : i18n._('opacity-50 cursor-not-allowed')
                 }
               `}
                               >
@@ -393,7 +403,9 @@ export default function AssetContent({
                         </div>
                       </div>
                     ) : (
-                      <h4>No services are currently available.</h4>
+                      <h4>
+                        <Trans id="No services are currently available." />
+                      </h4>
                     )}
                   </>
                 ) : (
@@ -411,8 +423,8 @@ export default function AssetContent({
               ) : (
                 <h4>
                   {asset?.indexedMetadata?.nft?.owner === accountId
-                    ? 'You are the asset owner.'
-                    : 'Services cannot be ordered.'}
+                    ? i18n._('You are the asset owner.')
+                    : i18n._('Services cannot be ordered.')}
                 </h4>
               )}
             </>
@@ -424,7 +436,7 @@ export default function AssetContent({
                 className={styles.editButton}
               >
                 <EditIcon className={styles.editIcon} />
-                Edit Asset
+                <Trans id="Edit Asset" />{' '}
               </Link>
 
               {/* <div

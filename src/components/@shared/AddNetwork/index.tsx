@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, ReactNode } from 'react'
 import { useSwitchChain } from 'wagmi'
 import Button from '@shared/atoms/Button'
@@ -16,6 +18,8 @@ export default function AddNetwork({
   networkName,
   logo
 }: AddNetworkProps): ReactElement {
+  useLingui()
+
   const { switchChain } = useSwitchChain()
 
   return (
@@ -30,7 +34,7 @@ export default function AddNetwork({
       </span>
 
       <span className={AddTokenStyles.text}>
-        {'Add '}
+        {i18n._('Add ')}
         <span className={AddTokenStyles.symbol}>{networkName}</span>
       </span>
     </Button>

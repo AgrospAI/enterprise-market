@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './Help.module.css'
 import Markdown from '@shared/Markdown'
@@ -9,6 +10,8 @@ const FormHelp = ({
   children: string
   className?: string
 }): ReactElement => {
+  useLingui()
+
   return (
     <Markdown className={`${styles.help} ${className || ''}`} text={children} />
   )

@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import { ErrorMessage, useField } from 'formik'
 import styles from './index.module.css'
@@ -27,6 +28,8 @@ export default function MethodInput({
   storageType: _storageType,
   ...props
 }: MethodInputProps): ReactElement {
+  useLingui()
+
   const [field, meta] = useField(name)
   const [methodSelected, setMethod] = useState(field?.value[0]?.method || 'get')
 
@@ -60,8 +63,12 @@ export default function MethodInput({
             }}
             disabled={disabled}
           >
-            <option value="get">GET</option>
-            <option value="post">POST</option>
+            <option value="get">
+              <Trans id="GET" />
+            </option>
+            <option value="post">
+              <Trans id="POST" />
+            </option>
           </select>
           <div
             className={`${styles.methodDisplay} ${

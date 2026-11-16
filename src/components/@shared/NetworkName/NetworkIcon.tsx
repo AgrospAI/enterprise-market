@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import EthIcon from '@images/eth.svg'
 import PolygonIcon from '@images/polygon.svg'
@@ -8,6 +9,8 @@ import OptimismIcon from '@images/optimism.svg'
 import styles from './index.module.css'
 
 export function NetworkIcon({ name }: { name: string }): ReactElement {
+  useLingui()
+
   const IconMapped = name.includes('ETH')
     ? EthIcon
     : name.includes('Polygon') || name.includes('Mumbai')

@@ -1,6 +1,7 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './Header.module.css'
-import content from '../../../../content/onboarding/index.json'
+import { contentOnboardingIndex as content } from '../../../i18n/content'
 import Container from '../atoms/Container'
 import Markdown from '../Markdown'
 // import LightBulb from '@images/lightBulb.svg'
@@ -12,6 +13,8 @@ interface OnboardingHeaderData {
   body: string
 }
 export default function Header(): ReactElement {
+  useLingui()
+
   const { title, subtitle, body }: OnboardingHeaderData = content
 
   return (

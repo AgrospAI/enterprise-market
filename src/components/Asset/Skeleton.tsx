@@ -1,13 +1,16 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Skeleton from '@shared/atoms/Skeleton'
 import AssetListSkeleton from '@shared/AssetList/Skeleton'
 import styles from './Skeleton.module.css'
 
 export default function AssetDetailsSkeleton(): ReactElement {
+  useLingui()
+
   return (
     <>
       <span className={styles.loadingStatus} role="status" aria-live="polite">
-        Loading asset details
+        <Trans id="Loading asset details" />{' '}
       </span>
       <article className={styles.grid} aria-hidden="true">
         <div>

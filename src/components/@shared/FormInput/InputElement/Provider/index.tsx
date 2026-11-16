@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 import UrlInput from '../URLInput'
@@ -45,6 +47,8 @@ function invalidateServiceFile(
 }
 
 export default function CustomProvider(props: InputProps): ReactElement {
+  useLingui()
+
   const chainId = useChainId()
   const newCancelToken = useCancelToken()
   const {
@@ -128,7 +132,9 @@ export default function CustomProvider(props: InputProps): ReactElement {
       if (!isValid) {
         setFieldError(
           `${field.name}.url`,
-          '✗ No valid provider detected. Check your network, your URL and try again.'
+          i18n._(
+            '✗ No valid provider detected. Check your network, your URL and try again.'
+          )
         )
         LoggerInstance.error(
           '[Custom Provider]:',
@@ -157,7 +163,9 @@ export default function CustomProvider(props: InputProps): ReactElement {
       if (!isCompatible) {
         setFieldError(
           `${field.name}.url`,
-          '✗ This provider is incompatible with the network your wallet is connected to.'
+          i18n._(
+            '✗ This provider is incompatible with the network your wallet is connected to.'
+          )
         )
         LoggerInstance.error(
           '[Custom Provider]:',
@@ -232,13 +240,15 @@ export default function CustomProvider(props: InputProps): ReactElement {
                 {providerUrl}
               </option>
             ))}
-            <option value={CUSTOM_PROVIDER_OPTION}>Custom provider URL</option>
+            <option value={CUSTOM_PROVIDER_OPTION}>
+              <Trans id="Custom provider URL" />
+            </option>
           </select>
         </div>
       )}
 
       <UrlInput
-        submitText="Validate"
+        submitText={i18n._('Validate')}
         {...props}
         name={`${field.name}.url`}
         isLoading={isLoading}
@@ -260,7 +270,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
                 setIsInfoModalOpen(true)
               }}
             >
-              Info
+              <Trans id="Info" />{' '}
             </Button>
           ) : null
         }
@@ -270,10 +280,12 @@ export default function CustomProvider(props: InputProps): ReactElement {
         <>
           <div className={styles.defaultContainer}>
             <CircleCheckIcon />
-            <div className={styles.confirmed}>File confirmed</div>
+            <div className={styles.confirmed}>
+              <Trans id="File confirmed" />
+            </div>
           </div>
           <ProviderOwnerInfoModal
-            title="Node Owner Info"
+            title={i18n._('Node Owner Info')}
             isOpen={isInfoModalOpen}
             providerUrl={field?.value?.url}
             onClose={() => setIsInfoModalOpen(false)}
@@ -288,7 +300,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
         >
           <div className={styles.defaultContainer}>
             <CircleErrorIcon />
-            Use Default Provider
+            <Trans id="Use Default Provider" />{' '}
           </div>
         </Button>
       ) : null}

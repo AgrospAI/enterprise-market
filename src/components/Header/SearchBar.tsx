@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   useState,
   useEffect,
@@ -31,6 +32,8 @@ export default function SearchBar({
   placeholder?: string
   initialValue?: string
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const [value, setValue] = useState(initialValue || '')
   const parsed = router.query

@@ -1,6 +1,8 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { CSSProperties, ReactElement, ReactNode } from 'react'
 import Link from 'next/link'
-import content from '../../../../content/pages/home/content.json'
+import { contentPagesHomeContent as content } from '../../../i18n/content'
 import shared from './shared.module.css'
 import styles from './Products.module.css'
 import SectionHeader from './SectionHeader'
@@ -15,6 +17,8 @@ function SmartLink({
   className: string
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   if (href.startsWith('/'))
     return (
       <Link href={href} className={className}>
@@ -68,6 +72,8 @@ const meshLinks = [
 ]
 
 function NetworkVisual(): ReactElement {
+  useLingui()
+
   return (
     <svg className={styles.network} viewBox="0 0 300 150">
       {meshLinks.map(([from, to], index) => (
@@ -92,11 +98,17 @@ function NetworkVisual(): ReactElement {
 }
 
 function ComputeVisual(): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.compute}>
       <div className={styles.computeNode}>
-        <span className={styles.computeIcon}>&lt;/&gt;</span>
-        <span className={styles.computeLabel}>Algorithm</span>
+        <span className={styles.computeIcon}>
+          <Trans id="&lt;/&gt;" />
+        </span>
+        <span className={styles.computeLabel}>
+          <Trans id="Algorithm" />
+        </span>
       </div>
       <div className={`${styles.wire} ${styles.wireIn}`} />
       <div className={`${styles.computeNode} ${styles.vault}`}>
@@ -106,7 +118,9 @@ function ComputeVisual(): ReactElement {
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
         </span>
-        <span className={styles.computeLabel}>Private data</span>
+        <span className={styles.computeLabel}>
+          <Trans id="Private data" />
+        </span>
       </div>
       <div className={`${styles.wire} ${styles.wireOut}`} />
       <div className={styles.computeNode}>
@@ -115,7 +129,9 @@ function ComputeVisual(): ReactElement {
             <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
           </svg>
         </span>
-        <span className={styles.computeLabel}>Results</span>
+        <span className={styles.computeLabel}>
+          <Trans id="Results" />
+        </span>
       </div>
     </div>
   )
@@ -124,6 +140,8 @@ function ComputeVisual(): ReactElement {
 const marketplaceRows = ['Dataset', 'AI model', 'Compute']
 
 function MarketplaceVisual(): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.market}>
       {marketplaceRows.map((row, index) => (
@@ -133,7 +151,7 @@ function MarketplaceVisual(): ReactElement {
           style={{ '--i': index } as CSSProperties}
         >
           <span className={styles.marketDot} />
-          <span className={styles.marketName}>{row}</span>
+          <span className={styles.marketName}>{i18n._(row)}</span>
           <span className={styles.marketBar} />
         </div>
       ))}
@@ -148,6 +166,8 @@ const visuals: Record<string, () => ReactElement> = {
 }
 
 export default function Products(): ReactElement {
+  useLingui()
+
   const { title, titleMuted, items, cta } = content.products
   const [ref, reveal] = useReveal<HTMLElement>(0.1)
 

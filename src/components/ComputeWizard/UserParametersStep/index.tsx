@@ -1,4 +1,6 @@
 'use client'
+import { i18n } from '../../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useFormikContext } from 'formik'
@@ -95,6 +97,8 @@ function ParameterCardHeader({
   secondaryLabel: string
   secondaryValue?: string
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.cardHeader}>
       <div className={styles.cardHeaderBlock}>
@@ -121,6 +125,8 @@ export default function UserParametersStep({
   asset,
   service
 }: UserParametersStepProps): ReactElement {
+  useLingui()
+
   const isDatasetFlow = flow === 'dataset'
   const { values, setFieldValue } = useFormikContext<
     DatasetFlowFormValues & AlgorithmFlowFormValues
@@ -358,8 +364,12 @@ export default function UserParametersStep({
             }
             onChange={(e) => onChange(e.target.value)}
           >
-            <option value="true">true</option>
-            <option value="false">false</option>
+            <option value="true">
+              <Trans id="true" />
+            </option>
+            <option value="false">
+              <Trans id="false" />
+            </option>
           </select>
         )
       case 'select':
@@ -406,8 +416,12 @@ export default function UserParametersStep({
   ) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>User Parameters</h1>
-        <p className={styles.noParamsText}>Please select an algorithm first</p>
+        <h1 className={styles.title}>
+          <Trans id="User Parameters" />
+        </h1>
+        <p className={styles.noParamsText}>
+          <Trans id="Please select an algorithm first" />
+        </p>
       </div>
     )
   }
@@ -415,9 +429,11 @@ export default function UserParametersStep({
   if (!isDatasetFlow && entriesToRender.length === 0) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>User Parameters</h1>
+        <h1 className={styles.title}>
+          <Trans id="User Parameters" />
+        </h1>
         <p className={styles.noParamsText}>
-          No user parameters found for selected datasets.
+          <Trans id="No user parameters found for selected datasets." />{' '}
         </p>
       </div>
     )
@@ -425,7 +441,9 @@ export default function UserParametersStep({
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>User Parameters</h1>
+      <h1 className={styles.title}>
+        <Trans id="User Parameters" />
+      </h1>
       {isDatasetFlow ? (
         entriesToRender.map((entry) => {
           const isMainDataset = entry.did === asset?.id
@@ -457,16 +475,16 @@ export default function UserParametersStep({
             >
               {entry.did ? (
                 <ParameterCardHeader
-                  primaryLabel="Dataset"
+                  primaryLabel={i18n._('Dataset')}
                   primaryValue={datasetName}
-                  secondaryLabel="Service"
+                  secondaryLabel={i18n._('Service')}
                   secondaryValue={serviceName ?? 'Service'}
                 />
               ) : (
                 <ParameterCardHeader
-                  primaryLabel="Algorithm"
+                  primaryLabel={i18n._('Algorithm')}
                   primaryValue={values.algorithms?.name || 'Algorithm'}
-                  secondaryLabel="Service"
+                  secondaryLabel={i18n._('Service')}
                   secondaryValue={values.algorithms?.services?.[0]?.name}
                 />
               )}
@@ -502,9 +520,9 @@ export default function UserParametersStep({
               .map((entry) => (
                 <div key={entry.did + entry.serviceId} className={styles.card}>
                   <ParameterCardHeader
-                    primaryLabel="Algorithm"
+                    primaryLabel={i18n._('Algorithm')}
                     primaryValue={asset?.credentialSubject?.metadata?.name}
-                    secondaryLabel="Service"
+                    secondaryLabel={i18n._('Service')}
                     secondaryValue={service?.name}
                   />
                   {entry.userParameters.map(
@@ -540,9 +558,9 @@ export default function UserParametersStep({
               return (
                 <div key={dataset.did || dataset.id} className={styles.card}>
                   <ParameterCardHeader
-                    primaryLabel="Dataset"
+                    primaryLabel={i18n._('Dataset')}
                     primaryValue={dataset.name}
-                    secondaryLabel="Service"
+                    secondaryLabel={i18n._('Service')}
                     secondaryValue={
                       selectedServices[0].serviceName ??
                       selectedServices[0].name ??

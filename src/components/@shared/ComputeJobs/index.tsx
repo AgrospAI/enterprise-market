@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import styles from './index.module.css'
 import { getAllComputeJobs } from '@utils/compute'
@@ -19,6 +22,8 @@ const ComputeJobs = ({
   asset?: AssetExtended
   refetchTrigger?: number
 }) => {
+  useLingui()
+
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -81,14 +86,14 @@ const ComputeJobs = ({
         }
       } catch (err) {
         console.error('Error fetching compute jobs:', err)
-        setError('Failed to load compute jobs. Please try again.')
+        setError(i18n._('Failed to load compute jobs. Please try again.'))
         setJobs([])
       } finally {
         if (type === 'init') setIsLoading(false)
         if (type === 'refresh') setIsRefreshing(false)
       }
     },
-    [accountId, asset?.id, newCancelToken, signer]
+    [accountId, asset?.id, newCancelToken, signer, i18n.locale]
   )
 
   useEffect(() => {
@@ -98,7 +103,9 @@ const ComputeJobs = ({
   const header = useMemo(
     () => (
       <div className={styles.headerRow}>
-        <h1 className={styles.title}>Your Compute Jobs</h1>
+        <h1 className={styles.title}>
+          <Trans id="Your Compute Jobs" />
+        </h1>
         <Button
           style="gradient"
           className={styles.refreshButton}
@@ -110,7 +117,7 @@ const ComputeJobs = ({
               <Loader />
             </div>
           ) : (
-            'Refresh'
+            i18n._('Refresh')
           )}
         </Button>
       </div>
@@ -121,7 +128,9 @@ const ComputeJobs = ({
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Your Compute Jobs</h1>
+        <h1 className={styles.title}>
+          <Trans id="Your Compute Jobs" />
+        </h1>
         <div className={styles.loading}>
           <Loader />
         </div>
@@ -132,8 +141,10 @@ const ComputeJobs = ({
   if (error) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Your Compute Jobs</h1>
-        <div className={styles.error}>{error}</div>
+        <h1 className={styles.title}>
+          <Trans id="Your Compute Jobs" />
+        </h1>
+        <div className={styles.error}>{translate(error)}</div>
       </div>
     )
   }
@@ -142,7 +153,9 @@ const ComputeJobs = ({
     return (
       <div className={styles.container}>
         {header}
-        <div className={styles.empty}>No compute jobs found</div>
+        <div className={styles.empty}>
+          <Trans id="No compute jobs found" />
+        </div>
       </div>
     )
   }
@@ -152,13 +165,21 @@ const ComputeJobs = ({
       {header}
 
       {jobs.length === 0 ? (
-        <div className={styles.empty}>No compute jobs found</div>
+        <div className={styles.empty}>
+          <Trans id="No compute jobs found" />
+        </div>
       ) : (
         <div className={styles.jobsTable}>
           <div className={styles.tableHeader}>
-            <div className={styles.statusColumn}>STATUS</div>
-            <div className={styles.actionsColumn}>ACTIONS</div>
-            <div className={styles.finishedColumn}>FINISHED</div>
+            <div className={styles.statusColumn}>
+              <Trans id="STATUS" />
+            </div>
+            <div className={styles.actionsColumn}>
+              <Trans id="ACTIONS" />
+            </div>
+            <div className={styles.finishedColumn}>
+              <Trans id="FINISHED" />
+            </div>
           </div>
 
           {jobs.map((job) => {
@@ -185,7 +206,7 @@ const ComputeJobs = ({
                   {dateFinishedMs ? (
                     <Time date={dateFinishedMs.toString()} isUnix relative />
                   ) : (
-                    'In progress'
+                    i18n._('In progress')
                   )}
                 </div>
               </div>

@@ -1,3 +1,5 @@
+import { i18n } from '../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Button from '../atoms/Button'
 import DeleteIcon from '@images/delete.svg'
@@ -18,9 +20,11 @@ export default function DeleteButton({
   disabled = false,
   className = '',
   loading = false,
-  loadingText = 'Deleting...',
-  text = 'Delete'
+  loadingText = i18n._('Deleting...'),
+  text = i18n._('Delete')
 }: DeleteButtonProps): ReactElement {
+  useLingui()
+
   return (
     <Button
       type="button"

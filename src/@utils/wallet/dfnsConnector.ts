@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { DfnsApiClient, DfnsAuthenticator, DfnsError } from '@dfns/sdk'
 import { WebAuthnSigner } from '@dfns/sdk-browser'
 import { decodeJwt } from 'jose'
@@ -91,7 +92,11 @@ function assertDfnsConfig() {
     .map(([key]) => key)
 
   if (missing.length) {
-    throw new Error(`Missing Dfns configuration: ${missing.join(', ')}`)
+    throw new Error(
+      i18n._('Missing Dfns configuration: {value0}', {
+        value0: missing.join(', ')
+      })
+    )
   }
 
   return config as ReturnType<typeof getDfnsConfig> & {
@@ -175,11 +180,13 @@ function assertRequestedAccount(
   method: string
 ) {
   if (!requestedAddress) {
-    throw new Error(`${method} requires an account address.`)
+    throw new Error(i18n._('{method} requires an account address.', { method }))
   }
 
   if (getAddress(requestedAddress) !== getAddress(signerAddress)) {
-    throw new Error(`${method} requested a different account.`)
+    throw new Error(
+      i18n._('{method} requested a different account.', { method })
+    )
   }
 }
 
@@ -357,7 +364,9 @@ async function rpcRequest(
   const data = await response.json()
 
   if (data.error) {
-    throw new Error(data.error.message || `RPC request failed: ${method}`)
+    throw new Error(
+      data.error.message || i18n._('RPC request failed: {method}', { method })
+    )
   }
 
   return data.result
@@ -425,7 +434,7 @@ async function getDfnsSsoToken() {
   }
 
   if (!response.ok) {
-    throw new Error(data.error || 'Dfns SSO login is required.')
+    throw new Error(data.error || i18n._('Dfns SSO login is required.'))
   }
 
   if (!data.token) {
@@ -584,7 +593,8 @@ export function dfnsConnector() {
             currentSigner.address,
             method
           )
-          if (!message) throw new Error(`${method} requires a message.`)
+          if (!message)
+            throw new Error(i18n._('{method} requires a message.', { method }))
 
           const walletClient = currentSigner.getWalletClient()
           return walletClient.signMessage({
@@ -620,7 +630,9 @@ export function dfnsConnector() {
           const nextChainId = getRequestedSwitchChainId(params)
           if (!currentSigner.hasWalletForChain(nextChainId)) {
             throw new Error(
-              `No DFNS wallet provisioned for chain ${nextChainId}.`
+              i18n._('No DFNS wallet provisioned for chain {nextChainId}.', {
+                nextChainId
+              })
             )
           }
           await switchToChain(nextChainId)
@@ -639,7 +651,7 @@ export function dfnsConnector() {
 
     return {
       id: DFNS_CONNECTOR_ID,
-      name: 'Dfns Account',
+      name: i18n._('Dfns Account'),
       type: DFNS_CONNECTOR_ID,
       async connect<withCapabilities extends boolean = false>(
         parameters?: DfnsConnectParameters<withCapabilities>
@@ -660,7 +672,7 @@ export function dfnsConnector() {
         const webAuthnSigner = new WebAuthnSigner({
           relyingParty: {
             id: dfnsConfig.relyingPartyId,
-            name: 'AgrospAI Marketplace'
+            name: i18n._('AgrospAI Marketplace')
           }
         })
         const authenticator = new DfnsAuthenticator({
@@ -789,7 +801,10 @@ export function dfnsConnector() {
           )
           if (!fallbackChain) {
             throw new Error(
-              `DFNS wallet exists for chain ${fallbackChainId} but it is not in the wagmi chain config.`
+              i18n._(
+                'DFNS wallet exists for chain {fallbackChainId} but it is not in the wagmi chain config.',
+                { fallbackChainId }
+              )
             )
           }
           activeChain = fallbackChain
@@ -873,7 +888,9 @@ export function dfnsConnector() {
         if (!chain) throw new Error('Unsupported chain')
         if (!signer.hasWalletForChain(nextChainId)) {
           throw new Error(
-            `No DFNS wallet provisioned for chain ${nextChainId}.`
+            i18n._('No DFNS wallet provisioned for chain {nextChainId}.', {
+              nextChainId
+            })
           )
         }
         await switchToChain(nextChainId)

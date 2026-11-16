@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../i18n/index'
 import {
   useContext,
   useState,
@@ -16,7 +18,7 @@ import { getOceanConfig, sanitizeDevelopmentConfig } from '@utils/ocean'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from './MarketMetadata'
-import { assetStateToString } from '@utils/assetState'
+import { assetStateToString, displayAssetState } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import { useAccount, useChainId } from 'wagmi'
@@ -50,6 +52,8 @@ function AssetProvider({
   did: string
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const { appConfig } = useMarketMetadata()
   const { address: accountId } = useAccount()
   const chainId = useChainId()
@@ -78,7 +82,7 @@ function AssetProvider({
       if (!did) return
       const isDid = isValidDid(did)
       if (!isDid) {
-        setError(`The url is not for a valid DID`)
+        setError(i18n._('The url is not for a valid DID'))
         LoggerInstance.error(`[asset] Not a valid DID`)
         return
       }
@@ -100,7 +104,9 @@ function AssetProvider({
         if (!asset) {
           setError(
             did +
-              '\n\nWe could not find an asset for this DID in the cache. If you just published a new asset, wait some seconds and refresh this page.'
+              i18n._(
+                '\n\nWe could not find an asset for this DID in the cache. If you just published a new asset, wait some seconds and refresh this page.'
+              )
           )
           LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
           return
@@ -109,19 +115,26 @@ function AssetProvider({
         const isWhitelisted = isDDOWhitelisted(asset)
 
         if (!isWhitelisted) {
-          setError(did + '\n\nThis DID can not be retrieved on this portal.')
+          setError(
+            did + i18n._('\n\nThis DID can not be retrieved on this portal.')
+          )
           LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
           return
         }
 
         if (asset.indexedMetadata.nft.state === (1 | 2 | 3)) {
           setTitle(
-            `This asset has been set as "${assetStateToString(
-              asset.indexedMetadata.nft.state
-            )}" by the publisher`
+            i18n._('This asset has been set as "{value0}" by the publisher', {
+              value0: displayAssetState(
+                assetStateToString(asset.indexedMetadata.nft.state)
+              )
+            })
           )
           setError(
-            did + `\n\nPublisher Address: ${asset.indexedMetadata.nft.owner}`
+            did +
+              i18n._('\n\nPublisher Address: {value0}', {
+                value0: asset.indexedMetadata.nft.owner
+              })
           )
           LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
           return
@@ -164,7 +177,7 @@ function AssetProvider({
         setLoading(false)
       }
     },
-    [did, accountId]
+    [did, accountId, i18n.locale]
   )
 
   // -----------------------------------

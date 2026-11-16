@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement } from 'react'
 import Label from '@shared/FormInput/Label'
 import FormHelp from '@shared/FormInput/Help'
@@ -15,6 +17,8 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import { useConnectorSupportedChains } from '@hooks/useDfnsWalletsByChain'
 
 export default function Networks(): ReactElement | null {
+  useLingui()
+
   const { isValidatingSupportedChains } = useMarketMetadata()
   const { networksList } = useNetworkMetadata()
   const { chainIds } = useUserPreferences()
@@ -42,11 +46,15 @@ export default function Networks(): ReactElement | null {
           className={`${stylesIndex.preferencesDetails} ${styles.preferencesDetails}`}
         >
           <li>
-            <Label htmlFor="chains">Networks</Label>
-            <FormHelp>Switch the data source for the interface.</FormHelp>
+            <Label htmlFor="chains">
+              <Trans id="Networks" />
+            </Label>
+            <FormHelp>
+              {i18n._('Switch the data source for the interface.')}
+            </FormHelp>
 
-            <NetworksList title="Main" networks={networksMain} />
-            <NetworksList title="Test" networks={networksTest} />
+            <NetworksList title={i18n._('Main')} networks={networksMain} />
+            <NetworksList title={i18n._('Test')} networks={networksTest} />
           </li>
         </ul>
       }
@@ -55,7 +63,7 @@ export default function Networks(): ReactElement | null {
       className={`${stylesIndex.preferences} ${styles.networks}`}
     >
       <>
-        <Network aria-label="Networks" className={stylesIndex.icon} />
+        <Network aria-label={i18n._('Networks')} className={stylesIndex.icon} />
         <Caret aria-hidden="true" className={stylesIndex.caret} />
 
         <div className={styles.chainsSelected}>

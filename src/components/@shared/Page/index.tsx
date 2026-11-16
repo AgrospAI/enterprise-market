@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactNode, ReactElement } from 'react'
 import PageHeader from './PageHeader'
 import Seo from './Seo'
@@ -25,6 +26,8 @@ export default function Page({
   headerCenter,
   fullWidth
 }: PageProps): ReactElement {
+  useLingui()
+
   const { allowExternalContent } = useUserPreferences()
 
   const isHome = uri === '/'

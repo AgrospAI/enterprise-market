@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { filesize } from 'filesize'
 import cleanupContentType from '@utils/cleanupContentType'
@@ -6,6 +8,8 @@ import Loader from '@shared/atoms/Loader'
 import { FileInfo } from '@oceanprotocol/lib'
 
 function LoaderArea() {
+  useLingui()
+
   return (
     <div className={styles.loaderWrap}>
       <Loader />
@@ -26,6 +30,8 @@ export default function FileIcon({
   small?: boolean
   isLoading?: boolean
 }): ReactElement {
+  useLingui()
+
   const styleClasses = `${styles.file} ${small ? styles.small : ''} ${
     className || ''
   }`
@@ -44,11 +50,15 @@ export default function FileIcon({
                   : ''}
               </li>
               <li>
-                {file.type === 'smartcontract' ? 'smart\ncontract' : file.type}
+                {file.type === 'smartcontract'
+                  ? i18n._('smart\ncontract')
+                  : file.type}
               </li>
             </>
           ) : (
-            <li className={styles.empty}>No file info available</li>
+            <li className={styles.empty}>
+              <Trans id="No file info available" />
+            </li>
           )}
         </>
       ) : (

@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useEffect } from 'react'
 import { addExistingParamsToUrl } from './utils'
 import styles from './sort.module.css'
@@ -12,15 +14,45 @@ import { Sort as SortInterface, useFilter } from '@context/Filter'
 import queryString from 'query-string'
 
 const sortItems = [
-  { display: 'Relevance', value: SortTermOptions.Relevance },
-  { display: 'Published', value: SortTermOptions.Created },
-  { display: 'Sales', value: SortTermOptions.Orders },
-  { display: 'Price', value: SortTermOptions.Price }
+  {
+    get display() {
+      return i18n._('Relevance')
+    },
+    value: SortTermOptions.Relevance
+  },
+  {
+    get display() {
+      return i18n._('Published')
+    },
+    value: SortTermOptions.Created
+  },
+  {
+    get display() {
+      return i18n._('Sales')
+    },
+    value: SortTermOptions.Orders
+  },
+  {
+    get display() {
+      return i18n._('Price')
+    },
+    value: SortTermOptions.Price
+  }
 ]
 
 const sortDirections = [
-  { display: '\u2191 Ascending', value: SortDirectionOptions.Ascending },
-  { display: '\u2193 Descending', value: SortDirectionOptions.Descending }
+  {
+    get display() {
+      return i18n._('↑ Ascending')
+    },
+    value: SortDirectionOptions.Ascending
+  },
+  {
+    get display() {
+      return i18n._('↓ Descending')
+    },
+    value: SortDirectionOptions.Descending
+  }
 ]
 
 function getInitialFilters(
@@ -40,6 +72,8 @@ export default function Sort({
 }: {
   expanded?: boolean
 }): ReactElement {
+  useLingui()
+
   const { sort, setSort } = useFilter()
 
   const router = useRouter()
@@ -76,10 +110,12 @@ export default function Sort({
   return (
     <>
       <div className={styles.sidePositioning}>
-        <Accordion title="Sort" defaultExpanded={expanded}>
+        <Accordion title={i18n._('Sort')} defaultExpanded={expanded}>
           <div className={styles.sortList}>
             <div className={styles.sortType}>
-              <h5 className={styles.sortTypeLabel}>Type</h5>
+              <h5 className={styles.sortTypeLabel}>
+                <Trans id="Type" />
+              </h5>
               {sortItems.map((item) => (
                 <Input
                   key={item.value}
@@ -93,7 +129,9 @@ export default function Sort({
               ))}
             </div>
             <div className={styles.sortDirection}>
-              <h5 className={styles.sortDirectionLabel}>Direction</h5>
+              <h5 className={styles.sortDirectionLabel}>
+                <Trans id="Direction" />
+              </h5>
               {sortDirections.map((item) => (
                 <Input
                   key={item.value}
@@ -111,7 +149,7 @@ export default function Sort({
       </div>
       <div className={styles.topPositioning}>
         <div className={styles.compactFilterContainer}>
-          <Accordion title="Sort Type" compact>
+          <Accordion title={i18n._('Sort Type')} compact>
             <div className={styles.compactOptionsContainer}>
               {sortItems.map((item) => (
                 <Input
@@ -128,7 +166,7 @@ export default function Sort({
           </Accordion>
         </div>
         <div className={styles.compactFilterContainer}>
-          <Accordion title="Sort Direction" compact>
+          <Accordion title={i18n._('Sort Direction')} compact>
             <div className={styles.compactOptionsContainer}>
               {sortDirections.map((item) => (
                 <Input

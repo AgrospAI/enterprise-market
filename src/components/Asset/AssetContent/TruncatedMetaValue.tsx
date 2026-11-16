@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './TruncatedMetaValue.module.css'
 
@@ -17,6 +18,8 @@ export default function TruncatedMetaValue({
   start = 6,
   end = 6
 }: TruncatedMetaValueProps): ReactElement {
+  useLingui()
+
   return (
     <span className={styles.root}>
       <code className={styles.truncated} title={value} aria-label={value}>

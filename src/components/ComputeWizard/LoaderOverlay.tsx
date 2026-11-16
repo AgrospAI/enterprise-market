@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Loader from '@shared/atoms/Loader'
 import styles from './LoaderOverlay.module.css'
@@ -11,6 +12,8 @@ export default function LoaderOverlay({
   visible,
   message
 }: LoaderOverlayProps): ReactElement {
+  useLingui()
+
   return (
     <div
       className={`${styles.overlay} ${visible ? styles.visible : ''}`}

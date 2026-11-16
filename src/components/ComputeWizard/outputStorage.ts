@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import {
   ComputeOutput,
   EncryptMethod,
@@ -34,7 +35,7 @@ export function getOutputStorageValidationMessage(
   storage?: FormComputeData['outputStorage']
 ): string | null {
   if (!enabled) return null
-  if (!storage?.type) return 'Select an output storage type.'
+  if (!storage?.type) return i18n._('Select an output storage type.')
 
   let validationMessage: string | null = null
 
@@ -42,12 +43,12 @@ export function getOutputStorageValidationMessage(
     case 'url':
       validationMessage = storage.url?.trim()
         ? null
-        : 'Enter the output storage URL.'
+        : i18n._('Enter the output storage URL.')
       break
     case 'ftp':
       validationMessage = storage.url?.trim()
         ? null
-        : 'Enter the FTP/FTPS destination URL.'
+        : i18n._('Enter the FTP/FTPS destination URL.')
       break
     case 's3':
       validationMessage =
@@ -57,10 +58,10 @@ export function getOutputStorageValidationMessage(
         storage.s3Access?.accessKeyId?.trim() &&
         storage.s3Access?.secretAccessKey?.trim()
           ? null
-          : 'Complete the S3 destination fields.'
+          : i18n._('Complete the S3 destination fields.')
       break
     default:
-      validationMessage = 'Unsupported output storage type.'
+      validationMessage = i18n._('Unsupported output storage type.')
   }
 
   if (validationMessage) {
@@ -71,7 +72,7 @@ export function getOutputStorageValidationMessage(
     storage.useEncryption &&
     !isValidComputeOutputEncryptionKey(storage.encryptionKey)
   ) {
-    return 'Enter a 64-character hex encryption key.'
+    return i18n._('Enter a 64-character hex encryption key.')
   }
 
   return null

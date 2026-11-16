@@ -1,4 +1,4 @@
-import privacyContent from '../../content/pages/privacy/policies.json'
+import { contentPagesPrivacyPolicies as privacyContent } from '../i18n/content'
 
 export interface UsePrivacyMetadata {
   policies: {

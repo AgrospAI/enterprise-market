@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './PriceUnit.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -18,11 +19,15 @@ export default function PriceUnit({
   decimals?: string
   explicitZero?: boolean
 }): ReactElement {
+  useLingui()
+
   const { locale } = useUserPreferences()
   return (
     <div className={`${styles.price} ${styles[size]} ${className}`}>
       {price === 0 && !explicitZero ? (
-        <div className={styles.free}>Free</div>
+        <div className={styles.free}>
+          <Trans id="Free" />
+        </div>
       ) : (!price && price !== 0) || Number.isNaN(price) ? (
         <div>-</div>
       ) : (

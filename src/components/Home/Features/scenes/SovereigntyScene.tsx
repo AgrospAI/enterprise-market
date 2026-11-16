@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { CSSProperties, ReactElement } from 'react'
 import styles from './SovereigntyScene.module.css'
 
@@ -16,8 +18,18 @@ const cloudIcon = (
 
 // Generic providers only: compute is deployed to them, the data never moves
 const targets: { label: string; icon: ReactElement }[] = [
-  { label: 'Cloud A', icon: cloudIcon },
-  { label: 'Cloud B', icon: cloudIcon },
+  {
+    get label() {
+      return i18n._('Cloud A')
+    },
+    icon: cloudIcon
+  },
+  {
+    get label() {
+      return i18n._('Cloud B')
+    },
+    icon: cloudIcon
+  },
   {
     label: 'On-premise',
     icon: (
@@ -55,6 +67,8 @@ function cx(...names: (string | false)[]): string {
 }
 
 export default function SovereigntyScene(): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.scene} aria-hidden="true">
       <div className={styles.stage}>
@@ -117,7 +131,7 @@ export default function SovereigntyScene(): ReactElement {
               <circle cx="12" cy="10" r="3" />
             </svg>
           </span>
-          Stays with you
+          <Trans id="Stays with you" />{' '}
         </div>
 
         {targets.map((target, i) => (
@@ -126,7 +140,9 @@ export default function SovereigntyScene(): ReactElement {
             className={cx(styles.chip, i === 0 && styles.first)}
             style={{ '--i': i } as CSSProperties}
           >
-            <span className={styles.chipLabel}>deployed</span>
+            <span className={styles.chipLabel}>
+              <Trans id="deployed" />
+            </span>
             {target.label}
           </span>
         ))}

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Skeleton from '@shared/atoms/Skeleton'
 import styles from '../Bookmarks.module.css'
@@ -5,6 +6,8 @@ import styles from '../Bookmarks.module.css'
 const SKELETON_ROWS = 10
 
 export default function BookmarksSkeleton(): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.skeleton} aria-hidden="true">
       <div className={`${styles.skeletonRow} ${styles.skeletonHeaderRow}`}>

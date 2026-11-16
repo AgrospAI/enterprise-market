@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import NumberUnit from './NumberUnit'
 import styles from './Stats.module.css'
@@ -18,6 +20,8 @@ function TokenAmount({
   amount: string
   token: string
 }): ReactElement {
+  useLingui()
+
   const value = `${amount} ${token}`
 
   return (
@@ -33,13 +37,17 @@ function EscrowAvailableLabel({
 }: {
   hasAvailable: boolean
 }): ReactElement {
+  useLingui()
+
   return (
     <>
       <span className={styles.escrowAvailableLabel}>
-        Escrow Available Funds
+        <Trans id="Escrow Available Funds" />{' '}
       </span>
       {hasAvailable && (
-        <span className={styles.withdrawHint}>👉 Click to Withdraw 👈</span>
+        <span className={styles.withdrawHint}>
+          <Trans id="👉 Click to Withdraw 👈" />
+        </span>
       )}
     </>
   )
@@ -50,6 +58,8 @@ export default function Stats({
 }: {
   selectedToken?: string
 }): ReactElement {
+  useLingui()
+
   const {
     activeAssetsTotal,
     activeSales,
@@ -95,14 +105,16 @@ export default function Stats({
   return (
     <div className={styles.stats}>
       <NumberUnit
-        label={`Sale${activeSales === 1 ? '' : 's'}`}
+        label={i18n._('{count, plural, one {Sale} other {Sales}}', {
+          count: activeSales
+        })}
         value={activeSales < 0 ? 0 : activeSales}
       />
-      <NumberUnit label="Published" value={activeAssetsTotal} />
-      <NumberUnit label="Downloads" value={activeDownloadsTotal} />
+      <NumberUnit label={i18n._('Published')} value={activeAssetsTotal} />
+      <NumberUnit label={i18n._('Downloads')} value={activeDownloadsTotal} />
       {activeToken && (
         <NumberUnit
-          label="Revenue"
+          label={i18n._('Revenue')}
           value={
             <TokenAmount
               amount={formatToFixedNoRounding(selectedRevenue, 3)}
@@ -115,7 +127,7 @@ export default function Stats({
       {ownAccount && activeToken && (
         <>
           <NumberUnit
-            label="Balance"
+            label={i18n._('Balance')}
             value={
               <TokenAmount
                 amount={formatToFixedNoRounding(selectedBalance, 3)}
@@ -129,7 +141,7 @@ export default function Stats({
             }
           />
           <NumberUnit
-            label="Escrow Locked Funds"
+            label={i18n._('Escrow Locked Funds')}
             value={
               <TokenAmount
                 amount={formatToFixedNoRounding(selectedEscrowLocked, 3)}

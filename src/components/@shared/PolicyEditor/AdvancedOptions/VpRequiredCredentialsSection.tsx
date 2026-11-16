@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import styles from './Advanced.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
@@ -25,6 +27,8 @@ const VpRequiredCredentialsSection = ({
   onChange,
   credentialOptions
 }: Props) => {
+  useLingui()
+
   const anyOfEnabled = required.some((e) => 'any_of' in e)
 
   // Compute all used credentials
@@ -219,7 +223,9 @@ const VpRequiredCredentialsSection = ({
 
   return (
     <div className={styles.requiredCredentialsSection}>
-      <div className={styles.sectionLabel}>VP Required Credentials</div>
+      <div className={styles.sectionLabel}>
+        <Trans id="VP Required Credentials" />
+      </div>
       {required
         .filter(
           (e): e is { id: string; credential_type: string } =>
@@ -279,7 +285,7 @@ const VpRequiredCredentialsSection = ({
         onClick={handleAddCredential}
         disabled={availableForRequired.length === 0}
       >
-        Add new credential
+        <Trans id="Add new credential" />{' '}
       </Button>
       <div className={styles.checkboxWithTooltip}>
         <Input
@@ -294,13 +300,19 @@ const VpRequiredCredentialsSection = ({
         />
         <Tooltip
           content={
-            <Markdown text="When enabled, the presented credentials must match any of the types below." />
+            <Markdown
+              text={i18n._(
+                'When enabled, the presented credentials must match any of the types below.'
+              )}
+            />
           }
         />
       </div>
       {anyOfEnabled && (
         <div className={styles.anyOfSection}>
-          <span className={styles.anyOfLabel}>Any of:</span>
+          <span className={styles.anyOfLabel}>
+            <Trans id="Any of:" />
+          </span>
           {required
             .filter((e): e is { id: string; any_of: string[] } => 'any_of' in e)
             .map((entry) =>
@@ -351,7 +363,7 @@ const VpRequiredCredentialsSection = ({
             onClick={handleAddAnyOfCredential}
             disabled={availableForAnyOf.length === 0}
           >
-            Add new
+            <Trans id="Add new" />{' '}
           </Button>
         </div>
       )}

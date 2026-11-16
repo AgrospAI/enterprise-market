@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Price from './Price'
 import styles from './Fixed.module.css'
@@ -10,12 +11,16 @@ export default function Fixed({
   approvedBaseTokens: TokenInfo[]
   content: any
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.container}>
       <Alert>{content.info}</Alert>
 
       <div className={styles.priceContainer}>
-        <h4 className={styles.title}>Price</h4>
+        <h4 className={styles.title}>
+          <Trans id="Price" />
+        </h4>
         <Price approvedBaseTokens={approvedBaseTokens} />
       </div>
     </div>

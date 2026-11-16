@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import styles from './EscrowWithdrawModal.module.css'
 import { EscrowContract } from '@oceanprotocol/lib'
@@ -11,10 +14,18 @@ import Button from '@shared/atoms/Button'
 import { formatToFixed } from '@utils/numbers'
 
 const ESCROW_WITHDRAW_TEXT = {
-  invalidAmount: 'Please enter a valid withdrawal amount.',
-  exceedsBalance: 'Amount can’t be greater than your escrow funds.',
-  walletMissing: 'Wallet or network not detected.',
-  withdrawFailed: 'Withdrawal failed. Please try again.'
+  get invalidAmount() {
+    return i18n._('Please enter a valid withdrawal amount.')
+  },
+  get exceedsBalance() {
+    return i18n._('Amount can’t be greater than your escrow funds.')
+  },
+  get walletMissing() {
+    return i18n._('Wallet or network not detected.')
+  },
+  get withdrawFailed() {
+    return i18n._('Withdrawal failed. Please try again.')
+  }
 } as const
 
 interface EscrowFunds {
@@ -32,6 +43,8 @@ export default function EscrowWithdrawModal({
   escrowFunds: EscrowFunds
   onClose: () => void
 }): ReactElement {
+  useLingui()
+
   const { refreshEscrowFunds, escrowFundsByToken } = useProfile()
   const walletClient = useEthersSigner()
   const chainId = useChainId()
@@ -68,7 +81,9 @@ export default function EscrowWithdrawModal({
       }
     } catch (err) {
       if (err?.message?.toLowerCase?.().includes('too many decimals')) {
-        return `Too many decimals (max ${selectedEscrowFunds.decimals}).`
+        return i18n._('Too many decimals (max {value0}).', {
+          value0: selectedEscrowFunds.decimals
+        })
       }
       return ESCROW_WITHDRAW_TEXT.invalidAmount
     }
@@ -147,7 +162,7 @@ export default function EscrowWithdrawModal({
 
   return (
     <Modal
-      title="Withdraw Escrow Funds"
+      title={i18n._('Withdraw Escrow Funds')}
       isOpen
       onToggleModal={onClose}
       shouldCloseOnOverlayClick={!isLoading}
@@ -156,7 +171,7 @@ export default function EscrowWithdrawModal({
         {availableTokens.length > 1 && (
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="escrow-token">
-              Token
+              <Trans id="Token" />{' '}
             </label>
             <select
               id="escrow-token"
@@ -175,7 +190,9 @@ export default function EscrowWithdrawModal({
         )}
 
         <div className={styles.availableRow}>
-          <span className={styles.label}>Available</span>
+          <span className={styles.label}>
+            <Trans id="Available" />
+          </span>
           <span className={styles.value}>
             {availableDisplay} {selectedEscrowFunds.symbol}
           </span>
@@ -183,7 +200,7 @@ export default function EscrowWithdrawModal({
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="escrow-amount">
-            Amount
+            <Trans id="Amount" />{' '}
           </label>
           <div className={styles.inputRow}>
             <input
@@ -205,12 +222,12 @@ export default function EscrowWithdrawModal({
               disabled={isLoading}
               className={styles.maxButton}
             >
-              Max
+              <Trans id="Max" />{' '}
             </Button>
           </div>
         </div>
 
-        {error && <div className={styles.error}>{error}</div>}
+        {error && <div className={styles.error}>{translate(error)}</div>}
 
         <div className={styles.actions}>
           <Button
@@ -219,7 +236,7 @@ export default function EscrowWithdrawModal({
             onClick={onClose}
             disabled={isLoading}
           >
-            Close
+            <Trans id="Close" />{' '}
           </Button>
           <Button
             style="primary"
@@ -227,7 +244,7 @@ export default function EscrowWithdrawModal({
             onClick={handleWithdraw}
             disabled={isWithdrawDisabled}
           >
-            {isLoading ? 'Withdrawing...' : 'Withdraw'}
+            {isLoading ? i18n._('Withdrawing...') : i18n._('Withdraw')}
           </Button>
         </div>
       </div>

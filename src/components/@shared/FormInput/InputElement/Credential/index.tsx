@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { useField, useFormikContext } from 'formik'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import PublishButton from '../../../PublishButton'
@@ -14,6 +16,8 @@ interface CredentialProps extends InputProps {
 }
 
 export default function Credentials(props: CredentialProps) {
+  useLingui()
+
   const [field] = useField(props.name)
   const { setFieldValue } = useFormikContext()
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
@@ -44,12 +48,12 @@ export default function Credentials(props: CredentialProps) {
     e.preventDefault()
 
     if (!(value === '*' || isAddress(value))) {
-      toast.error('Wallet address is invalid')
+      toast.error(i18n._('Wallet address is invalid'))
       return
     }
 
     if (addressList.includes(value.toLowerCase())) {
-      toast.error('Wallet address already added into the list')
+      toast.error(i18n._('Wallet address already added into the list'))
       return
     }
 
@@ -77,7 +81,7 @@ export default function Credentials(props: CredentialProps) {
         />
         <PublishButton
           icon="add"
-          text="ADD"
+          text={i18n._('ADD')}
           buttonStyle="primary"
           onClick={handleAddValue}
           disabled={hasWildcard}
@@ -86,7 +90,7 @@ export default function Credentials(props: CredentialProps) {
         {!hasWildcard && (
           <PublishButton
             icon="add"
-            text="ADD ALL"
+            text={i18n._('ADD ALL')}
             buttonStyle="primary"
             onClick={handleAddAll}
             type="button"
@@ -101,7 +105,7 @@ export default function Credentials(props: CredentialProps) {
               <InputGroup>
                 <InputElement
                   name={`address[${i}]`}
-                  value={value === '*' ? 'All Wallets (*)' : value}
+                  value={value === '*' ? i18n._('All Wallets (*)') : value}
                   disabled
                 />
                 <DeleteButton onClick={() => handleDeleteAddress(value)} />

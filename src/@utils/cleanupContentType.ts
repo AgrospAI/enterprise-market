@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 export default function cleanupContentType(contentType: string): string {
   if (!contentType) return
   // strip away the `charset=utf-8`
@@ -35,7 +36,7 @@ export default function cleanupContentType(contentType: string): string {
     .replace('vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx')
     .replace('vnd.ms-excel', 'xls')
     .replace('apple-diskimage', 'dmg')
-    .replace('octet-stream', 'Binary')
+    .replace('octet-stream', i18n._('Binary'))
     .replace('svg+xml', 'svg')
 
   return contentTypeCleaned

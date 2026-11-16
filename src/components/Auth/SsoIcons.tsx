@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import type { SVGProps } from 'react'
 
 export type SsoIconVariant = 'building_key' | 'user_plus'
@@ -7,6 +8,8 @@ interface SsoIconProps extends SVGProps<SVGSVGElement> {
 }
 
 export function SsoIcon({ variant, ...props }: SsoIconProps) {
+  useLingui()
+
   switch (variant) {
     case 'building_key':
       return (

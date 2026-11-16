@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import Tooltip from '@shared/atoms/Tooltip'
 import ServiceTypeIcon from '@shared/ServiceTypeIcon'
@@ -5,9 +7,9 @@ import { Service } from 'src/@types/ddo/Service'
 import styles from './ServiceTypeIcons.module.css'
 
 function getServiceTypesLabel(hasDownload: boolean, hasCompute: boolean) {
-  if (hasDownload && hasCompute) return 'Access and compute services'
-  if (hasDownload) return 'Access service'
-  return 'Compute service'
+  if (hasDownload && hasCompute) return i18n._('Access and compute services')
+  if (hasDownload) return i18n._('Access service')
+  return i18n._('Compute service')
 }
 
 export function ServiceTypeIcons({
@@ -19,6 +21,8 @@ export function ServiceTypeIcons({
   hideEmpty?: boolean
   className?: string
 }): ReactElement {
+  useLingui()
+
   const hasDownload = services?.some((service) => service.type === 'access')
   const hasCompute = services?.some((service) => service.type === 'compute')
 
@@ -43,9 +47,11 @@ export function ServiceTypeIcons({
 }
 
 export function ServicesColumnHeader(): ReactElement {
+  useLingui()
+
   return (
     <span className={styles.servicesHeader}>
-      Services
+      <Trans id="Services" />{' '}
       <Tooltip
         placement="top"
         content={
@@ -56,7 +62,7 @@ export function ServicesColumnHeader(): ReactElement {
                 className={styles.serviceIcon}
                 ariaHidden={false}
               />
-              Has services of type access
+              <Trans id="Has services of type access" />{' '}
             </span>
             <span className={styles.serviceLegendRow}>
               <ServiceTypeIcon
@@ -64,7 +70,7 @@ export function ServicesColumnHeader(): ReactElement {
                 className={styles.serviceIcon}
                 ariaHidden={false}
               />
-              Has services of type compute
+              <Trans id="Has services of type compute" />{' '}
             </span>
           </div>
         }

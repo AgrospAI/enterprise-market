@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useState } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import { STORAGE_KEY } from '@utils/wallet/ssiWallet'
@@ -7,6 +8,8 @@ import useSsiAutoConnectPrompt from '@hooks/useSsiAutoConnectPrompt'
 import useSsiConnect from '@hooks/useSsiConnect'
 
 export default function SsiWalletManager() {
+  useLingui()
+
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
   useSsiAutoConnectPrompt()
   const { connectSsi } = useSsiConnect()

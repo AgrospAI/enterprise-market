@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import Stats from './Stats'
 import Account from './Account'
@@ -9,6 +10,8 @@ export default function AccountHeader({
 }: {
   accountId: string
 }): ReactElement {
+  useLingui()
+
   const [selectedToken, setSelectedToken] = useState<string>('')
 
   return (

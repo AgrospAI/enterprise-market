@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../../Publish/_types'
@@ -34,12 +36,14 @@ interface SSIPoliciesSectionProps {
 export default function SSIPoliciesSection({
   defaultPolicies,
   fieldNamePrefix,
-  title = DEFAULT_TITLE,
-  help = DEFAULT_HELP,
+  title = i18n._(DEFAULT_TITLE),
+  help = i18n._(DEFAULT_HELP),
   showEnableCheckbox = true,
   hideDefaultPolicies = false,
   isAsset = true
 }: SSIPoliciesSectionProps): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const [enabled, setEnabled] = useState(false)
 
@@ -117,7 +121,7 @@ export default function SSIPoliciesSection({
       {showEnableCheckbox && (
         <Input
           name="enableSSI"
-          label="Enable SSI Policies"
+          label={i18n._('Enable SSI Policies')}
           type="checkbox"
           options={['Enable SSI Policies']}
           checked={enabled}

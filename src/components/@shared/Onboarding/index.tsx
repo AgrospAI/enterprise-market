@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Header from './Header'
@@ -37,6 +39,8 @@ export enum NavigationDirections {
 }
 
 export default function OnboardingSection(): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const web3Provider = usePublicClient()
@@ -46,12 +50,14 @@ export default function OnboardingSection(): ReactElement {
   const [navigationDirection, setNavigationDirection] =
     useState<NavigationDirections>()
   const isSSIEnabled = getRuntimeConfig().NEXT_PUBLIC_SSI_ENABLED === 'true'
-  const faucetStepLabel = isMainnetChain(chainId) ? 'Funds' : 'Faucet'
+  const faucetStepLabel = isMainnetChain(chainId)
+    ? i18n._('Funds')
+    : i18n._('Faucet')
 
   const steps = [
-    { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
-    { shortLabel: 'Connect', component: <ConnectAccount /> },
-    { shortLabel: 'Tokens', component: <ImportCustomTokens /> },
+    { shortLabel: i18n._('MetaMask'), component: <DownloadMetamask /> },
+    { shortLabel: i18n._('Connect'), component: <ConnectAccount /> },
+    { shortLabel: i18n._('Tokens'), component: <ImportCustomTokens /> },
     { shortLabel: faucetStepLabel, component: <Faucet /> },
 
     ...((isSSIEnabled ? [{ shortLabel: 'SSI', component: <SSI /> }] : []) as {
@@ -59,7 +65,7 @@ export default function OnboardingSection(): ReactElement {
       component: ReactElement
     }[]),
 
-    { shortLabel: 'Ready', component: <Ready /> }
+    { shortLabel: i18n._('Ready'), component: <Ready /> }
   ]
 
   const stepLabels = steps.map((step) => step.shortLabel)

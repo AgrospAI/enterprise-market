@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import NetworkItem from './NetworkItem'
 import styles from './NetworksList.module.css'
@@ -9,6 +10,8 @@ export default function NetworksList({
   title: string
   networks: number[]
 }): ReactElement {
+  useLingui()
+
   const content = networks.map((chainId) => (
     <NetworkItem key={chainId} chainId={chainId} />
   ))

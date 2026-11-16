@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import PriceUnit from '@components/@shared/Price/PriceUnit'
 import Tooltip from '@shared/atoms/Tooltip'
 import { getFeeTooltip } from '@utils/feeTooltips'
@@ -22,6 +24,8 @@ export function Row({
   type?: string
   tooltip?: string
 }) {
+  useLingui()
+
   const tooltipContent = tooltip || getFeeTooltip(type)
 
   return (
@@ -43,9 +47,9 @@ export function Row({
         />
         <span className={styles.timeout}>
           {timeout &&
-            timeout !== 'Forever' &&
+            timeout !== i18n._('Forever') &&
             !hasPreviousOrder &&
-            `for ${timeout}`}
+            i18n._('for {timeout}', { timeout })}
         </span>
       </div>
     </div>

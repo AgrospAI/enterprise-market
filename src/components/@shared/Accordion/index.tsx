@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
@@ -26,6 +27,8 @@ export default function Accordion({
   action?: ReactNode
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const [open, setOpen] = useState(!!defaultExpanded)
   const headingClassName = compact ? styles.compactTitle : styles.title
   const showSummary =
