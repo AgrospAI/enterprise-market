@@ -252,7 +252,6 @@ msgstr "Airbus Defence and Space"
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetType/index.tsx
 #: src/components/Asset/AssetActions/CheckCredentials/checkCredentialsAlgo.tsx
-#: src/components/ComputeWizard/Review/index.tsx
 #: src/components/ComputeWizard/UserParametersStep/index.tsx
 #: src/components/Home/Sections/Products.tsx
 #: src/components/Profile/History/ComputeJobs/index.tsx
@@ -665,7 +664,6 @@ msgid "Credential field"
 msgstr "Credential field"
 
 #. js-lingui-explicit-id
-#: src/components/ComputeWizard/Review/index.tsx
 #: src/i18n/contentMessages.ts
 msgid "Credentials"
 msgstr "Credentials"
@@ -751,7 +749,6 @@ msgstr "Data sovereignty, any cloud"
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetType/index.tsx
 #: src/components/Asset/AssetActions/CheckCredentials/checkCredentialsAlgo.tsx
-#: src/components/ComputeWizard/Review/index.tsx
 #: src/components/ComputeWizard/UserParametersStep/index.tsx
 #: src/components/Home/Features/scenes/AgentScene.tsx
 #: src/i18n/contentMessages.ts
@@ -4688,6 +4685,11 @@ msgid "EURC"
 msgstr "EURC"
 
 #. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Edge"
+msgstr "Edge"
+
+#. js-lingui-explicit-id
 #: src/components/@shared/PolicyEditor/index.tsx
 #: src/i18n/sourceMessages.ts
 msgid "Edit Advanced SSI Policy Features"
@@ -6371,8 +6373,18 @@ msgstr "Org A"
 
 #. js-lingui-explicit-id
 #: src/components/Home/Features/scenes/AgentScene.tsx
+msgid "discover"
+msgstr "discover"
+
+#. js-lingui-explicit-id
+#: src/components/Home/Features/scenes/AgentScene.tsx
 msgid "Org C"
 msgstr "Org C"
+
+#. js-lingui-explicit-id
+#: src/components/Home/Features/scenes/AgentScene.tsx
+msgid "compute"
+msgstr "compute"
 
 #. js-lingui-explicit-id
 #: src/components/Home/Features/scenes/AgentScene.tsx
@@ -6383,6 +6395,11 @@ msgstr "Org B"
 #: src/components/Home/Features/scenes/AgentScene.tsx
 msgid "Model"
 msgstr "Model"
+
+#. js-lingui-explicit-id
+#: src/components/Home/Features/scenes/AgentScene.tsx
+msgid "pay"
+msgstr "pay"
 
 #. js-lingui-explicit-id
 #: src/components/Home/Features/scenes/AgentScene.tsx
@@ -6462,31 +6479,6 @@ msgid "granted"
 msgstr "granted"
 
 #. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/IdentityScene.tsx
-msgid "policy.rego"
-msgstr "policy.rego"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/IdentityScene.tsx
-msgid "allow"
-msgstr "allow"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/IdentityScene.tsx
-msgid "allow if"
-msgstr "allow if"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/IdentityScene.tsx
-msgid "input.country =="
-msgstr "input.country =="
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/IdentityScene.tsx
-msgid "\"DE\""
-msgstr "\"DE\""
-
-#. js-lingui-explicit-id
 #: src/components/Home/Features/scenes/SovereigntyScene.tsx
 msgid "Cloud A"
 msgstr "Cloud A"
@@ -6495,16 +6487,6 @@ msgstr "Cloud A"
 #: src/components/Home/Features/scenes/SovereigntyScene.tsx
 msgid "Cloud B"
 msgstr "Cloud B"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/SovereigntyScene.tsx
-msgid "On-premise"
-msgstr "On-premise"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/SovereigntyScene.tsx
-msgid "Edge"
-msgstr "Edge"
 
 #. js-lingui-explicit-id
 #: src/components/Home/Features/scenes/SovereigntyScene.tsx
@@ -7463,8 +7445,13 @@ msgstr "Preparing request"
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/Review/index.tsx
-msgid "Verify"
-msgstr "Verify"
+msgid "Verify Dataset Credentials"
+msgstr "Verify Dataset Credentials"
+
+#. js-lingui-explicit-id
+#: src/components/ComputeWizard/Review/index.tsx
+msgid "Verify Algorithm Credentials"
+msgstr "Verify Algorithm Credentials"
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/Review/index.tsx
@@ -11083,18 +11070,3 @@ msgstr ""
 #: src/@context/Profile/index.tsx
 msgid "Request cancelled."
 msgstr "Request cancelled."
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/AgentScene.tsx
-msgid "discover"
-msgstr "discover"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/AgentScene.tsx
-msgid "compute"
-msgstr "compute"
-
-#. js-lingui-explicit-id
-#: src/components/Home/Features/scenes/AgentScene.tsx
-msgid "pay"
-msgstr "pay"

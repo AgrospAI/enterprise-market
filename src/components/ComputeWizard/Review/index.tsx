@@ -2621,11 +2621,11 @@ export default function Review({
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
               <h3>
-                <Trans id="Verify" />{' '}
-                {currentVerificationItem.type === 'dataset'
-                  ? i18n._('Dataset')
-                  : i18n._('Algorithm')}{' '}
-                <Trans id="Credentials" />{' '}
+                {currentVerificationItem.type === 'dataset' ? (
+                  <Trans id="Verify Dataset Credentials" />
+                ) : (
+                  <Trans id="Verify Algorithm Credentials" />
+                )}
               </h3>
               <button
                 className={styles.closeButton}

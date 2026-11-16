@@ -71,6 +71,7 @@ export const sourceMessages = [
   /* i18n */ { id: 'Docker image tag is required' },
   /* i18n */ { id: 'EURAU' },
   /* i18n */ { id: 'EURC' },
+  /* i18n */ { id: 'Edge' },
   /* i18n */ { id: 'Edit Advanced SSI Policy Features' },
   /* i18n */ { id: 'Enable SSI Policies' },
   /* i18n */ { id: 'Endpoint' },
