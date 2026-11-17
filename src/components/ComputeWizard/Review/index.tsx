@@ -44,7 +44,6 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment, ProviderFees } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import { Asset } from 'src/@types/Asset'
-import type { Credential } from 'src/@types/ddo/Credentials'
 import { Signer, formatUnits } from 'ethers'
 import Decimal from 'decimal.js'
 import { getConsumeMarketFeeWei } from '@utils/consumeMarketFee'
@@ -54,11 +53,6 @@ import PricingRow from './PricingRow'
 import styles from './index.module.css'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeFlow, FormComputeData } from '../_types'
-import appConfig from 'app.config.cjs'
-import {
-  requiresSsiVerification,
-  resolveCredentialVerification
-} from './credentialVerification'
 import { ComputeStartProgressStep } from '../progress'
 import Accordion from '@components/@shared/Accordion'
 import RowItem from './RowItem'
@@ -83,21 +77,6 @@ interface VerificationItem {
   duration: string
   name: string
   symbol?: string
-}
-
-/**
- * Whether the asset or service defines any allow/deny credential rule, so the
- * "no credentials required" hint is only shown when both lists are empty.
- */
-function hasCredentialRules(credentials?: Credential): boolean {
-  return Boolean(credentials?.allow?.length || credentials?.deny?.length)
-}
-
-function verificationItemHasCredentialRules(item: VerificationItem): boolean {
-  return (
-    hasCredentialRules(item.asset?.credentialSubject?.credentials) ||
-    hasCredentialRules(item.service?.credentials)
-  )
 }
 
 type TotalPriceEntry = { value: string; symbol: string }
@@ -1080,42 +1059,34 @@ export default function Review({
     const hasExpiredCredentials = verificationQueue.some(
       (item) => item.status === 'failed' || item.status === 'expired'
     )
-    let targetIndex = index
     if (hasExpiredCredentials) {
-      const firstExpiredIndex = verificationQueue.findIndex(
-        (item) => item.status === 'failed' || item.status === 'expired'
-      )
-      if (firstExpiredIndex !== -1) targetIndex = firstExpiredIndex
-    }
-
-    const targetItem = verificationQueue[targetIndex]
-    if (!targetItem) return
-
-    const outcome = resolveCredentialVerification({
-      asset: targetItem.asset,
-      service: targetItem.service,
-      accountId,
-      ssiEnabled: appConfig.ssiEnabled
-    })
-
-    // Without an SSI policy (or with SSI disabled) there is no wallet to present
-    // credentials to, so the account is validated directly.
-    if (outcome !== 'ssi') {
+      const expiredIndices = verificationQueue
+        .map((item, i) => ({ item, index: i }))
+        .filter(
+          ({ item }) => item.status === 'failed' || item.status === 'expired'
+        )
+        .map(({ index }) => index)
+      const firstExpiredIndex = expiredIndices[0]
+      if (firstExpiredIndex !== undefined) {
+        setVerificationQueue((prev) =>
+          prev.map((item, i) =>
+            i === firstExpiredIndex
+              ? { ...item, status: 'checking' as const }
+              : item
+          )
+        )
+        setCurrentVerificationIndex(firstExpiredIndex)
+        setShowCredentialsCheck(true)
+      }
+    } else {
       setVerificationQueue((prev) =>
         prev.map((item, i) =>
-          i === targetIndex ? { ...item, status: outcome } : item
+          i === index ? { ...item, status: 'checking' as const } : item
         )
       )
-      return
+      setCurrentVerificationIndex(index)
+      setShowCredentialsCheck(true)
     }
-
-    setVerificationQueue((prev) =>
-      prev.map((item, i) =>
-        i === targetIndex ? { ...item, status: 'checking' as const } : item
-      )
-    )
-    setCurrentVerificationIndex(targetIndex)
-    setShowCredentialsCheck(true)
   }
 
   const handleVerificationComplete = () => {
@@ -2224,12 +2195,6 @@ export default function Review({
   }
 
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
-  const currentVerificationRequiresSsi =
-    currentVerificationItem &&
-    requiresSsiVerification(
-      currentVerificationItem.asset,
-      currentVerificationItem.service
-    )
   const assetRows = verificationQueue
 
   function getAlgorithmAsset(
@@ -2365,8 +2330,9 @@ export default function Review({
                 </div>
               ) : (
                 assetRows.map((item, i) => {
-                  const hasCredentialRules =
-                    verificationItemHasCredentialRules(item)
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
                   return (
                     <PricingRow
                       key={`${item.type}-${item.id}-${i}`}
@@ -2392,7 +2358,7 @@ export default function Review({
                       }
                       isService={item.type === 'algorithm'}
                       infoMessage={
-                        !hasCredentialRules
+                        !hasSsiPolicy
                           ? i18n._('No credentials required (never expires)')
                           : undefined
                       }
@@ -2616,57 +2582,54 @@ export default function Review({
         )}
       </div>
 
-      {showCredentialsCheck &&
-        currentVerificationItem &&
-        appConfig.ssiEnabled &&
-        currentVerificationRequiresSsi && (
-          <div className={styles.credentialsOverlay}>
-            <div className={styles.credentialsContainer}>
-              <div className={styles.credentialsHeader}>
-                <h3>
-                  {currentVerificationItem.type === 'dataset' ? (
-                    <Trans id="Verify Dataset Credentials" />
-                  ) : (
-                    <Trans id="Verify Algorithm Credentials" />
-                  )}
-                </h3>
-                <button
-                  className={styles.closeButton}
-                  onClick={() => {
-                    setShowCredentialsCheck(false)
-                    setCurrentVerificationIndex(-1)
-                    setVerificationQueue((prev) =>
-                      prev.map((item, i) =>
-                        i === currentVerificationIndex
-                          ? { ...item, status: 'failed' as const }
-                          : item
-                      )
-                    )
-                  }}
-                >
-                  <Trans id="✕ Close" />{' '}
-                </button>
-              </div>
-              <CredentialDialogProvider autoStart={true}>
+      {showCredentialsCheck && currentVerificationItem && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>
                 {currentVerificationItem.type === 'dataset' ? (
-                  <AssetActionCheckCredentials
-                    asset={currentVerificationItem.asset}
-                    service={currentVerificationItem.service}
-                    onVerified={handleVerificationComplete}
-                    onError={handleVerificationError}
-                  />
+                  <Trans id="Verify Dataset Credentials" />
                 ) : (
-                  <AssetActionCheckCredentialsAlgo
-                    asset={currentVerificationItem.asset}
-                    service={currentVerificationItem.service}
-                    onVerified={handleVerificationComplete}
-                    onError={handleVerificationError}
-                  />
+                  <Trans id="Verify Algorithm Credentials" />
                 )}
-              </CredentialDialogProvider>
+              </h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowCredentialsCheck(false)
+                  setCurrentVerificationIndex(-1)
+                  setVerificationQueue((prev) =>
+                    prev.map((item, i) =>
+                      i === currentVerificationIndex
+                        ? { ...item, status: 'failed' as const }
+                        : item
+                    )
+                  )
+                }}
+              >
+                <Trans id="✕ Close" />{' '}
+              </button>
             </div>
+            <CredentialDialogProvider autoStart={true}>
+              {currentVerificationItem.type === 'dataset' ? (
+                <AssetActionCheckCredentials
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
+                  onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
+                />
+              ) : (
+                <AssetActionCheckCredentialsAlgo
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
+                  onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
+                />
+              )}
+            </CredentialDialogProvider>
           </div>
-        )}
+        </div>
+      )}
     </div>
   )
 }
