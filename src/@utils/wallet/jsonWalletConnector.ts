@@ -108,7 +108,7 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
       }
     }
 
-    function restoreState(): boolean {
+    function restoreLocalState(): boolean {
       if (!persistSession || typeof sessionStorage === 'undefined') return false
       try {
         const storedKey = sessionStorage.getItem(
@@ -126,6 +126,96 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
         // ignore
       }
       return false
+    }
+
+    // BroadcastChannel is scoped to this origin and browser storage partition.
+    // Share only with live tabs; never persist the decrypted key in localStorage.
+    let sessionChannel: BroadcastChannel | undefined
+    let pendingRestore: Promise<boolean> | undefined
+    let finishRestore: ((restored: boolean) => void) | undefined
+    let restoreRequestId: string | undefined
+
+    function clearSession() {
+      finishRestore?.(false)
+      privateKey = undefined
+      currentChainId = undefined
+      clearPersistedState()
+    }
+
+    function setupSessionChannel() {
+      if (
+        sessionChannel ||
+        !persistSession ||
+        typeof window === 'undefined' ||
+        typeof BroadcastChannel === 'undefined'
+      )
+        return
+      try {
+        sessionChannel = new BroadcastChannel('jsonWallet:session')
+        sessionChannel.onmessage = ({ data }) => {
+          if (data?.type === 'disconnect') {
+            clearSession()
+            config.emitter.emit('disconnect')
+          } else if (data?.type === 'request') {
+            if (privateKey || restoreLocalState()) {
+              sessionChannel?.postMessage({
+                type: 'response',
+                requestId: data.requestId,
+                privateKey,
+                chainId: currentChainId
+              })
+            }
+          } else if (
+            data?.type === 'response' &&
+            finishRestore &&
+            data.requestId === restoreRequestId
+          ) {
+            try {
+              privateKeyToAccount(data.privateKey)
+              if (!config.chains.some((chain) => chain.id === data.chainId))
+                return
+              const { privateKey: restoredKey, chainId } = data
+              privateKey = restoredKey
+              currentChainId = chainId
+              persistState()
+              finishRestore(true)
+            } catch {
+              // Ignore invalid responses and continue waiting for a live tab.
+            }
+          }
+        }
+      } catch {
+        // Some browsers block cross-tab messaging; tab-local restore still works.
+      }
+    }
+
+    async function restoreState(): Promise<boolean> {
+      if (privateKey || restoreLocalState()) return true
+      setupSessionChannel()
+      if (!sessionChannel) return false
+      if (pendingRestore) return pendingRestore
+      pendingRestore = new Promise<boolean>((resolve) => {
+        const timeout = setTimeout(() => finishRestore?.(false), 1000)
+        finishRestore = (restored) => {
+          clearTimeout(timeout)
+          finishRestore = undefined
+          restoreRequestId = undefined
+          pendingRestore = undefined
+          resolve(restored)
+        }
+        restoreRequestId = Array.from(
+          crypto.getRandomValues(new Uint32Array(4))
+        ).join('-')
+        try {
+          sessionChannel!.postMessage({
+            type: 'request',
+            requestId: restoreRequestId
+          })
+        } catch {
+          finishRestore(false)
+        }
+      })
+      return pendingRestore
     }
 
     function buildProvider(): Provider {
@@ -350,6 +440,10 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
       },
       type: jsonWalletConnector.type,
 
+      async setup() {
+        setupSessionChannel()
+      },
+
       // --- Custom properties ---
 
       loadWallet(pk: string, chainId?: number) {
@@ -400,7 +494,7 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
       async connect({ chainId } = {}) {
         if (!privateKey) {
           // Try restoring from session
-          if (!restoreState()) {
+          if (!(await restoreState())) {
             // No wallet available — ask the UI to show the import modal
             // and return a promise that resolves when loadWallet() is called
             if (connectResolver) {
@@ -423,9 +517,8 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
 
       async disconnect() {
         LoggerInstance.log('[jsonWalletConnector] Disconnecting wallet.')
-        privateKey = undefined
-        currentChainId = undefined
-        clearPersistedState()
+        clearSession()
+        sessionChannel?.postMessage({ type: 'disconnect' })
         config.emitter.emit('disconnect')
       },
 
@@ -500,9 +593,8 @@ export function jsonWalletConnector(options: JsonWalletConnectorOptions = {}) {
       },
 
       onDisconnect() {
-        privateKey = undefined
-        currentChainId = undefined
-        clearPersistedState()
+        clearSession()
+        sessionChannel?.postMessage({ type: 'disconnect' })
         config.emitter.emit('disconnect')
       }
     }
