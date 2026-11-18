@@ -7380,11 +7380,6 @@ msgstr "Verificando..."
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/Review/index.tsx
-msgid "No credentials required (never expires)"
-msgstr "No se requieren credenciales (nunca caduca)"
-
-#. js-lingui-explicit-id
-#: src/components/ComputeWizard/Review/index.tsx
 msgid "C2D Resources"
 msgstr "Recursos C2D"
 

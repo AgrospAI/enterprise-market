@@ -1,3 +1,4 @@
+import { AquariusQueryResult, getQueryResult } from './searchResponse'
 import { i18n } from '../../i18n/index'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -247,7 +248,7 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  if (baseQueryParams.sortOptions !== undefined) {
+  if (baseQueryParams.sortOptions?.sortBy) {
     generatedQuery.sort = {
       [`${baseQueryParams.sortOptions.sortBy}`]:
         baseQueryParams.sortOptions.sortDirection ||
@@ -332,12 +333,6 @@ function getMetadataCacheUris(): string[] {
     .filter((uri) => typeof uri === 'string')
     .map((uri: string) => uri.trim().replace(/\/+$/, ''))
     .filter(Boolean)
-}
-
-interface AquariusQueryResult {
-  results?: Asset[]
-  totalResults?: number
-  aggregations?: unknown
 }
 
 interface MetadataCacheQuery {
@@ -460,18 +455,6 @@ function buildMetadataCacheQueries(
         cacheUri,
         query: prepareMergedCacheQuery(query)
       }))
-}
-
-function getQueryResult(
-  responseData: unknown
-): AquariusQueryResult | undefined {
-  const queryResult = Array.isArray(responseData)
-    ? responseData[0]
-    : responseData
-
-  return queryResult && typeof queryResult === 'object'
-    ? (queryResult as AquariusQueryResult)
-    : undefined
 }
 
 function getSortValue(asset: Asset, path: string): string | number | undefined {

@@ -312,7 +312,8 @@ function findCredential(
     const type = String(credential.type ?? '').toLowerCase()
     return type === 'address'
   })
-  if (type === 'service' && !hasAddressType) return true
+  // SSI policies are checked separately; this check only enforces Web3 lists.
+  if (!hasAddressType) return true
   return credentials.find((credential) => {
     if (!isCredentialAddressBased(credential)) {
       return false
@@ -377,21 +378,12 @@ export function isAddressWhitelisted(
 ): boolean {
   if (!ddo || !accountId) return false
 
-  // If SSI is not configured at asset or service level, allow access (no credential check required)
-  if (!ddo.credentialSubject?.credentials) {
-    return true
-  }
-
-  if (!service || !service.credentials) {
-    return true
-  }
-
   const assetAccessGranted = checkCredentials(
-    ddo.credentialSubject.credentials,
+    ddo.credentialSubject?.credentials,
     accountId
   )
   const serviceAccessGranted = checkCredentials(
-    service.credentials,
+    service?.credentials,
     accountId,
     'service'
   )

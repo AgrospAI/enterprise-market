@@ -62,6 +62,7 @@ import { resetCredentialCache } from './hooks/resetCredentialCache'
 import { resolveVerifierSessionId } from '@utils/verifierSession'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import appConfig from 'app.config.cjs'
+import { requiresSsi } from '@utils/credentials'
 import { ComputeRerunConfig } from '@utils/computeRerun'
 import {
   createComputeOutput,
@@ -1077,7 +1078,12 @@ export default function ComputeWizardController({
       if (isAlgorithmFlow) {
         const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
-        if (appConfig.ssiEnabled && !skip) {
+        if (
+          appConfig.ssiEnabled &&
+          (requiresSsi(asset.credentialSubject?.credentials) ||
+            requiresSsi(service?.credentials)) &&
+          !skip
+        ) {
           try {
             const sessionId = lookupVerifierSessionId(asset.id, service.id)
             const result = await checkVerifierSessionId(sessionId)

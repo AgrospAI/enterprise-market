@@ -35,6 +35,8 @@ import {
 } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { requiresSsi } from '@utils/credentials'
+import appConfig from 'app.config.cjs'
+import { getVerificationStatus } from './verification'
 import { getFeeTooltip } from '@utils/feeTooltips'
 import { getAsset } from '@utils/aquarius'
 import { getBaseTokenSymbol } from '@utils/getBaseTokenSymbol'
@@ -870,8 +872,6 @@ export default function Review({
     const queue: VerificationItem[] = []
     if (isDatasetFlow) {
       if (asset && service) {
-        const sessionId = lookupVerifierSessionId?.(asset.id, service.id)
-        const isVerified = Boolean(sessionId)
         const rawPrice =
           accessDetails?.validOrderTx && accessDetails.validOrderTx !== ''
             ? '0'
@@ -881,7 +881,7 @@ export default function Review({
           type: 'dataset',
           asset,
           service,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: 0,
           price: rawPrice,
           duration: formatServiceTimeout(service.timeout),
@@ -904,11 +904,6 @@ export default function Review({
           undefined)
       const algoService = algoServices?.[serviceIndex] || algoServices?.[0]
       if (selectedAlgorithmAsset && algoService) {
-        const sessionId = lookupVerifierSessionId?.(
-          selectedAlgorithmAsset.id,
-          algoService?.id
-        )
-        const isVerified = Boolean(sessionId)
         const details = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
         const rawPrice =
           details?.validOrderTx || details?.price
@@ -921,7 +916,7 @@ export default function Review({
           type: 'algorithm',
           asset: selectedAlgorithmAsset,
           service: algoService,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: queue.length,
           price: rawPrice,
           duration: formatServiceTimeout(algoService.timeout),
@@ -944,8 +939,6 @@ export default function Review({
         selectedDatasetAsset?.forEach((ds, index) => {
           const dsService =
             ds.credentialSubject?.services?.[ds.serviceIndex || 0]
-          const sessionId = lookupVerifierSessionId?.(ds.id, dsService?.id)
-          const isVerified = Boolean(sessionId)
           const details = ds.accessDetails?.[ds.serviceIndex || 0]
           const rawPrice =
             details?.validOrderTx && details.validOrderTx !== ''
@@ -956,9 +949,7 @@ export default function Review({
             type: 'dataset',
             asset: ds,
             service: dsService,
-            status: isVerified
-              ? ('verified' as const)
-              : ('unverified' as const),
+            status: 'unverified',
             index,
             price: rawPrice,
             duration: formatServiceTimeout(dsService?.timeout),
@@ -976,8 +967,6 @@ export default function Review({
         })
       }
       if (service && asset) {
-        const sessionId = lookupVerifierSessionId?.(asset?.id, service.id)
-        const isVerified = Boolean(sessionId)
         const rawPrice = asset.credentialSubject.metadata.algorithm
           ? accessDetails?.validOrderTx
             ? '0'
@@ -990,7 +979,7 @@ export default function Review({
           type: 'algorithm',
           asset,
           service,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: queue.length,
           price: rawPrice,
           duration: formatServiceTimeout(service.timeout),
@@ -1005,7 +994,18 @@ export default function Review({
         })
       }
     }
-    setVerificationQueue(queue)
+    setVerificationQueue(
+      queue.map((item) => ({
+        ...item,
+        status: getVerificationStatus(
+          item.asset,
+          item.service,
+          accountId,
+          appConfig.ssiEnabled,
+          lookupVerifierSessionId?.(item.asset.id, item.service?.id)
+        )
+      }))
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isDatasetFlow,
@@ -1015,7 +1015,8 @@ export default function Review({
     selectedAlgorithmAsset,
     selectedDatasetAsset,
     values.withoutDataset,
-    serviceIndex
+    serviceIndex,
+    accountId
   ])
 
   useEffect(() => {
@@ -1056,37 +1057,26 @@ export default function Review({
   }, [])
 
   const startVerification = (index: number) => {
-    const hasExpiredCredentials = verificationQueue.some(
-      (item) => item.status === 'failed' || item.status === 'expired'
+    if (!appConfig.ssiEnabled) return
+    const requiresVerification = (item: VerificationItem) =>
+      requiresSsi(item.asset?.credentialSubject?.credentials) ||
+      requiresSsi(item.service?.credentials)
+    const firstExpiredIndex = verificationQueue.findIndex(
+      (item) =>
+        requiresVerification(item) &&
+        (item.status === 'failed' || item.status === 'expired')
     )
-    if (hasExpiredCredentials) {
-      const expiredIndices = verificationQueue
-        .map((item, i) => ({ item, index: i }))
-        .filter(
-          ({ item }) => item.status === 'failed' || item.status === 'expired'
-        )
-        .map(({ index }) => index)
-      const firstExpiredIndex = expiredIndices[0]
-      if (firstExpiredIndex !== undefined) {
-        setVerificationQueue((prev) =>
-          prev.map((item, i) =>
-            i === firstExpiredIndex
-              ? { ...item, status: 'checking' as const }
-              : item
-          )
-        )
-        setCurrentVerificationIndex(firstExpiredIndex)
-        setShowCredentialsCheck(true)
-      }
-    } else {
-      setVerificationQueue((prev) =>
-        prev.map((item, i) =>
-          i === index ? { ...item, status: 'checking' as const } : item
-        )
+    const nextIndex = firstExpiredIndex === -1 ? index : firstExpiredIndex
+    const nextItem = verificationQueue[nextIndex]
+    if (!nextItem || !requiresVerification(nextItem)) return
+
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === nextIndex ? { ...item, status: 'checking' as const } : item
       )
-      setCurrentVerificationIndex(index)
-      setShowCredentialsCheck(true)
-    }
+    )
+    setCurrentVerificationIndex(nextIndex)
+    setShowCredentialsCheck(true)
   }
 
   const handleVerificationComplete = () => {
@@ -2330,9 +2320,10 @@ export default function Review({
                 </div>
               ) : (
                 assetRows.map((item, i) => {
-                  const hasSsiPolicy =
-                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                    requiresSsi(item.service?.credentials)
+                  const showSsiVerification =
+                    appConfig.ssiEnabled &&
+                    (requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                      requiresSsi(item.service?.credentials))
                   return (
                     <PricingRow
                       key={`${item.type}-${item.id}-${i}`}
@@ -2342,7 +2333,9 @@ export default function Review({
                       duration={item.duration}
                       className={styles.listRow}
                       actionLabel={
-                        item.status === 'unverified'
+                        !showSsiVerification
+                          ? undefined
+                          : item.status === 'unverified'
                           ? i18n._('Check Credentials')
                           : item.status === 'checking'
                           ? i18n._('Verifying...')
@@ -2357,15 +2350,16 @@ export default function Review({
                         item.status === 'checking' || item.status === 'verified'
                       }
                       isService={item.type === 'algorithm'}
-                      infoMessage={
-                        !hasSsiPolicy
-                          ? i18n._('No credentials required (never expires)')
-                          : undefined
+                      credentialStatus={
+                        showSsiVerification ? item.status : undefined
                       }
-                      credentialStatus={item.status}
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
-                      onCredentialRefresh={() => startVerification(i)}
+                      onCredentialRefresh={
+                        showSsiVerification
+                          ? () => startVerification(i)
+                          : undefined
+                      }
                       symbol={item.symbol || symbol}
                       tooltip={getFeeTooltip(item.name)}
                       showStatusWithoutAction

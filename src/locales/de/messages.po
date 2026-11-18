@@ -7380,11 +7380,6 @@ msgstr "Überprüfung..."
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/Review/index.tsx
-msgid "No credentials required (never expires)"
-msgstr "Keine Nachweise erforderlich (läuft nie ab)"
-
-#. js-lingui-explicit-id
-#: src/components/ComputeWizard/Review/index.tsx
 msgid "C2D Resources"
 msgstr "C2D-Ressourcen"
 
