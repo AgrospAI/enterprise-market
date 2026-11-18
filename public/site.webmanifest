@@ -1,11 +1,11 @@
 {
-  "name": "AgrospAI Demonstration Marketplace",
-  "short_name": "AgrospAI",
+  "name": "Tareando Data Space",
+  "short_name": "Tareando",
   "description": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#004967",
-  "background_color": "#ffffff",
+  "theme_color": "#1674b6",
+  "background_color": "#f5f5ff",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

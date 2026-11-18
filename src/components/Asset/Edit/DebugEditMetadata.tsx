@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
+import { withPortalTag } from '@utils/portalTag'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { MetadataEditForm } from './_types'
@@ -42,7 +43,7 @@ export default function DebugEditMetadata({
         author: values.author,
         providedBy: values.providedBy || '',
         copyrightHolder: values.copyrightHolder || '',
-        tags: values.tags,
+        tags: withPortalTag(values.tags),
         license: values.license,
         additionalInformation: {
           ...asset?.credentialSubject?.metadata?.additionalInformation,

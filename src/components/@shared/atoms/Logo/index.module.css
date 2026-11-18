@@ -1,11 +1,13 @@
 /*
- * AgrospAI logo: full-colour mark with fixed fills. Sized by height, width
+ * Tareando logo: the wordmark paths use fill="currentColor", so the colour
+ * is set here (brand blue on the light header). Sized by height, width
  * follows the aspect ratio.
  */
 .logo {
   /* the SVGR component sets width/height="1em", so the ratio must be explicit
-   * (matches the viewBox of src/@images/agrospai_logo.svg) */
-  aspect-ratio: 227 / 206.75;
+   * (matches the viewBox of src/@images/tareando_logo_horizontal.svg) */
+  aspect-ratio: 406.4 / 119.33;
+  color: var(--brand-tareando-dark);
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
   margin: 0;

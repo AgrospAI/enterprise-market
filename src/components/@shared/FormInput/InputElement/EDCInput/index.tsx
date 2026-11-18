@@ -209,7 +209,7 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
               id="edcParticipantId"
               type="text"
               className={styles.input}
-              placeholder="did:web:provider-identity-hub.agrospai.udl.cat:provider-connector-id"
+              placeholder="did:web:provider-identity-hub.example.com:provider-connector-id"
               value={participantId}
               onChange={(e) => setParticipantId(e.target.value)}
             />
@@ -222,7 +222,7 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
               id="edcDspUrl"
               type="text"
               className={styles.input}
-              placeholder="https://provider-connector.agrospai.udl.cat/api/dsp"
+              placeholder="https://provider-connector.example.com/api/dsp"
               value={dspUrl}
               onChange={(e) => setDspUrl(e.target.value)}
             />

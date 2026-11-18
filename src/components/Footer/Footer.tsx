@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import styles from './Footer.module.css'
 import Links from './Links'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import Logo from '@images/agrospai_logo_horizontal.svg'
+import Logo from '@images/tareando_logo_horizontal.svg'
 
 export default function Footer(): ReactElement {
   useLingui()
@@ -22,15 +22,15 @@ export default function Footer(): ReactElement {
           <Logo className={styles.logo} />
           <div className={styles.taglineContainer}>
             <span className={styles.tagline}>
-              <Trans id="Developed by Universitat de Lleida and powered by Ocean Enterprise. Learn more about the project!" />{' '}
+              <Trans id="Tareando data space by Disi Servicios Informáticos, powered by Ocean Enterprise. Learn more about the project!" />{' '}
             </span>
             <a
               className={styles.websiteLink}
-              href="https://agrospai.udl.cat/en"
+              href="https://tareando.es/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Trans id="agrospai.udl.cat" />{' '}
+              tareando.es{' '}
             </a>
           </div>
         </div>

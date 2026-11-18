@@ -5,18 +5,14 @@
 //   - an array of strings/numbers     → translated to a "terms" filter
 //   - an object with { match: value } → translated to a case-insensitive "match" filter
 //
-// Examples:
-//   indexedMetadata: { nft: { owner: '0x123…' } }                           → term filter
-//   indexedMetadata: { nft: { state: [0, 1] } }                             → terms filter
-//   credentialSubject: { metadata: { tags: { keyword: 'MyTag' } } }         → term filter (.keyword sub-field)
-//   credentialSubject: { metadata: { tags: { match: 'MyTag' } } }           → match filter (full-text, use with caution)
-//
 // Scope: these filters are injected into every query built by
-// generateBaseQuery, which since upstream v1.5.0 also covers the
-// Compute-to-Data algorithm allowlist (getAlgorithmAllowlistQuery) and the
-// dataset-for-algorithm selection lists. A non-empty config therefore also
-// hides trusted algorithms and datasets that lack the configured tag, not just
-// search results. Orders are exempt via the isOrderIndex guard.
+// generateBaseQuery, which also covers the Compute-to-Data algorithm
+// allowlist (getAlgorithmAllowlistQuery) and the dataset-for-algorithm
+// selection lists. Orders are exempt via the isOrderIndex guard.
 //
-// Empty by default — downstream portals override this file with their own tags.
-module.exports = {}
+// Tareando: the portal only lists assets tagged "tareando". The same tag is
+// forced on every asset published or edited from this portal (see
+// src/@utils/portalTag.ts), so new assets always show up in the catalogue.
+module.exports = {
+  credentialSubject: { metadata: { tags: { keyword: 'tareando' } } }
+}

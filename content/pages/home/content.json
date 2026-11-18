@@ -1,7 +1,7 @@
 {
   "hero": {
-    "title": "AgrospAI Demonstration Marketplace",
-    "subtitle": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
+    "title": "Tareando Data Space",
+    "subtitle": "Tareando Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
     "searchPlaceholder": "Search data and algorithms…"
   },
   "ecosystem": {
@@ -14,179 +14,9 @@
         "logoColor": "/images/partners/color/udl.webp"
       },
       {
-        "name": "SBB",
-        "logo": "/images/partners/sbb.png",
-        "logoColor": "/images/partners/color/sbb.webp"
-      },
-      {
-        "name": "Sense",
-        "logo": "/images/partners/sense.png",
-        "logoColor": "/images/partners/color/sense.webp"
-      },
-      {
-        "name": "TU Wien",
-        "logo": "/images/partners/tu-wien.png",
-        "logoColor": "/images/partners/color/tu-wien.webp"
-      },
-      {
-        "name": "ACCURATE",
-        "logo": "/images/partners/accurate.png",
-        "logoColor": "/images/partners/color/accurate.webp"
-      },
-      {
-        "name": "AgrospAI",
-        "logo": "/images/partners/agrospai.png",
-        "logoColor": "/images/partners/color/agrospai.webp"
-      },
-      {
-        "name": "AllUnity",
-        "logo": "/images/partners/allunity.png",
-        "logoColor": "/images/partners/color/allunity.webp"
-      },
-      {
-        "name": "beebucket",
-        "logo": "/images/partners/beebucket.png",
-        "logoColor": "/images/partners/color/beebucket.webp"
-      },
-      {
-        "name": "EuProGigant",
-        "logo": "/images/partners/euprogigant.png",
-        "logoColor": "/images/partners/color/euprogigant.webp"
-      },
-      {
         "name": "Ocean Enterprise",
         "logo": "/images/partners/ocean-enterprise.png",
         "logoColor": "/images/partners/color/ocean-enterprise.webp"
-      },
-      {
-        "name": "GMN",
-        "logo": "/images/partners/gmn.png",
-        "logoColor": "/images/partners/color/gmn.webp"
-      },
-      {
-        "name": "Airbus",
-        "logo": "/images/partners/airbus.png",
-        "logoColor": "/images/partners/color/airbus.webp"
-      },
-      {
-        "name": "Airbus Defence and Space",
-        "logo": "/images/partners/airbus-defence-and-space-gmbh.png",
-        "logoColor": "/images/partners/color/airbus-defence-and-space-gmbh.webp"
-      },
-      {
-        "name": "AIT Austrian Institute of Technology",
-        "logo": "/images/partners/ait-austrian-institute-of-technology-gmbh.png",
-        "logoColor": "/images/partners/color/ait-austrian-institute-of-technology-gmbh.webp"
-      },
-      {
-        "name": "DLR – German Aerospace Center",
-        "logo": "/images/partners/dlr-german-aerospace-center.png",
-        "logoColor": "/images/partners/color/dlr-german-aerospace-center.webp"
-      },
-      {
-        "name": "TEF agrifood",
-        "logo": "/images/partners/tef-agrifood.png",
-        "logoColor": "/images/partners/color/tef-agrifood.webp"
-      },
-      {
-        "name": "Gaia-X AISBL",
-        "logo": "/images/partners/gaia-x-aisbl.png",
-        "logoColor": "/images/partners/color/gaia-x-aisbl.webp"
-      },
-      {
-        "name": "PTW TU Darmstadt",
-        "logo": "/images/partners/ptw-tu-darmstadt.png",
-        "logoColor": "/images/partners/color/ptw-tu-darmstadt.webp"
-      },
-      {
-        "name": "Neusta Aerospace",
-        "logo": "/images/partners/neusta-aerospace.png",
-        "logoColor": "/images/partners/color/neusta-aerospace.webp"
-      },
-      {
-        "name": "OHB SE",
-        "logo": "/images/partners/ohb-se.png",
-        "logoColor": "/images/partners/color/ohb-se.webp"
-      },
-      {
-        "name": "Oasis",
-        "logo": "/images/partners/oasis.png",
-        "logoColor": "/images/partners/color/oasis.webp"
-      },
-      {
-        "name": "UBC",
-        "logo": "/images/partners/ubc.png",
-        "logoColor": "/images/partners/color/ubc.webp"
-      },
-      {
-        "name": "FIWARE",
-        "logo": "/images/partners/fiware.png",
-        "logoColor": "/images/partners/color/fiware.webp"
-      },
-      {
-        "name": "CIRP",
-        "logo": "/images/partners/cirp.png",
-        "logoColor": "/images/partners/color/cirp.webp"
-      },
-      {
-        "name": "Cooperants",
-        "logo": "/images/partners/cooperants.png",
-        "logoColor": "/images/partners/color/cooperants.webp"
-      },
-      {
-        "name": "CLIO-X",
-        "logo": "/images/partners/clio-x.png",
-        "logoColor": "/images/partners/color/clio-x.webp"
-      },
-      {
-        "name": "FEN",
-        "logo": "/images/partners/fen.png",
-        "logoColor": "/images/partners/color/fen.webp"
-      },
-      {
-        "name": "PSNC",
-        "logo": "/images/partners/psnc.png",
-        "logoColor": "/images/partners/color/psnc.webp"
-      },
-      {
-        "name": "Dione-X",
-        "logo": "/images/partners/dione-x.png",
-        "logoColor": "/images/partners/color/dione-x.webp"
-      },
-      {
-        "name": "Flex4Res",
-        "logo": "/images/partners/flex4res.png",
-        "logoColor": "/images/partners/color/flex4res.webp"
-      },
-      {
-        "name": "Gaia-X 4 Future Mobility",
-        "logo": "/images/partners/gaia-x-4-future-mobility.png",
-        "logoColor": "/images/partners/color/gaia-x-4-future-mobility.webp"
-      },
-      {
-        "name": "Gaia-X Hub Germany",
-        "logo": "/images/partners/gaia-x-hub-germany.png",
-        "logoColor": "/images/partners/color/gaia-x-hub-germany.webp"
-      },
-      {
-        "name": "Gaia-X Hub Austria",
-        "logo": "/images/partners/gaia-x-hub-austria.png",
-        "logoColor": "/images/partners/color/gaia-x-hub-austria.webp"
-      },
-      {
-        "name": "Gaia-X Hub France",
-        "logo": "/images/partners/gaia-x-hub-france.png",
-        "logoColor": "/images/partners/color/gaia-x-hub-france.webp"
-      },
-      {
-        "name": "Gaia-X Hub Spain",
-        "logo": "/images/partners/gaia-x-hub-spain.png",
-        "logoColor": "/images/partners/color/gaia-x-hub-spain.webp"
-      },
-      {
-        "name": "Gaia-X Hub Netherlands",
-        "logo": "/images/partners/gaia-x-hub-netherlands.png",
-        "logoColor": "/images/partners/color/gaia-x-hub-netherlands.webp"
       }
     ]
   },
@@ -257,11 +87,11 @@
     "cta": {
       "title": "The secure foundation",
       "titleMuted": "for the AI & data economy",
-      "text": "Join Pontus-X for free.",
-      "label": "Onboard now",
-      "href": "https://onboarding.delta-dao.com",
+      "text": "Want to share your data or services in Tareando?",
+      "label": "Learn more",
+      "href": "https://tareando.es/",
       "contactLabel": "Contact us",
-      "contactHref": "https://delta-dao.com/contact"
+      "contactHref": "mailto:hola@tareando.es"
     }
   }
 }

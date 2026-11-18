@@ -1,7 +1,7 @@
 {
   "title": "🍪 We're not big on cookies",
-  "text": "We respect your privacy! We only use strictly necessary cookies to keep the portal working, and our reach analysis works without cookies and without tracking you. See our [cookie policy](/privacy/cookie-policy).",
-  "analyticsText": "We respect your privacy! We only use strictly necessary cookies to keep the portal working, and our reach analysis works without cookies and without tracking you. See our [cookie policy](/privacy/cookie-policy).",
+  "text": "We respect your privacy! We only use strictly necessary cookies to keep the portal working and we do not track you. See our [cookie policy](/privacy/cookie-policy).",
+  "analyticsText": "We respect your privacy! We only use strictly necessary cookies to keep the portal working and we do not track you. See our [cookie policy](/privacy/cookie-policy).",
   "manageIntro": "Choose which cookies this portal may use. Essential cookies are always active.",
   "close": "Acknowledge",
   "save": "Save preferences",

@@ -192,7 +192,7 @@ export async function setNFTMetadataAndTokenURI(
             name: (asset as Asset).indexedMetadata.nft.name,
             symbol: (asset as Asset).indexedMetadata.nft.symbol,
             description: i18n._(
-              '{value0}\n\nView on the AgrospAI Marketplace: {externalUrl}',
+              '{value0}\n\nView on the Tareando Data Space: {externalUrl}',
               {
                 value0: nftMetadataTemplate.description,
                 externalUrl

@@ -1,16 +1,13 @@
 ---
-title: Imprint
-description: Contact information of the provider of the AgrospAI Demonstration Marketplace.
-lastUpdated: '2026-11-04'
+title: Contact
+description: Contact information of the provider of the Tareando Data Space portal.
+lastUpdated: '2026-11-16'
 ---
 
-**Universitat de Lleida**  
-Computer Science and Digital Design Department  
-Jaume II, 69  
-25001 Lleida  
-Spain  
-CIF: Q7550001G
+**Tareando**  
+Disi Servicios Informáticos  
+Web: [tareando.es](https://tareando.es/)  
+E-mail: <hola@tareando.es>
 
-**Contact person**  
-Roberto García, Associate Professor  
-E-mail: <roberto.garcia@udl.cat>
+**Data protection enquiries**  
+E-mail: <rgpd@disi.es>

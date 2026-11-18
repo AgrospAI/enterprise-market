@@ -34,7 +34,7 @@ export const authBrandDefaults: {
   trustBadges: string[]
 } = {
   get title() {
-    return i18n._('AgrospAI Portal')
+    return i18n._('Tareando Portal')
   },
   get description() {
     return i18n._(

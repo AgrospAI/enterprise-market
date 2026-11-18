@@ -50,7 +50,8 @@
         "name": "tags",
         "label": "Tags",
         "type": "tags",
-        "placeholder": "e.g. logistics"
+        "placeholder": "e.g. logistics",
+        "help": "The tag `tareando` is added automatically so the asset is listed in this portal."
       },
       {
         "name": "ontologyTerms",
@@ -69,7 +70,7 @@
       {
         "name": "locationLabel",
         "label": "Location Name",
-        "placeholder": "e.g. Lleida, Catalonia, Spain",
+        "placeholder": "e.g. Catalonia, Spain",
         "help": "Optional: Provide a human-readable name for the geographic area.",
         "required": false
       },
@@ -96,13 +97,13 @@
       {
         "name": "copyrightHolder",
         "label": "Copyright Holder",
-        "placeholder": "e.g. Universitat de Lleida",
+        "placeholder": "e.g. Disi Servicios Informáticos",
         "help": "The entity holding the legal copyright for this asset."
       },
       {
         "name": "providedBy",
         "label": "Provided By",
-        "placeholder": "e.g. https://agrospai.udl.cat/vc.json",
+        "placeholder": "e.g. https://tareando.es/vc.json",
         "help": "URL where the Verifiable Credential of the entity offering this asset resides."
       },
       {
@@ -112,7 +113,7 @@
         "keyLabel": "Title",
         "valueLabel": "URL",
         "keyPlaceholder": "e.g. Website",
-        "valuePlaceholder": "e.g. https://agrospai.udl.cat",
+        "valuePlaceholder": "e.g. https://tareando.es",
         "validateValueAsUrl": true,
         "help": "Related links for this asset as a mapping of titles to URLs. Enter a Title and its URL, then click Add. Repeat to add more (e.g. website, demo)."
       },

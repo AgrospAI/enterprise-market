@@ -1,8 +1,10 @@
 ---
-lastUpdated: '2026-11-04'
+lastUpdated: '2026-11-16'
 ---
 
-# AgrospAI MARKETPLACE - TERMS AND CONDITIONS
+# TAREANDO DATA PORTAL - TERMS AND CONDITIONS
+
+All the infrastructure components of the Tareando Data Space ecosystem, including the data portal demonstrator, are provided by Universitat de Lleida (hereinafter "UdL") on behalf of Tareando. These terms and conditions govern the access to and use of the Tareando data portal demonstrator provided by UdL.
 
 UdL (as defined below) provides a technical infrastructure for a digital portal enabling access to data (as defined below). Based on these terms and conditions, a customer (as defined below) and UdL enter into an agreement which governs the customer’s access to and use of the data portal (as defined below) and takes effect on the date of UdL’s acceptance of such customer’s offer.
 
@@ -61,7 +63,7 @@ Capitalised terms shall have the meaning given to them in this Agreement; and:
 
 **"Third-Party Content"** means Service Offerings published by other parties but the Customer.
 
-**"Website"** means the website at [https://market.agrospai.udl.cat](https://market.agrospai.udl.cat) (and any successor or related site designated by UdL), as may be updated by UdL from time to time.
+**"Website"** means the website at [https://tareando.agrospai.udl.cat](https://tareando.agrospai.udl.cat) (and any successor or related site designated by UdL), as may be updated by UdL from time to time.
 
 **1.2 Interpretation**  
 **1.2.1** Unless specified otherwise, these Terms shall be construed as follows:

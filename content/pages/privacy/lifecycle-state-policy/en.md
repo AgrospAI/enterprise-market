@@ -1,7 +1,7 @@
 ---
 title: Lifecycle State Policy
 description: This Lifecycle State Policy describes the assignment and transition of Lifecycle States and sanctions for a violation of this policy. It supplements the Terms and Conditions.
-lastUpdated: '2026-11-04'
+lastUpdated: '2026-11-16'
 ---
 
 # Lifecycle State Policy
@@ -21,7 +21,7 @@ _Version: August 2026_
 
 ## 1. Objective and scope
 
-The Lifecycle State Policy describes the assignment and transition of one Lifecycle State to another and sanctions for a violation of this policy. This policy supplements the Terms and Conditions available at [Terms and Conditions](/privacy/terms), as updated from time to time, between Customer and Universitat de Lleida (in the following “Data Portal Provider”), which governs the Customer’s access to and use of the Data Portal.
+The Lifecycle State Policy describes the assignment and transition of one Lifecycle State to another and sanctions for a violation of this policy. This policy supplements the Terms and Conditions available at [Terms and Conditions](/privacy/terms), as updated from time to time, between Customer and Universitat de Lleida, acting as infrastructure provider of the Tareando Data Space (in the following “Data Portal Provider”), which governs the Customer’s access to and use of the Data Portal.
 
 As outlined in the Terms and Conditions, **all Customers are bound by this policy**.
 

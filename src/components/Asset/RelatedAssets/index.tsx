@@ -8,6 +8,7 @@ import styles from './index.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
 import AssetList from '@shared/AssetList'
 import { generateQuery } from './_utils'
+import { withoutPortalTag } from '@utils/portalTag'
 import { Asset } from 'src/@types/Asset'
 
 export default function RelatedAssets(): ReactElement {
@@ -42,19 +43,30 @@ export default function RelatedAssets(): ReactElement {
       try {
         let tagResults: Asset[] = []
 
+        // Tareando: every asset carries the portal tag, so ignore it when
+        // looking for related assets by tag.
+        const relatedTags = withoutPortalTag(
+          assetTags instanceof Array ? assetTags : []
+        )
+
         // safeguard against faults in the metadata
-        if (assetTags instanceof Array) {
+        if (relatedTags.length > 0) {
+          const baseQuery = generateBaseQuery({
+            chainIds,
+            esPaginationOptions: { from: 0, size: 4 }
+          })
+          // keep the base filters (portal tag, chain, purgatory, nodes...)
+          // and only narrow the result down by tag and current asset
           const tagQuery = {
-            ...generateBaseQuery({
-              chainIds,
-              esPaginationOptions: { from: 0, size: 4 }
-            }),
+            ...baseQuery,
             query: {
               bool: {
+                ...baseQuery.query.bool,
                 must: [
+                  ...(baseQuery.query.bool.must || []),
                   {
                     terms: {
-                      'credentialSubject.metadata.tags.keyword': assetTags
+                      'credentialSubject.metadata.tags.keyword': relatedTags
                     }
                   }
                 ],

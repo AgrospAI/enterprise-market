@@ -1,10 +1,10 @@
 {
-  "siteTitle": "AgrospAI Demonstration Marketplace",
-  "siteTagline": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
+  "siteTitle": "Tareando",
+  "siteTagline": "Tareando Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
   "taglineContinuation": "",
-  "siteUrl": "",
+  "siteUrl": "https://tareando.agrospai.udl.cat",
   "siteImage": "/share.png",
-  "siteImageAlt": "AgrospAI Demonstration Marketplace: sovereign agri-food data-sharing and AI services",
+  "siteImageAlt": "Tareando Data Space: sovereign data-sharing and AI services",
   "menu": [
     {
       "name": "Catalogue",
@@ -24,29 +24,21 @@
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in beta phase."
   },
-  "siteDescription": "Agri-food data space for sovereign data-sharing and AI services, developed by Universitat de Lleida and powered by Ocean Enterprise.",
+  "siteDescription": "Tareando data space for sovereign data-sharing and AI services, operated by Disi Servicios Informáticos on infrastructure provided by Universitat de Lleida and powered by Ocean Enterprise.",
   "footer": {
     "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
-    "copyright": "© AgrospAI 2026 · Universitat de Lleida",
+    "copyright": "© 2026 Disi Servicios Informáticos · Developed by Universitat de Lleida",
     "content": [
       {
         "title": "Resources",
         "links": [
           {
-            "name": "About AgrospAI",
-            "link": "https://agrospai.udl.cat/en"
-          },
-          {
-            "name": "Universitat de Lleida",
-            "link": "https://www.udl.cat"
+            "name": "About Tareando",
+            "link": "https://tareando.es/"
           },
           {
             "name": "Docs",
             "link": "https://docs.oceanenterprise.io/"
-          },
-          {
-            "name": "GitHub",
-            "link": "https://github.com/AgrospAI"
           }
         ]
       },
@@ -71,7 +63,7 @@
         "title": "Legal",
         "links": [
           {
-            "name": "Imprint",
+            "name": "Contact",
             "link": "/privacy/imprint"
           },
           {

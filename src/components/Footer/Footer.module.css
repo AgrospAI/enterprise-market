@@ -1,4 +1,4 @@
-/* AgrospAI footer: the dark green slide that bookends the site.
+/* Tareando footer: the brand blue slide that bookends the site.
  * Content sits on the same grid as the home sections: a 1160px box with 20px
  * side padding (1120px of content), 1500px at >=1550px, 1900px at >=2550px. */
 .footer {
@@ -76,14 +76,14 @@
 }
 
 .logoSection > svg {
-  aspect-ratio: 476 / 207; /* matches the agrospai_logo_horizontal.svg viewBox */
+  aspect-ratio: 406.4 / 119.33; /* matches the tareando_logo_horizontal.svg viewBox */
   width: auto;
   height: var(--footer-logo-size-height);
   margin: 0;
 }
 
 .logo {
-  aspect-ratio: 476 / 207;
+  aspect-ratio: 406.4 / 119.33;
   width: auto;
   height: var(--footer-logo-size-height);
 }

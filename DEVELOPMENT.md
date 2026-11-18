@@ -31,8 +31,8 @@ already linked to the Infisical project through the committed
 ## Getting started
 
 ```bash
-git clone https://github.com/AgrospAI/enterprise-market.git
-cd enterprise-market
+git clone https://github.com/AgrospAI/tareando-enterprise-market.git
+cd tareando-enterprise-market
 nvm use                 # switch to the Node version in .nvmrc
 make secrets-pull       # write .env from Infisical (dev environment)
 npm install             # also installs the Husky git hooks

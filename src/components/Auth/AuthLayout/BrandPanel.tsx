@@ -1,5 +1,5 @@
 import { useLingui } from '@lingui/react'
-import Logo from '@images/agrospai_logo_horizontal.svg'
+import Logo from '@images/tareando_logo_horizontal.svg'
 import appConfig from 'app.config.cjs'
 import { authBrandDefaults, type AuthPanelContent } from '../constants'
 import { BrandPanelIcon, BrandPanelWaves } from './BrandPanelArtwork'
