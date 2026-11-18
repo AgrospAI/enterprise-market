@@ -28,12 +28,20 @@ export function ensureUrlScheme(url: string): string {
 export function isValidWebUrl(url: string): boolean {
   const trimmed = url?.trim()
   if (!trimmed) return true
+  // Explicit local HTTP(S) endpoints are valid web links too.
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      if (new URL(trimmed).hostname === 'localhost') return true
+    } catch {
+      return false
+    }
+  }
   // The host as typed must contain a dot: a real domain (`domain.tld`) or IP
   // (`a.b.c.d`) always does. Without this, the URL parser silently coerces a
   // bare integer (e.g. `2312321` -> `0.35.71.65`) into an IP and accepts it,
   // and bare single-word tokens (`localhost`, `rweASDsSDADS`) would slip in.
   const typedHost = trimmed.replace(/^https?:\/\//i, '').split(/[/?#]/)[0]
-  if (!typedHost.includes('.')) return false
+  if (!typedHost.includes('.') || /\s/.test(typedHost)) return false
   try {
     const parsed = new URL(ensureUrlScheme(trimmed))
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
@@ -42,7 +50,15 @@ export function isValidWebUrl(url: string): boolean {
     // hostname must resolve to a domain/IP: at least two non-empty,
     // dot-separated labels. This also rejects ".io" and "example.".
     const labels = parsed.hostname.split('.')
-    return labels.length >= 2 && labels.every((label) => label.length > 0)
+    return (
+      labels.length >= 2 &&
+      labels.every(
+        (label) =>
+          /^[a-z0-9-]+$/i.test(label) &&
+          !label.startsWith('-') &&
+          !label.endsWith('-')
+      )
+    )
   } catch {
     return false
   }

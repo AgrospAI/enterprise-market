@@ -9,7 +9,7 @@ import { Asset } from 'src/@types/Asset'
 import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
 import Label from '@components/@shared/FormInput/Label'
 import { assetStateToString, displayAssetState } from '@utils/assetState'
-import { safeExternalWebUrl } from '@utils/url'
+import { isValidWebUrl, safeExternalWebUrl } from '@utils/url'
 import AdditionalLicenseFiles from './AdditionalLicenseFiles'
 import MetaLinks from './MetaLinks'
 import TruncatedMetaValue from './TruncatedMetaValue'
@@ -71,13 +71,18 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
           <MetaItem
             title={i18n._('Provided By')}
             content={
-              <a
-                href={safeExternalWebUrl(metadata.providedBy)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {metadata.providedBy}
-              </a>
+              metadata.providedBy.trim() &&
+              isValidWebUrl(metadata.providedBy) ? (
+                <a
+                  href={safeExternalWebUrl(metadata.providedBy)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {metadata.providedBy}
+                </a>
+              ) : (
+                metadata.providedBy
+              )
             }
           />
         )}
@@ -151,7 +156,23 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
         <AdditionalLicenseFiles licenseDocuments={license?.licenseDocuments} />
         <MetaItem
           title={i18n._('OE Node')}
-          content={oeNode || i18n._('Not available')}
+          content={
+            oeNode ? (
+              isValidWebUrl(oeNode) ? (
+                <a
+                  href={safeExternalWebUrl(oeNode)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {oeNode}
+                </a>
+              ) : (
+                oeNode
+              )
+            ) : (
+              i18n._('Not available')
+            )
+          }
         />
       </div>
     </>

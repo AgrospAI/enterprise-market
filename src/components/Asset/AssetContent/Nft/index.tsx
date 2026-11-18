@@ -1,5 +1,5 @@
 import { useLingui } from '@lingui/react'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { useAsset } from '@context/Asset'
 import Tooltip from '@shared/atoms/Tooltip'
 import { decodeTokenURI } from '@utils/nft'
@@ -16,6 +16,7 @@ export default function Nft({
   useLingui()
 
   const { asset } = useAsset()
+  const [failedImage, setFailedImage] = useState<string | null>(null)
   const nftMetadata = decodeTokenURI(asset?.indexedMetadata.nft?.tokenURI)
 
   // TODO: using this for the publish preview works fine, but produces a console warning
@@ -37,11 +38,17 @@ export default function Nft({
     : formikState?.values?.metadata?.nft?.image_data
     ? formikState.values.metadata.nft.image_data
     : null
+  const displayImage = nftImage && nftImage !== failedImage ? nftImage : null
 
   return (
     <div className={styles.nftImage}>
-      {nftImage ? (
-        <img src={nftImage} alt={asset?.indexedMetadata.nft?.name} />
+      {displayImage ? (
+        <img
+          key={displayImage}
+          src={displayImage}
+          alt={asset?.indexedMetadata.nft?.name}
+          onError={() => setFailedImage(displayImage)}
+        />
       ) : (
         <div className={styles.placeholder} />
       )}
@@ -49,10 +56,11 @@ export default function Nft({
       {(nftMetadata || asset?.credentialSubject?.nftAddress) && (
         <Tooltip
           className={styles.tooltip}
+          contentClassName={styles.tooltipContent}
           content={
             <NftTooltip
               nft={nftMetadata}
-              nftImage={nftImage}
+              nftImage={displayImage}
               address={asset?.credentialSubject?.nftAddress}
               chainId={asset?.credentialSubject?.chainId}
               isBlockscoutExplorer={isBlockscoutExplorer}
