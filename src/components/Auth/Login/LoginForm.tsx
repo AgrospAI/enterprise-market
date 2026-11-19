@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useState } from 'react'
 import { useAuth } from '@hooks/useAuth'
 import { authConfig } from '../../../config/auth.config'
@@ -6,6 +7,8 @@ import { SsoIcon } from '../SsoIcons'
 import styles from './LoginForm.module.css'
 
 export default function LoginForm() {
+  useLingui()
+
   const { beginOidcFlow } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 

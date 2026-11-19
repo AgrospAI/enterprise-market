@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import styles from './ServiceCard.module.css'
 import { Service } from 'src/@types/ddo/Service'
@@ -15,6 +17,8 @@ export default function ServiceCard({
   onClick: () => void
   isClickable?: boolean
 }): ReactElement {
+  useLingui()
+
   const [expanded, setExpanded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -40,7 +44,9 @@ export default function ServiceCard({
         opacity: clickable ? 1 : 0.5
       }}
     >
-      <span className={styles.serviceTitle}>{service.name || 'Unknown'} </span>
+      <span className={styles.serviceTitle}>
+        {service.name || i18n._('Unknown')}{' '}
+      </span>
       <br />
       <div className={styles.descriptionWrapper}>
         {description ? (
@@ -65,26 +71,37 @@ export default function ServiceCard({
                 }}
                 onMouseDown={(e) => e.stopPropagation()}
               >
-                {expanded ? 'Show less' : 'Show more'}
+                {expanded ? i18n._('Show less') : i18n._('Show more')}
               </button>
             )}
           </>
         ) : (
           <span className={styles.serviceDescriptionPlaceholder}>
-            No description available.
+            <Trans id="No description available." />{' '}
           </span>
         )}
       </div>
-      <span className={styles.title}>Type: </span>
+      <span className={styles.title}>
+        <Trans id="Type:" />{' '}
+      </span>
       <span className={styles.access}>
-        <ServiceTypeIcon type={service.type} className={styles.typeIcon} />
-        {service.type}
+        <ServiceTypeIcon
+          type={
+            service.type === 'access' ? i18n._('Download') : i18n._('Compute')
+          }
+          className={styles.typeIcon}
+        />
+        {service.type === 'access' ? i18n._('Download') : i18n._('Compute')}
       </span>
       <br />
-      <span className={styles.title}>Access Duration: </span>
+      <span className={styles.title}>
+        <Trans id="Access Duration:" />{' '}
+      </span>
       <span>{formatServiceTimeout(service.timeout)}</span>
       <br />
-      <span className={styles.title}>Price: </span>
+      <span className={styles.title}>
+        <Trans id="Price:" />{' '}
+      </span>
       {accessDetails.type === 'fixed' ? (
         <>
           {accessDetails.price}{' '}
@@ -93,7 +110,9 @@ export default function ServiceCard({
           </span>
         </>
       ) : (
-        <span className={styles.free}>free</span>
+        <span className={styles.free}>
+          <Trans id="free" />
+        </span>
       )}
       <br />
       <div
@@ -109,7 +128,7 @@ export default function ServiceCard({
             cursor: clickable ? 'pointer' : 'not-allowed'
           }}
         >
-          Select
+          <Trans id="Select" />{' '}
         </button>
       </div>
     </div>

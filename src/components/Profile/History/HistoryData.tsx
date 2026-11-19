@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import axios, { CancelToken } from 'axios'
 import {
@@ -48,6 +50,8 @@ const rowWidths = [
 ]
 
 function HistorySkeleton(): ReactElement {
+  useLingui()
+
   return (
     <TableSkeleton
       className={styles.skeletonWrapper}
@@ -109,6 +113,8 @@ export default function HistoryData({
 }: {
   accountId: string
 }): ReactElement {
+  useLingui()
+
   const { approvedBaseTokens, validatedSupportedChains } = useMarketMetadata()
   const { ownAccount } = useProfile()
   const { filters, ignorePurgatory } = useFilter()
@@ -117,7 +123,7 @@ export default function HistoryData({
   const columns: TableOceanColumn<AssetExtended>[] = useMemo(
     () => [
       {
-        name: 'Asset',
+        name: i18n._('Asset'),
         selector: (asset) => <AssetTitle asset={asset} maxTitleLength={80} />
       },
       {
@@ -129,7 +135,7 @@ export default function HistoryData({
         )
       },
       {
-        name: 'Network',
+        name: i18n._('Network'),
         selector: (asset) => {
           const networkData = getNetworkDataById(
             networksList,
@@ -144,14 +150,14 @@ export default function HistoryData({
         }
       },
       {
-        name: 'Time',
+        name: i18n._('Time'),
         selector: (asset) => {
           const created = asset.credentialSubject?.metadata?.created
           return created ? <Time date={created} relative /> : '-'
         }
       },
       {
-        name: 'Transaction ID',
+        name: i18n._('Transaction ID'),
         selector: (asset) => {
           const txid = asset.indexedMetadata?.event?.txid
           if (!txid) return ''
@@ -168,12 +174,12 @@ export default function HistoryData({
         }
       },
       {
-        name: 'Sales',
+        name: i18n._('Sales'),
         selector: (asset) => getOrders(asset),
         maxWidth: '5rem'
       }
     ],
-    [networksList]
+    [networksList, i18n.locale]
   )
   const activeChainIds = useMemo(
     () => validatedSupportedChains || [],
@@ -383,7 +389,7 @@ export default function HistoryData({
             paginationPerPage={9}
             emptyMessage={
               validatedSupportedChains.length === 0
-                ? 'No network selected'
+                ? i18n._('No network selected')
                 : null
             }
             exportEnabled={hasVisibleResults}
@@ -418,6 +424,8 @@ export default function HistoryData({
       </div>
     </div>
   ) : (
-    <div>Please connect your wallet.</div>
+    <div>
+      <Trans id="Please connect your wallet." />
+    </div>
   )
 }

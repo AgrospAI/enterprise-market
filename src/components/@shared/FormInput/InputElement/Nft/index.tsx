@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import Button from '@shared/atoms/Button'
 import Alert from '@shared/atoms/Alert'
 import { InputProps } from '@shared/FormInput'
@@ -8,6 +10,8 @@ import Refresh from '@images/refresh.svg'
 import styles from './index.module.css'
 
 export default function Nft(props: InputProps): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField(props.name)
 
   const refreshNftMetadata = () => {
@@ -32,7 +36,7 @@ export default function Nft(props: InputProps): ReactElement {
               style="text"
               size="small"
               className={styles.refresh}
-              title="Generate new image"
+              title={i18n._('Generate new image')}
               onClick={(e) => {
                 e.preventDefault()
                 refreshNftMetadata()
@@ -47,7 +51,11 @@ export default function Nft(props: InputProps): ReactElement {
       <Alert
         title={field?.value?.name}
         subtitle={field?.value?.symbol}
-        description={field?.value?.description}
+        description={
+          field?.value?.description === 'This NFT represents an asset.'
+            ? i18n._('This NFT represents an asset.')
+            : field?.value?.description
+        }
       />
     </div>
   )

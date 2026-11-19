@@ -1,10 +1,14 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import content from '../../../../content/publish/form.json'
+import {
+  contentPublishConsumerParameters as consumerParametersContent,
+  contentPublishForm as content
+} from '../../../i18n/content'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
@@ -28,6 +32,8 @@ export default function FormAddService({
   assetType: string
   serviceEndpoint: string
 }): ReactElement {
+  useLingui()
+
   const { approvedBaseTokens } = useMarketMetadata()
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
   const baseTokenOptions = useMemo(() => {
@@ -157,7 +163,7 @@ export default function FormAddService({
           step={0.000001}
         />
         <Field
-          label="Price Token"
+          label={i18n._('Price Token')}
           component={Input}
           name="baseToken"
           type="select"

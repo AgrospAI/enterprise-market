@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, ChangeEvent } from 'react'
 import SearchIcon from '@images/search.svg'
 import styles from './index.module.css'
@@ -10,11 +12,13 @@ interface SearchSectionProps {
 }
 
 export default function SearchSection({
-  placeholder = 'Search by title, datatoken, or DID...',
+  placeholder = i18n._('Search by title, datatoken, or DID...'),
   value,
   onChange,
   disabled = false
 }: SearchSectionProps): ReactElement {
+  useLingui()
+
   function handleSearchInput(e: ChangeEvent<HTMLInputElement>) {
     onChange(e.target.value)
   }
@@ -37,7 +41,9 @@ export default function SearchSection({
           disabled={disabled}
         >
           <SearchIcon className={styles.searchIcon} />
-          <span className={styles.searchButtonText}>Search</span>
+          <span className={styles.searchButtonText}>
+            <Trans id="Search" />
+          </span>
         </button>
       </div>
     </div>

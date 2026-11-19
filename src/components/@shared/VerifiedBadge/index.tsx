@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import classNames from 'classnames/bind'
 import { ReactElement } from 'react'
 import VerifiedPatch from '@images/circle_check.svg'
@@ -15,6 +16,8 @@ export function Badge({
   verifiedService: string
   className?: string
 }): ReactElement {
+  useLingui()
+
   return (
     <div
       className={cx({

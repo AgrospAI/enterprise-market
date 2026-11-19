@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Link from 'next/link'
@@ -18,6 +20,8 @@ export default function Publisher({
   verifiedServiceProviderName,
   className
 }: PublisherProps): ReactElement {
+  useLingui()
+
   const isMounted = useIsMounted()
   const legalName = usePontusXLegalName(account)
   const resolvedName = verifiedServiceProviderName || legalName
@@ -43,7 +47,7 @@ export default function Publisher({
         <Link
           href={`/profile/${account}`}
           className={styles.truncated}
-          title="Show profile page."
+          title={i18n._('Show profile page.')}
         >
           {name}
         </Link>

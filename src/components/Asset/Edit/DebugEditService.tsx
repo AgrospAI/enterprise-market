@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -27,6 +29,8 @@ export default function DebugEditService({
   asset: Asset
   service: Service
 }): ReactElement {
+  useLingui()
+
   const [valuePreview, setValuePreview] = useState({})
   const [updatedService, setUpdatedService] = useState<Service>()
   const newCancelToken = useCancelToken()
@@ -85,9 +89,13 @@ export default function DebugEditService({
 
   return (
     <>
-      <DebugOutput title="Collected Form Values" output={valuePreview} large />
       <DebugOutput
-        title="Transformed Service Values"
+        title={i18n._('Collected Form Values')}
+        output={valuePreview}
+        large
+      />
+      <DebugOutput
+        title={i18n._('Transformed Service Values')}
         output={updatedService}
         large
       />

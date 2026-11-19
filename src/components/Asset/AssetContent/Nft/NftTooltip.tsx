@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import Copy from '@shared/atoms/Copy'
 import External from '@images/external.svg'
 import ExplorerLink from '@shared/ExplorerLink'
@@ -25,6 +26,8 @@ export default function NftTooltip({
   chainId: number
   isBlockscoutExplorer: boolean
 }): ReactElement {
+  useLingui()
+
   const openSeaSupported = openSeaNetworks
     .concat(openSeaTestNetworks)
     .includes(chainId)
@@ -57,7 +60,7 @@ export default function NftTooltip({
                 isBlockscoutExplorer ? `tokens/${address}` : `token/${address}`
               }
             >
-              View on Explorer
+              <Trans id="View on Explorer" />{' '}
             </ExplorerLink>
           )}
 
@@ -68,12 +71,14 @@ export default function NftTooltip({
               rel="noreferrer"
               className={explorerLinkStyles.link}
             >
-              View on OpenSea <External />
+              <Trans id="View on OpenSea" /> <External />
             </a>
           )}
         </div>
         {!nft?.image_data && !nft?.image && (
-          <p className={styles.fallback}>This Data NFT has no image set.</p>
+          <p className={styles.fallback}>
+            <Trans id="This Data NFT has no image set." />
+          </p>
         )}
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import styles from './PageHeader.module.css'
@@ -21,6 +23,8 @@ export default function PageHeader({
   showSearch?: boolean
   isExtended?: boolean
 }): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     header: true,
     center
@@ -43,7 +47,7 @@ export default function PageHeader({
       )}
       {showSearch && (
         <div className={styles.search}>
-          <SearchBar placeholder="Search for service offerings" />
+          <SearchBar placeholder={i18n._('Search for service offerings')} />
         </div>
       )}
     </header>

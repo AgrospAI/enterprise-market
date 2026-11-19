@@ -1,4 +1,5 @@
-import gdprContent from '../../content/gdpr.json'
+import { i18n } from '../i18n/index'
+import { contentGdpr as gdprContent } from '../i18n/content'
 import { useMemo } from 'react'
 import {
   ANALYTICS_CONSENT_COOKIE,
@@ -35,7 +36,7 @@ export function useGdprMetadata(): UseGdprMetadata {
         (cookie) =>
           cookie.cookieName !== ANALYTICS_CONSENT_COOKIE || analyticsConfigured
       ),
-    [analyticsConfigured]
+    [analyticsConfigured, i18n.locale]
   )
 
   return { ...gdprContent, optionalCookies }

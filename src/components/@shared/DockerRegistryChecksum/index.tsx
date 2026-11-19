@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ChangeEvent, ReactElement, useEffect, useState } from 'react'
 import Input from '@shared/FormInput'
 import Button from '@shared/atoms/Button'
@@ -16,6 +18,8 @@ export default function DockerRegistryChecksum({
   tag,
   onChecksumResolved
 }: DockerRegistryChecksumProps): ReactElement {
+  useLingui()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isResolving, setIsResolving] = useState(false)
@@ -29,7 +33,7 @@ export default function DockerRegistryChecksum({
   async function handleResolve() {
     const normalizedUsername = username.trim()
     if (!normalizedUsername || !password) {
-      toast.error('Docker Hub username and access token are required.')
+      toast.error(i18n._('Docker Hub username and access token are required.'))
       return
     }
 
@@ -44,21 +48,21 @@ export default function DockerRegistryChecksum({
 
     setPassword('')
     await onChecksumResolved(containerInfo.checksum)
-    toast.success('Docker image checksum resolved.')
+    toast.success(i18n._('Docker image checksum resolved.'))
   }
 
   return (
     <section className={styles.container} aria-live="polite">
-      <h4>Private Docker Hub image</h4>
+      <h4>
+        <Trans id="Private Docker Hub image" />
+      </h4>
       <p>
-        Enter a Docker Hub username and a read-only access token to calculate
-        the Linux/amd64 checksum. The credentials are not added to the asset
-        metadata.
+        <Trans id="Enter a Docker Hub username and a read-only access token to calculate the Linux/amd64 checksum. The credentials are not added to the asset metadata." />{' '}
       </p>
       <div className={styles.fields}>
         <Input
           name="dockerChecksumUsername"
-          label="Docker Hub username"
+          label={i18n._('Docker Hub username')}
           type="text"
           value={username}
           autoComplete="username"
@@ -69,7 +73,7 @@ export default function DockerRegistryChecksum({
         />
         <Input
           name="dockerChecksumToken"
-          label="Docker Hub access token"
+          label={i18n._('Docker Hub access token')}
           type="password"
           value={password}
           autoComplete="new-password"
@@ -91,7 +95,7 @@ export default function DockerRegistryChecksum({
         }
         onClick={handleResolve}
       >
-        {isResolving ? 'Calculating...' : 'Calculate checksum'}
+        {isResolving ? i18n._('Calculating...') : i18n._('Calculate checksum')}
       </Button>
     </section>
   )

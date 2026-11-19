@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { useEthersSigner } from '@hooks/useEthersSigner'
 import { Datatoken } from '@oceanprotocol/lib'
 import { useEffect, useState } from 'react'
@@ -13,6 +14,8 @@ export default function ComputeEnvSelection({
     React.SetStateAction<{ [envId: string]: ResourceType }>
   >
 }): JSX.Element {
+  useLingui()
+
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
   const chainId = useChainId()
   const walletClient = useEthersSigner()
@@ -166,7 +169,7 @@ export default function ComputeEnvSelection({
                     checked={mode === 'free'}
                     onChange={() => setMode('free')}
                   />{' '}
-                  Free
+                  <Trans id="Free" />{' '}
                 </label>
                 <label style={{ marginLeft: '1em' }}>
                   <input
@@ -174,13 +177,15 @@ export default function ComputeEnvSelection({
                     checked={mode === 'paid'}
                     onChange={() => setMode('paid')}
                   />{' '}
-                  Paid
+                  <Trans id="Paid" />{' '}
                 </label>
               </div>
             )}
 
             <div>
-              <label>CPU: </label>
+              <label>
+                <Trans id="CPU:" />{' '}
+              </label>
               <input
                 type="range"
                 min={getLimits('cpu').min}
@@ -189,11 +194,15 @@ export default function ComputeEnvSelection({
                 value={currentRes.cpu}
                 onChange={(e) => updateRes('cpu', Number(e.target.value))}
               />
-              <span>{currentRes.cpu} cores</span>
+              <span>
+                {currentRes.cpu} <Trans id="cores" />
+              </span>
             </div>
 
             <div>
-              <label>RAM: </label>
+              <label>
+                <Trans id="RAM:" />{' '}
+              </label>
               <input
                 type="range"
                 min={getLimits('ram').min}
@@ -202,11 +211,15 @@ export default function ComputeEnvSelection({
                 value={currentRes.ram}
                 onChange={(e) => updateRes('ram', Number(e.target.value))}
               />
-              <span>{currentRes.ram} GB</span>
+              <span>
+                {currentRes.ram} <Trans id="GB" />
+              </span>
             </div>
 
             <div>
-              <label>DISK: </label>
+              <label>
+                <Trans id="DISK:" />{' '}
+              </label>
               <input
                 type="range"
                 min={getLimits('disk').min}
@@ -215,11 +228,15 @@ export default function ComputeEnvSelection({
                 value={currentRes.disk}
                 onChange={(e) => updateRes('disk', Number(e.target.value))}
               />
-              <span>{currentRes.disk} GB</span>
+              <span>
+                {currentRes.disk} <Trans id="GB" />
+              </span>
             </div>
 
             <div>
-              <label>Job Duration: </label>
+              <label>
+                <Trans id="Job Duration:" />{' '}
+              </label>
               <input
                 type="range"
                 min={60}
@@ -230,18 +247,25 @@ export default function ComputeEnvSelection({
                   updateRes('jobDuration', Number(e.target.value))
                 }
               />
-              <span>{formatMinutes(currentRes.jobDuration)} minutes</span>
+              <span>
+                {formatMinutes(currentRes.jobDuration)} <Trans id="minutes" />
+              </span>
             </div>
 
             {mode === 'paid' && fee && (
               <>
                 {fee.prices?.map((p) => (
                   <div key={p.id}>
-                    <strong>Price:</strong> {p.price} {tokenSymbol} / {p.id}
+                    <strong>
+                      <Trans id="Price:" />
+                    </strong>{' '}
+                    {p.price} {tokenSymbol} / {p.id}
                   </div>
                 ))}
                 <div>
-                  <strong>Total Cost:</strong>{' '}
+                  <strong>
+                    <Trans id="Total Cost:" />
+                  </strong>{' '}
                   {Number(currentRes.price).toFixed(2)} {tokenSymbol}
                 </div>
               </>

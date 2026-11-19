@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import * as Yup from 'yup'
 import { isAddress } from 'ethers'
 import { MAX_DECIMALS } from '@utils/constants'
@@ -20,41 +21,41 @@ import {
 } from '@utils/docker'
 
 const validationRequestCredentials = {
-  format: Yup.string().required('Required'),
-  type: Yup.string().required('Required'),
+  format: Yup.string().required(() => i18n._('Required')),
+  type: Yup.string().required(() => i18n._('Required')),
   policies: Yup.array().of(
     Yup.object().shape({
       type: Yup.string(),
       name: Yup.string()
         .when('type', {
           is: 'staticPolicy',
-          then: (shema) => shema.required('Required')
+          then: (shema) => shema.required(i18n._('Required'))
         })
         .when('type', {
           is: 'customUrlPolicy',
-          then: (shema) => shema.required('Required')
+          then: (shema) => shema.required(i18n._('Required'))
         })
         .when('type', {
           is: 'customPolicy',
           then: (shema) =>
             shema
-              .required('Required')
-              .matches(/^[A-Za-z]+$/, 'Only letters A–Z are allowed')
+              .required(i18n._('Required'))
+              .matches(/^[A-Za-z]+$/, i18n._('Only letters A–Z are allowed'))
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
-        then: (shema) => shema.of(Yup.string().required('Required'))
+        then: (shema) => shema.of(Yup.string().required(i18n._('Required')))
       }),
       policy: Yup.string().when('type', {
         is: 'parameterizedPolicy',
-        then: (shema) => shema.required('Required')
+        then: (shema) => shema.required(i18n._('Required'))
       }),
       policyUrl: Yup.string().when('type', {
         is: 'customUrlPolicy',
         then: (shema) =>
           shema
-            .required('Required')
-            .test('isValidUrl', 'Invalid URL format', (value) => {
+            .required(i18n._('Required'))
+            .test('isValidUrl', i18n._('Invalid URL format'), (value) => {
               if (!value) return false
               const trimmedValue = value.trim()
               if (
@@ -77,8 +78,8 @@ const validationRequestCredentials = {
           then: (shema) =>
             shema.of(
               Yup.object().shape({
-                name: Yup.string().required('Required'),
-                value: Yup.string().required('Required')
+                name: Yup.string().required(i18n._('Required')),
+                value: Yup.string().required(i18n._('Required'))
               })
             )
         })
@@ -87,8 +88,8 @@ const validationRequestCredentials = {
           then: (shema) =>
             shema.of(
               Yup.object().shape({
-                name: Yup.string().required('Required'),
-                value: Yup.string().required('Required')
+                name: Yup.string().required(i18n._('Required')),
+                value: Yup.string().required(i18n._('Required'))
               })
             )
         }),
@@ -97,9 +98,9 @@ const validationRequestCredentials = {
         then: (shema) =>
           shema.of(
             Yup.object().shape({
-              leftValue: Yup.string().required('Required'),
-              operator: Yup.string().required('Required'),
-              rightValue: Yup.string().required('Required')
+              leftValue: Yup.string().required(i18n._('Required')),
+              operator: Yup.string().required(i18n._('Required')),
+              rightValue: Yup.string().required(i18n._('Required'))
             })
           )
       })
@@ -108,11 +109,11 @@ const validationRequestCredentials = {
 }
 
 const validationVpPolicy = {
-  type: Yup.string().required('Required'),
+  type: Yup.string().required(() => i18n._('Required')),
   name: Yup.mixed().when('type', {
     is: 'staticVpPolicy',
     then: (shema) =>
-      shema.test('static-name', 'Required', (value) => {
+      shema.test('static-name', i18n._('Required'), (value) => {
         if (typeof value === 'string') return value.trim().length > 0
         if (
           value &&
@@ -126,16 +127,16 @@ const validationVpPolicy = {
   }),
   policy: Yup.string().when('type', {
     is: 'argumentVpPolicy',
-    then: (shema) => shema.required('Required')
+    then: (shema) => shema.required(i18n._('Required'))
   }),
   args: Yup.string().when('type', {
     is: 'argumentVpPolicy',
-    then: (shema) => shema.required('Required')
+    then: (shema) => shema.required(i18n._('Required'))
   }),
   url: Yup.string().when('type', {
     is: 'externalEvpForwardVpPolicy',
     then: (shema) =>
-      shema.test('isValidUrlOpt', 'Invalid URL format', (value) => {
+      shema.test('isValidUrlOpt', i18n._('Invalid URL format'), (value) => {
         // Optional here to avoid transient invalid state; main enforcement occurs on credentials.externalEvpForwardUrl
         if (!value) return true
         const trimmedValue = value.trim()
@@ -149,14 +150,14 @@ const validationCredentials = {
   requestCredentials: Yup.array().of(
     Yup.object().shape(validationRequestCredentials)
   ),
-  vcPolicies: Yup.array().of(Yup.string().required('Required')),
+  vcPolicies: Yup.array().of(Yup.string().required(() => i18n._('Required'))),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
   allowInputValue: Yup.string().nullable(),
   externalEvpForwardUrl: Yup.string().test(
     'external-evp-url',
-    'Invalid URL format',
+    () => i18n._('Invalid URL format'),
     function (value) {
       const vpPolicies = (this.parent as any)?.vpPolicies || []
       const hasExternal = vpPolicies.some(
@@ -175,16 +176,22 @@ const validationCredentials = {
 
 export const metadataValidationSchema = Yup.object().shape({
   name: Yup.string()
-    .min(4, (param) => `Title must be at least ${param.min} characters`)
-    .required('Required'),
-  description: Yup.string().required('Required').min(10),
+    .min(4, (param) =>
+      i18n._('Title must be at least {value0} characters', {
+        value0: param.min
+      })
+    )
+    .required(() => i18n._('Required')),
+  description: Yup.string()
+    .required(() => i18n._('Required'))
+    .min(10),
   copyrightHolder: Yup.string().nullable(),
-  providedBy: testOptionalUrl('Provided By must be a valid URL.'),
+  providedBy: testOptionalUrl(() => i18n._('Provided By must be a valid URL.')),
   links: Yup.array()
     .of(
       Yup.object().shape({
         key: Yup.string(),
-        value: testOptionalUrl('Each link must be a valid URL.')
+        value: testOptionalUrl(() => i18n._('Each link must be a valid URL.'))
       })
     )
     .nullable(),
@@ -194,13 +201,15 @@ export const metadataValidationSchema = Yup.object().shape({
   containerImage: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string()
-      .required('Required')
+      .required(() => i18n._('Required'))
       .test('docker-image', function (value) {
         try {
           const parsedReference = parseDockerImageReference(value)
           return parsedReference.tag
             ? this.createError({
-                message: 'Enter the Docker tag in the separate tag field'
+                message: i18n._(
+                  'Enter the Docker tag in the separate tag field'
+                )
               })
             : true
         } catch (error) {
@@ -211,7 +220,7 @@ export const metadataValidationSchema = Yup.object().shape({
   containerTag: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string()
-      .required('Required')
+      .required(() => i18n._('Required'))
       .test('docker-tag', function (value) {
         try {
           normalizeDockerImageReference(this.parent.containerImage, value)
@@ -223,23 +232,27 @@ export const metadataValidationSchema = Yup.object().shape({
   }),
   containerChecksum: Yup.string().when('type', {
     is: 'algorithm',
-    then: Yup.string().trim().required('Required')
+    then: Yup.string()
+      .trim()
+      .required(() => i18n._('Required'))
   }),
   containerEntrypoint: Yup.string().when('type', {
     is: 'algorithm',
-    then: Yup.string().trim().required('Required')
+    then: Yup.string()
+      .trim()
+      .required(() => i18n._('Required'))
   }),
   usesConsumerParameters: Yup.boolean(),
   saas: Yup.object({
     redirectUrl: Yup.string()
-      .url('Must be a valid URL.')
-      .required('Redirect URL is required')
+      .url(() => i18n._('Must be a valid URL.'))
+      .required(() => i18n._('Redirect URL is required'))
   }).default(undefined),
   consumerParameters: Yup.array().when('usesConsumerParameters', {
     is: true,
     then: Yup.array()
       .of(Yup.object().shape(validationConsumerParameters))
-      .required('Required'),
+      .required(() => i18n._('Required')),
     otherwise: Yup.array()
       .nullable()
       .transform((value) => value || null)
@@ -253,7 +266,7 @@ export const metadataValidationSchema = Yup.object().shape({
     is: false,
     then: Yup.array().test('urlTest', (array, context) => {
       if (!array || !array[0]) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
       const { url, valid } = array[0] as {
         url: string
@@ -261,11 +274,11 @@ export const metadataValidationSchema = Yup.object().shape({
         valid: boolean
       }
       if (!url || url.length === 0) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
       // Only check valid flag if validation has been attempted (valid is not undefined)
       if (valid !== undefined && !valid) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
       return true
     })
@@ -274,7 +287,7 @@ export const metadataValidationSchema = Yup.object().shape({
     is: true,
     then: Yup.object().test('remoteTest', (license, context) => {
       if (!license) {
-        return context.createError({ message: `Need a license file` })
+        return context.createError({ message: i18n._('Need a license file') })
       }
       return true
     })
@@ -282,8 +295,8 @@ export const metadataValidationSchema = Yup.object().shape({
   additionalDdos: Yup.array()
     .of(
       Yup.object().shape({
-        data: Yup.string().required('Required'),
-        type: Yup.string().required('Required')
+        data: Yup.string().required(() => i18n._('Required')),
+        type: Yup.string().required(() => i18n._('Required'))
       })
     )
     .nullable()
@@ -292,7 +305,10 @@ export const metadataValidationSchema = Yup.object().shape({
 const noWhitespaceTest = (fieldName: string) =>
   Yup.string().test(
     'no-whitespace',
-    `${fieldName} cannot have leading or trailing spaces`,
+    () =>
+      i18n._('{fieldName} cannot have leading or trailing spaces', {
+        fieldName: i18n._(fieldName)
+      }),
     (value) => {
       if (!value) return true
       return value === value.trim()
@@ -301,19 +317,25 @@ const noWhitespaceTest = (fieldName: string) =>
 
 export const serviceValidationSchema = Yup.object().shape({
   name: Yup.string()
-    .min(4, (param) => `Name must be at least ${param.min} characters`)
-    .required('Required'),
-  description: Yup.string().required('Required').min(10),
+    .min(4, (param) =>
+      i18n._('Name must be at least {value0} characters', { value0: param.min })
+    )
+    .required(() => i18n._('Required')),
+  description: Yup.string()
+    .required(() => i18n._('Required'))
+    .min(10),
   price: Yup.number()
-    .required('Required')
-    .min(1, 'Price must be at least 1')
-    .max(
-      1000000,
-      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    .required(() => i18n._('Required'))
+    .min(1, () => i18n._('Price must be at least 1'))
+    .max(1000000, (param: { max: number }) =>
+      i18n._('Must be less than or equal to {value0}', { value0: param.max })
     )
     .test(
       'maxDigitsAfterDecimal',
-      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      () =>
+        i18n._('Must have maximum {MAX_DECIMALS} decimal digits', {
+          MAX_DECIMALS
+        }),
       function (_value, ctx) {
         const rawValue = getOriginalValue(ctx, _value)
         if (rawValue === undefined || rawValue === null || rawValue === '') {
@@ -335,7 +357,7 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'endpoint-trim',
-                'Endpoint cannot have leading or trailing spaces',
+                () => i18n._('Endpoint cannot have leading or trailing spaces'),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -345,7 +367,7 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'region-trim',
-                'Region cannot have leading or trailing spaces',
+                () => i18n._('Region cannot have leading or trailing spaces'),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -355,7 +377,8 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'bucket-trim',
-                'Bucket name cannot have leading or trailing spaces',
+                () =>
+                  i18n._('Bucket name cannot have leading or trailing spaces'),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -365,7 +388,8 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'objectKey-trim',
-                'Object key cannot have leading or trailing spaces',
+                () =>
+                  i18n._('Object key cannot have leading or trailing spaces'),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -375,7 +399,10 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'accessKeyId-trim',
-                'Access Key ID cannot have leading or trailing spaces',
+                () =>
+                  i18n._(
+                    'Access Key ID cannot have leading or trailing spaces'
+                  ),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -385,7 +412,10 @@ export const serviceValidationSchema = Yup.object().shape({
               .nullable()
               .test(
                 'secretAccessKey-trim',
-                'Secret Access Key cannot have leading or trailing spaces',
+                () =>
+                  i18n._(
+                    'Secret Access Key cannot have leading or trailing spaces'
+                  ),
                 (value) => {
                   if (!value) return true
                   return value === value.trim()
@@ -396,87 +426,106 @@ export const serviceValidationSchema = Yup.object().shape({
         })
       })
     )
-    .test('files-validation', 'Please provide a valid file', function (files) {
-      const fileList = (files || []) as any[]
-      const hasEncryptedFile = fileList.some(
-        (file) =>
-          (file?.type === 'hidden' || file?.isEncrypted) &&
-          (!file?.url || file.url?.trim() === '')
-      )
+    .test(
+      'files-validation',
+      () => i18n._('Please provide a valid file'),
+      function (files) {
+        const fileList = (files || []) as any[]
+        const hasEncryptedFile = fileList.some(
+          (file) =>
+            (file?.type === 'hidden' || file?.isEncrypted) &&
+            (!file?.url || file.url?.trim() === '')
+        )
 
-      if (hasEncryptedFile) {
-        return true
-      }
-      if (fileList.length === 0) {
-        return this.createError({ message: 'At least one file is required' })
-      }
+        if (hasEncryptedFile) {
+          return true
+        }
+        if (fileList.length === 0) {
+          return this.createError({
+            message: i18n._('At least one file is required')
+          })
+        }
 
-      for (let i = 0; i < fileList.length; i++) {
-        const file = fileList[i]
+        for (let i = 0; i < fileList.length; i++) {
+          const file = fileList[i]
 
-        if (isS3File(file) && file.s3Access) {
-          const {
-            endpoint,
-            region,
-            bucket,
-            objectKey,
-            accessKeyId,
-            secretAccessKey
-          } = file.s3Access
+          if (isS3File(file) && file.s3Access) {
+            const {
+              endpoint,
+              region,
+              bucket,
+              objectKey,
+              accessKeyId,
+              secretAccessKey
+            } = file.s3Access
 
-          if (endpoint && endpoint !== endpoint.trim()) {
-            return this.createError({
-              message: 'Endpoint cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.endpoint`
-            })
-          }
-          if (region && region !== region.trim()) {
-            return this.createError({
-              message: 'Region cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.region`
-            })
-          }
-          if (bucket && bucket !== bucket.trim()) {
-            return this.createError({
-              message: 'Bucket name cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.bucket`
-            })
-          }
-          if (objectKey && objectKey !== objectKey.trim()) {
-            return this.createError({
-              message: 'Object key cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.objectKey`
-            })
-          }
-          if (accessKeyId && accessKeyId !== accessKeyId.trim()) {
-            return this.createError({
-              message: 'Access Key ID cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.accessKeyId`
-            })
-          }
-          if (secretAccessKey && secretAccessKey !== secretAccessKey.trim()) {
-            return this.createError({
-              message:
-                'Secret Access Key cannot have leading or trailing spaces',
-              path: `${this.path}[${i}].s3Access.secretAccessKey`
-            })
+            if (endpoint && endpoint !== endpoint.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Endpoint cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.endpoint`
+              })
+            }
+            if (region && region !== region.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Region cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.region`
+              })
+            }
+            if (bucket && bucket !== bucket.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Bucket name cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.bucket`
+              })
+            }
+            if (objectKey && objectKey !== objectKey.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Object key cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.objectKey`
+              })
+            }
+            if (accessKeyId && accessKeyId !== accessKeyId.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Access Key ID cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.accessKeyId`
+              })
+            }
+            if (secretAccessKey && secretAccessKey !== secretAccessKey.trim()) {
+              return this.createError({
+                message: i18n._(
+                  'Secret Access Key cannot have leading or trailing spaces'
+                ),
+                path: `${this.path}[${i}].s3Access.secretAccessKey`
+              })
+            }
           }
         }
-      }
 
-      const hasValidFile = fileList.some(
-        (file) => file?.url?.trim() && file.valid !== false
-      )
-      return (
-        hasValidFile ||
-        this.createError({ message: 'Please provide a valid file URL' })
-      )
-    }),
+        const hasValidFile = fileList.some(
+          (file) => file?.url?.trim() && file.valid !== false
+        )
+        return (
+          hasValidFile ||
+          this.createError({
+            message: i18n._('Please provide a valid file URL')
+          })
+        )
+      }
+    ),
   timeout: Yup.string()
-    .required('Required')
+    .required(() => i18n._('Required'))
     .test(
       'valid-timeout',
-      TIMEOUT_VALIDATION_MESSAGE,
+      () => TIMEOUT_VALIDATION_MESSAGE(),
       (value) => isTimeoutPreset(value) || isCustomTimeoutValue(value)
     ),
   usesConsumerParameters: Yup.boolean(),
@@ -484,14 +533,14 @@ export const serviceValidationSchema = Yup.object().shape({
     is: true,
     then: Yup.array()
       .of(Yup.object().shape(validationConsumerParameters))
-      .required('Required'),
+      .required(() => i18n._('Required')),
     otherwise: Yup.array()
       .nullable()
       .transform((value) => value || null)
   }),
   paymentCollector: Yup.string().test(
     'ValidAddress',
-    'Must be a valid Ethereum Address.',
+    () => i18n._('Must be a valid Ethereum Address.'),
     (value) => {
       return isAddress(value)
     }
@@ -504,15 +553,17 @@ export const serviceValidationSchema = Yup.object().shape({
 
 export const newServiceValidationSchema = serviceValidationSchema.shape({
   price: Yup.number()
-    .required('Required')
-    .min(0, 'Price must be at least 0')
-    .max(
-      1000000,
-      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    .required(() => i18n._('Required'))
+    .min(0, () => i18n._('Price must be at least 0'))
+    .max(1000000, (param: { max: number }) =>
+      i18n._('Must be less than or equal to {value0}', { value0: param.max })
     )
     .test(
       'maxDigitsAfterDecimal',
-      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      () =>
+        i18n._('Must have maximum {MAX_DECIMALS} decimal digits', {
+          MAX_DECIMALS
+        }),
       function (_value, ctx) {
         const rawValue = getOriginalValue(ctx, _value)
         if (rawValue === undefined || rawValue === null || rawValue === '') {

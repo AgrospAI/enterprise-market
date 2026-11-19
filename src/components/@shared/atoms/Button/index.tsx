@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactNode, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
 import classNames from 'classnames/bind'
@@ -43,6 +44,8 @@ export default function Button({
   arrow,
   ...props
 }: ButtonProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     button: true,
     primary: style === 'primary',
@@ -63,7 +66,11 @@ export default function Button({
   return to ? (
     <Link href={to} className={styleClasses} {...props}>
       {children}
-      {arrow && <>&nbsp;&#8594;</>}
+      {arrow && (
+        <>
+          <Trans id="&nbsp;&#8594;" />
+        </>
+      )}
     </Link>
   ) : href ? (
     <a
@@ -74,7 +81,7 @@ export default function Button({
       {...props}
     >
       {children}
-      &nbsp;&#8599;
+      <Trans id="&nbsp;&#8599;" />{' '}
     </a>
   ) : (
     <button className={styleClasses} {...props}>

@@ -1,3 +1,5 @@
+import { i18n } from '../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './Stepper.module.css'
 import classNames from 'classnames/bind'
@@ -22,6 +24,8 @@ export default function Stepper({
   setCurrentStep: (step: number) => void
   setNavigationDirection: (direction: NavigationDirections) => void
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const web3Provider = usePublicClient()
   const chainId = useChainId()
@@ -38,11 +42,13 @@ export default function Stepper({
   const handleClick = (newStep: number) => {
     if (newStep === stepLabels.length - 1 && !onboardingCompleted) {
       toast.error(
-        getErrorMessage({
-          accountId,
-          web3Provider: !!web3Provider,
-          networkId: chainId
-        })
+        i18n._(
+          getErrorMessage({
+            accountId,
+            web3Provider: !!web3Provider,
+            networkId: chainId
+          })
+        )
       )
       return
     }

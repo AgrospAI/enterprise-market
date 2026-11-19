@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
@@ -17,6 +18,8 @@ export default function PublishedList({
 }: {
   accountId: string
 }): ReactElement {
+  useLingui()
+
   const { validatedSupportedChains } = useMarketMetadata()
   const { ownAccount } = useProfile()
   const { filters, ignorePurgatory } = useFilter()
@@ -107,6 +110,8 @@ export default function PublishedList({
       </div>
     </div>
   ) : (
-    <div>Please connect your wallet.</div>
+    <div>
+      <Trans id="Please connect your wallet." />
+    </div>
   )
 }

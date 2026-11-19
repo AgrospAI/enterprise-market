@@ -1,5 +1,5 @@
 import removeMarkdown from 'remove-markdown'
-import siteContent from '../../content/site.json'
+import { contentSite as siteContent } from '../i18n/content'
 import {
   siteUrl as configuredSiteUrl,
   allowIndexing

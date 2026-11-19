@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import styles from './index.module.css'
@@ -22,6 +23,8 @@ function isExternalUrl(href?: string): boolean {
 export default function AnchorNavigation({
   items
 }: AnchorNavigationProps): ReactElement {
+  useLingui()
+
   const router = useRouter()
 
   const handleClick = (item: AnchorItem) => {

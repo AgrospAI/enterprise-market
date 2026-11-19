@@ -1,4 +1,5 @@
 'use client'
+import { useLingui } from '@lingui/react'
 
 import {
   createClient,
@@ -28,6 +29,8 @@ export default function UrqlClientProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const [client, setClient] = useState<Client>()
   const chainId = useChainId() // wagmi v2 hook
 

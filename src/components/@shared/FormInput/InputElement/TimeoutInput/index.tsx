@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ChangeEvent, ReactElement, useEffect, useState } from 'react'
 import { useField } from 'formik'
 import InputElement from '@shared/FormInput/InputElement'
@@ -25,6 +27,8 @@ export default function TimeoutInput({
   disabled?: boolean
   placeholder?: string
 }): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField<string>(name)
   const value = field.value ?? ''
   const [customSelected, setCustomSelected] = useState(
@@ -65,7 +69,7 @@ export default function TimeoutInput({
         type="select"
         options={options}
         sortOptions={false}
-        placeholder={placeholder || 'Select a duration'}
+        placeholder={placeholder || i18n._('Select a duration')}
         disabled={disabled}
         field={field}
         value={isCustom ? CUSTOM_TIMEOUT_OPTION : value}
@@ -78,8 +82,8 @@ export default function TimeoutInput({
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
-            placeholder="e.g. 5400"
-            postfix="seconds"
+            placeholder={i18n._('e.g. 5400')}
+            postfix={i18n._('seconds')}
             disabled={disabled}
             value={value}
             onChange={handleSecondsChange}

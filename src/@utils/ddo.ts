@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   MetadataEditForm,
   ServiceEditForm
@@ -103,7 +104,11 @@ export function isTimeoutPreset(timeout: string): boolean {
 // so they survive the string -> number conversion.
 export const MAX_CUSTOM_TIMEOUT_SECONDS = ONE_YEAR_SECONDS
 
-export const TIMEOUT_VALIDATION_MESSAGE = `Enter a whole number of seconds between 1 and ${MAX_CUSTOM_TIMEOUT_SECONDS} (1 year), or choose 'Forever'`
+export const TIMEOUT_VALIDATION_MESSAGE = () =>
+  i18n._(
+    "Enter a whole number of seconds between 1 and {MAX_CUSTOM_TIMEOUT_SECONDS} (1 year), or choose 'Forever'",
+    { MAX_CUSTOM_TIMEOUT_SECONDS }
+  )
 
 export function isCustomTimeoutValue(timeout: string): boolean {
   return (
@@ -148,17 +153,27 @@ const DURATION_UNITS: { name: string; seconds: number }[] = [
   { name: 'second', seconds: 1 }
 ]
 
+const durationMessages: Record<string, string> = {
+  year: '{count, plural, one {# year} other {# years}}',
+  month: '{count, plural, one {# month} other {# months}}',
+  week: '{count, plural, one {# week} other {# weeks}}',
+  day: '{count, plural, one {# day} other {# days}}',
+  hour: '{count, plural, one {# hour} other {# hours}}',
+  minute: '{count, plural, one {# minute} other {# minutes}}',
+  second: '{count, plural, one {# second} other {# seconds}}'
+}
+
 // Formats seconds with the two largest units, e.g. 5400 -> "1 hour 30 minutes"
 export function formatSecondsPrecise(numberOfSeconds: number): string {
   let remaining = Math.floor(Number(numberOfSeconds) || 0)
-  if (remaining <= 0) return 'Forever'
+  if (remaining <= 0) return i18n._('Forever')
 
   const parts: string[] = []
   for (const unit of DURATION_UNITS) {
     if (parts.length === 2) break
     const amount = Math.floor(remaining / unit.seconds)
     if (amount > 0) {
-      parts.push(`${amount} ${unit.name}${amount === 1 ? '' : 's'}`)
+      parts.push(i18n._(durationMessages[unit.name], { count: amount }))
       remaining -= amount * unit.seconds
     }
   }
@@ -168,7 +183,7 @@ export function formatSecondsPrecise(numberOfSeconds: number): string {
 export function formatServiceTimeout(timeout: number | string): string {
   const seconds = Number(timeout) || 0
   const preset = TIMEOUT_PRESETS.find((preset) => preset.seconds === seconds)
-  return preset ? preset.label : formatSecondsPrecise(seconds)
+  return preset ? i18n._(preset.label) : formatSecondsPrecise(seconds)
 }
 
 // this is required to make it work properly for preview/publish/edit/debug.
@@ -297,7 +312,8 @@ function findCredential(
     const type = String(credential.type ?? '').toLowerCase()
     return type === 'address'
   })
-  if (type === 'service' && !hasAddressType) return true
+  // SSI policies are checked separately; this check only enforces Web3 lists.
+  if (!hasAddressType) return true
   return credentials.find((credential) => {
     if (!isCredentialAddressBased(credential)) {
       return false
@@ -362,21 +378,12 @@ export function isAddressWhitelisted(
 ): boolean {
   if (!ddo || !accountId) return false
 
-  // If SSI is not configured at asset or service level, allow access (no credential check required)
-  if (!ddo.credentialSubject?.credentials) {
-    return true
-  }
-
-  if (!service || !service.credentials) {
-    return true
-  }
-
   const assetAccessGranted = checkCredentials(
-    ddo.credentialSubject.credentials,
+    ddo.credentialSubject?.credentials,
     accountId
   )
   const serviceAccessGranted = checkCredentials(
-    service.credentials,
+    service?.credentials,
     accountId,
     'service'
   )

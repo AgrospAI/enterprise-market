@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Input, { InputProps } from '../..'
 import { Field, useField } from 'formik'
@@ -11,6 +12,8 @@ export default function DefaultInput({
   index: number
   inputName: string
 }): ReactElement {
+  useLingui()
+
   const [field] = useField<FormConsumerParameter[]>(inputName)
   const fieldType = field.value?.[index]?.type
   const fieldOptions = field.value?.[index]?.options

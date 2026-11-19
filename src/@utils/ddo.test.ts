@@ -244,6 +244,26 @@ describe('credentials allow/deny lists', () => {
     ).toBe(false)
   })
 
+  it('enforces asset restrictions when the service has no credentials', () => {
+    expect(
+      isAddressWhitelisted(
+        asset({ deny: [addressEntry(accountId)] }),
+        accountId,
+        service()
+      )
+    ).toBe(false)
+  })
+
+  it('enforces service restrictions when the asset has no credentials', () => {
+    expect(
+      isAddressWhitelisted(
+        asset(),
+        accountId,
+        service({ deny: [addressEntry(accountId)] })
+      )
+    ).toBe(false)
+  })
+
   it('allows assets without credentials', () => {
     expect(
       isAddressWhitelisted(asset(undefined), accountId, service(undefined))

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement } from 'react'
 import Time from '@shared/atoms/Time'
 import { usePrivacyMetadata } from '@hooks/usePrivacyMetadata'
@@ -11,6 +13,8 @@ export default function PrivacyPolicyHeader({
   documentDate?: string
   fileLastUpdated?: string
 }): ReactElement {
+  useLingui()
+
   const { policies } = usePrivacyMetadata()
   const policyMetadata = policies && policies.length > 0 ? policies[0] : null
   // The document's own `lastUpdated` front matter wins: it is the only source
@@ -23,8 +27,8 @@ export default function PrivacyPolicyHeader({
     fileLastUpdated ||
     new Date().toISOString().split('T')[0]
   const params = policyMetadata?.params || {
-    languageLabel: 'Language',
-    updated: 'Last updated on',
+    languageLabel: i18n._('Language'),
+    updated: i18n._('Last updated on'),
     dateFormat: 'MMMM dd, yyyy.'
   }
 
@@ -34,16 +38,15 @@ export default function PrivacyPolicyHeader({
   // their ids.
   const navItems = [
     {
-      label: 'Imprint',
-      anchor: 'imprint',
+      label: i18n._('Imprint'),
       href: '/privacy/imprint'
     },
     {
-      label: 'Terms and Conditions',
+      label: i18n._('Terms and Conditions'),
       href: '/privacy/terms'
     },
     {
-      label: 'Privacy Policy',
+      label: i18n._('Privacy Policy'),
       href: '/privacy/privacy-policy'
     },
     // No Data Portal Usage Agreement tab: the upstream document (naming Ocean
@@ -52,12 +55,11 @@ export default function PrivacyPolicyHeader({
     // NEXT_PUBLIC_DPUA_URL points at an external document. Add the tab back
     // once an AgrospAI version exists.
     {
-      label: 'Cookie Policy',
+      label: i18n._('Cookie Policy'),
       href: '/privacy/cookie-policy'
     },
     {
-      label: 'Lifecycle State Policy',
-      anchor: 'lifecycle-state-policy',
+      label: i18n._('Lifecycle State Policy'),
       href: '/privacy/lifecycle-state-policy'
     }
   ]
@@ -68,11 +70,8 @@ export default function PrivacyPolicyHeader({
       <AnchorNavigation items={navItems} />
       <p>
         <em>
-          {params?.updated || 'Last updated on'}{' '}
-          <Time
-            date={resolvedDate}
-            displayFormat={params?.dateFormat || 'MMMM dd, yyyy.'}
-          />
+          {params?.updated || i18n._('Last updated on')}{' '}
+          <Time date={resolvedDate} displayFormat="PP" />
         </em>
       </p>
     </div>

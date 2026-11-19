@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../i18n/index'
 import {
   createContext,
   ReactElement,
@@ -150,6 +152,8 @@ export function QueryFilterProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const defaultTerms = useRef(
     flattenFilterConfig(queryFilterConfig as NestedFilterConfig)
   )

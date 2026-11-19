@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useRef, ReactNode } from 'react'
 import styles from './index.module.css'
 
@@ -10,6 +11,8 @@ export default function StickySidebarLayout({
   sidebar,
   children
 }: StickySidebarLayoutProps): ReactElement {
+  useLingui()
+
   const sidebarRef = useRef<HTMLElement>(null)
   const mainContentRef = useRef<HTMLDivElement>(null)
 

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, RefObject, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, FeatureGroup, useMap } from 'react-leaflet'
 import L from 'leaflet'
@@ -110,6 +111,8 @@ export default function MapWithDraw({
   bounds: LatLngBoundsTuple | null
   onChange: BoundsChangeHandler
 }): ReactElement {
+  useLingui()
+
   const featureGroupRef = useRef<L.FeatureGroup>(null)
 
   return (

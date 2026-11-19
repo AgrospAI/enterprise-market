@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { MapContainer, TileLayer, Rectangle } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -10,6 +11,8 @@ export default function Map({
 }: {
   bounds: LatLngBoundsTuple
 }): ReactElement {
+  useLingui()
+
   return (
     <MapContainer
       // MapContainer props are immutable, remount when the coverage changes

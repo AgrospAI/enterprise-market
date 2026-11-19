@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useState, useRef } from 'react'
 import { Form, Formik } from 'formik'
 import { initialPublishFeedback, initialValues } from './_constants'
@@ -34,6 +36,8 @@ export default function PublishPage({
 }: {
   content: { title: string; description: string; warning: string }
 }): ReactElement {
+  useLingui()
+
   const { debug } = useUserPreferences()
   const { address: accountId } = useAccount()
   const walletClient = useEthersSigner()
@@ -100,7 +104,7 @@ export default function PublishPage({
     } catch (error) {
       LoggerInstance.error('[publish] error', error.message)
       if (error.message.length > 65) {
-        error.message = 'No Token created. Please try again.'
+        error.message = i18n._('No Token created. Please try again.')
       }
 
       setFeedback((prevState) => ({

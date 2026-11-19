@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import Tooltip from '@shared/atoms/Tooltip'
 import Cog from '@images/cog.svg'
@@ -12,6 +14,8 @@ import appConfig from 'app.config.cjs'
 import { useAccount } from 'wagmi'
 
 export default function UserPreferences(): ReactElement {
+  useLingui()
+
   const { isConnected } = useAccount()
   return (
     <>
@@ -41,7 +45,7 @@ export default function UserPreferences(): ReactElement {
         className={styles.preferences}
       >
         <>
-          <Cog aria-label="Preferences" className={styles.icon} />
+          <Cog aria-label={i18n._('Preferences')} className={styles.icon} />
           <Caret aria-hidden="true" className={styles.caret} />
         </>
       </Tooltip>

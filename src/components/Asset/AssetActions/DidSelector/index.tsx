@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import Button from '@components/@shared/atoms/Button'
 import Modal from '@shared/atoms/Modal'
 import { ReactElement, useEffect, useState } from 'react'
@@ -13,6 +15,8 @@ export interface DidSelectorProps {
 }
 
 export function DidSelector(props: DidSelectorProps): ReactElement {
+  useLingui()
+
   const { showDialog, setShowDialog, acceptSelection, abortSelection, dids } =
     props
   const [selectedDid, setSelectedDid] = useState<SsiWalletDid>()
@@ -44,7 +48,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
 
   return (
     <Modal
-      title="DID Selector"
+      title={i18n._('DID Selector')}
       isOpen={showDialog}
       onToggleModal={handleAbortSelection}
       shouldCloseOnOverlayClick
@@ -56,7 +60,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
           htmlFor="dids"
           className={`${styles.label} ${styles.marginBottom2}`}
         >
-          Choose your DID:
+          <Trans id="Choose your DID:" />{' '}
         </label>
 
         <select
@@ -83,7 +87,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
             className={`${styles.abortButton}`}
             onClick={handleAbortSelection}
           >
-            Cancel
+            <Trans id="Cancel" />{' '}
           </Button>
           <Button
             type="button"
@@ -93,7 +97,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
             onClick={handleAcceptSelection}
             disabled={!selectedDid}
           >
-            Confirm
+            <Trans id="Confirm" />{' '}
           </Button>
         </div>
       </div>

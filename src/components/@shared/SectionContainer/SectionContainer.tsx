@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import styles from './SectionContainer.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -28,6 +29,8 @@ export default function SectionContainer({
   borderless = false,
   padding
 }: SectionContainerProps): ReactElement {
+  useLingui()
+
   const containerClass = [
     styles.container,
     variant && styles[variant],

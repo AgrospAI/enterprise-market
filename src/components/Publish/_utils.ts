@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import {
   Config,
   FreCreationParams,
@@ -118,7 +119,11 @@ async function getAlgorithmContainerPreset(
     (preset) => `${preset.image}:${preset.tag}` === dockerImage
   )
   if (!preset) {
-    throw new Error(`Unknown algorithm container preset: ${dockerImage}`)
+    throw new Error(
+      i18n._('Unknown algorithm container preset: {dockerImage}', {
+        dockerImage
+      })
+    )
   }
 
   const resolved = await getConcreteDockerImageTag(preset.image, preset.tag)
@@ -1068,7 +1073,10 @@ export async function createTokensAndPricing(
   // undefined for chains without one (see getOceanConfig).
   if (!config.oceanTokenAddress) {
     throw new Error(
-      `No base token configured for network ${values.user.chainId}. Add it to NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES.`
+      i18n._(
+        'No base token configured for network {value0}. Add it to NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES.',
+        { value0: values.user.chainId }
+      )
     )
   }
 
@@ -1126,7 +1134,7 @@ export async function createTokensAndPricing(
 
       const receipt = await (result as TransactionResponse).wait()
       const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, i18n._('TokenCreated'))
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
@@ -1150,7 +1158,7 @@ export async function createTokensAndPricing(
       )
       const receipt = await (result as TransactionResponse).wait()
       const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, i18n._('TokenCreated'))
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress

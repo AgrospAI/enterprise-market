@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import Modal from '@shared/atoms/Modal'
 import Button from '@shared/atoms/Button'
@@ -31,11 +33,13 @@ export default function WalletChoiceModal({
   onSelectSignerServer,
   onSelectJsonWallet
 }: WalletChoiceModalProps): ReactElement {
+  useLingui()
+
   if (!isOpen) return null
 
   return (
     <Modal
-      title="Connect a wallet"
+      title={i18n._('Connect a wallet')}
       isOpen
       onToggleModal={onClose}
       shouldCloseOnOverlayClick

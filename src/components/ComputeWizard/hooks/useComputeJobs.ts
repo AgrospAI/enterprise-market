@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useCallback, useEffect, useState } from 'react'
 import { getComputeJobs } from '@utils/compute'
 import { Asset } from 'src/@types/Asset'
@@ -51,14 +52,22 @@ export function useComputeJobs({
         setIsLoadingJobs(!result.isLoaded)
       } catch (error) {
         const message =
-          (error as Error)?.message || 'Failed to fetch compute jobs'
+          (error as Error)?.message || i18n._('Failed to fetch compute jobs')
         setComputeJobsError(message)
         if (type === 'init') {
           setIsLoadingJobs(false)
         }
       }
     },
-    [asset, service, chainIds, ownerAddress, cancelTokenFactory, signer]
+    [
+      asset,
+      service,
+      chainIds,
+      ownerAddress,
+      cancelTokenFactory,
+      signer,
+      i18n.locale
+    ]
   )
 
   useEffect(() => {

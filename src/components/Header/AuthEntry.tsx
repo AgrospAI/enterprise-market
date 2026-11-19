@@ -1,3 +1,5 @@
+import { i18n } from '../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { MouseEventHandler, ReactElement, ReactNode } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@hooks/useAuth'
@@ -17,9 +19,11 @@ export default function AuthEntry({
   loginClassName,
   buttonContentClassName,
   buttonTextClassName,
-  loginLabel = 'Login',
+  loginLabel = i18n._('Login'),
   onLoginClick
 }: AuthEntryProps): ReactElement {
+  useLingui()
+
   const { isAuthenticated, authEnabled } = useAuth()
   const router = useRouter()
 

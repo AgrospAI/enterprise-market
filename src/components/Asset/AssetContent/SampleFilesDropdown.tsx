@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useMemo, useState } from 'react'
 import { prettySize } from '@shared/FormInput/InputElement/FilesInput/utils'
 import { Service } from 'src/@types/ddo/Service'
@@ -37,6 +39,8 @@ export default function SampleFilesDropdown({
   assetLinks,
   services = []
 }: SampleFilesDropdownProps): ReactElement | null {
+  useLingui()
+
   const [isExpanded, setIsExpanded] = useState(false)
 
   const sampleFiles = useMemo(() => {
@@ -63,7 +67,9 @@ export default function SampleFilesDropdown({
               url,
               name: extractFileNameFromUrl(url),
               type: 'url',
-              serviceName: service.name || `Service ${index + 1}`,
+              serviceName:
+                service.name ||
+                i18n._('Service {value0}', { value0: index + 1 }),
               source: 'service',
               serviceIndex: index + 1
             })
@@ -73,7 +79,7 @@ export default function SampleFilesDropdown({
     })
 
     return files
-  }, [assetLinks, services])
+  }, [assetLinks, services, i18n.locale])
 
   const groupedFiles = useMemo(() => {
     const assetFiles = sampleFiles.filter((f) => f.source === 'asset')
@@ -99,8 +105,10 @@ export default function SampleFilesDropdown({
         onClick={() => setIsExpanded((current) => !current)}
       >
         <span className={styles.toggleText}>
-          {isExpanded ? 'Hide sample files' : 'Show sample files'} ({totalFiles}
-          )
+          {isExpanded
+            ? i18n._('Hide sample files')
+            : i18n._('Show sample files')}{' '}
+          ({totalFiles})
         </span>
         <ChevronDown className={styles.chevron} aria-hidden="true" />
       </button>
@@ -111,7 +119,9 @@ export default function SampleFilesDropdown({
             {groupedFiles.assetFiles.length > 0 && (
               <>
                 <li className={styles.groupHeader}>
-                  <span className={styles.groupTitle}>Asset Sample Data</span>
+                  <span className={styles.groupTitle}>
+                    <Trans id="Asset Sample Data" />
+                  </span>
                 </li>
                 {groupedFiles.assetFiles.map((file, index) => (
                   <li
@@ -131,7 +141,10 @@ export default function SampleFilesDropdown({
                     </div>
 
                     <div className={styles.documentMeta}>
-                      <Badge label="SAMPLE" className={styles.fileTypePill} />
+                      <Badge
+                        label={i18n._('SAMPLE')}
+                        className={styles.fileTypePill}
+                      />
                     </div>
                   </li>
                 ))}
@@ -147,7 +160,8 @@ export default function SampleFilesDropdown({
                 {Object.entries(
                   groupedFiles.serviceFiles.reduce((acc, file) => {
                     const key =
-                      file.serviceName || `Service ${file.serviceIndex}`
+                      file.serviceName ||
+                      i18n._('Service {value0}', { value0: file.serviceIndex })
                     if (!acc[key]) acc[key] = []
                     acc[key].push(file)
                     return acc
@@ -156,7 +170,7 @@ export default function SampleFilesDropdown({
                   <li key={serviceName} className={styles.serviceGroup}>
                     <div className={styles.groupHeader}>
                       <span className={styles.groupTitle}>
-                        {serviceName} Sample Data
+                        {serviceName} <Trans id="Sample Data" />{' '}
                       </span>
                     </div>
                     <ul className={styles.subList}>
@@ -179,7 +193,7 @@ export default function SampleFilesDropdown({
 
                           <div className={styles.documentMeta}>
                             <Badge
-                              label="SAMPLE"
+                              label={i18n._('SAMPLE')}
                               className={styles.fileTypePill}
                             />
                           </div>

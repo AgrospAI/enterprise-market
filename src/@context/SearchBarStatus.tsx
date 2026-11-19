@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   createContext,
   useContext,
@@ -20,6 +21,8 @@ function SearchBarStatusProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
   const [homeSearchBarFocus, setHomeSearchBarFocus] = useState<boolean>(false)
 

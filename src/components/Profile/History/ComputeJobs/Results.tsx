@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { getErrorMessage, LoggerInstance, Provider } from '@oceanprotocol/lib'
 import type { ComputeResult, ComputeResultType } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
@@ -6,7 +8,7 @@ import Tooltip from '@shared/atoms/Tooltip'
 import IconDownload from '@images/download2.svg'
 import styles from './Results.module.css'
 import FormHelp from '@shared/FormInput/Help'
-import content from '../../../../../content/pages/history.json'
+import { contentPagesHistory as content } from '../../../../i18n/content'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
 import { useAccount } from 'wagmi'
@@ -30,14 +32,14 @@ interface ResultDownloadItemProps {
 function getDownloadButtonValue(type: ComputeResultType, name: string): string {
   switch (type) {
     case 'algorithmLog':
-      return 'ALGORITHM LOGS'
+      return i18n._('ALGORITHM LOGS')
     case 'configrationLog':
-      return 'CONFIGURATION LOGS'
+      return i18n._('CONFIGURATION LOGS')
     case 'publishLog':
-      return 'PUBLISH LOGS'
+      return i18n._('PUBLISH LOGS')
     case 'output':
     default:
-      return `RESULTS (${name})`
+      return i18n._('RESULTS ({name})', { name })
   }
 }
 
@@ -58,6 +60,8 @@ function ResultDownloadItem({
   isDisabled,
   onDownload
 }: ResultDownloadItemProps): ReactElement {
+  useLingui()
+
   const label = `${getDownloadButtonValue(
     result.type,
     result.filename
@@ -70,7 +74,7 @@ function ResultDownloadItem({
         className={styles.tooltipWrap}
         placement="top"
         trigger="mouseenter focusin"
-        content={`Download ${result.filename}`}
+        content={i18n._('Download {value0}', { value0: result.filename })}
       >
         <button
           type="button"
@@ -78,7 +82,7 @@ function ResultDownloadItem({
           onClick={onDownload}
           disabled={isDisabled}
           aria-busy={isPending}
-          aria-label={`Download ${result.filename}`}
+          aria-label={i18n._('Download {value0}', { value0: result.filename })}
         >
           <IconDownload aria-hidden="true" />
         </button>
@@ -92,6 +96,8 @@ export default function Results({
 }: {
   job: ComputeJobMetaData
 }): ReactElement {
+  useLingui()
+
   const providerInstance = useMemo(() => new Provider(), [])
   const { address: accountId } = useAccount()
   const walletClient = useEthersSigner()
@@ -156,7 +162,7 @@ export default function Results({
     } catch (error: unknown) {
       const message = getErrorMessageFromUnknown(error)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
-      toast.error(message)
+      toast.error(i18n._(message))
     } finally {
       setPendingIndex(null)
     }
@@ -164,7 +170,9 @@ export default function Results({
 
   return (
     <div className={styles.results}>
-      <div className={styles.title}>Results</div>
+      <div className={styles.title}>
+        <Trans id="Results" />
+      </div>
       {isFinished ? (
         <ul>
           {results.length > 0 ? (
@@ -179,15 +187,22 @@ export default function Results({
                   />
                 </ListItem>
               ) : (
-                <ListItem key={i}>No results found.</ListItem>
+                <ListItem key={i}>
+                  <Trans id="No results found." />
+                </ListItem>
               )
             )
           ) : (
-            <ListItem>No results found.</ListItem>
+            <ListItem>
+              <Trans id="No results found." />
+            </ListItem>
           )}
         </ul>
       ) : (
-        <p> Waiting for results...</p>
+        <p>
+          {' '}
+          <Trans id="Waiting for results..." />
+        </p>
       )}
       <div className={styles.alert}>
         <div className={styles.rightAlert}></div>

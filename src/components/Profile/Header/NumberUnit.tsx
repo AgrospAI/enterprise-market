@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Markdown from '@shared/Markdown'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -18,6 +19,8 @@ export default function NumberUnit({
   icon,
   tooltip
 }: NumberUnitProps): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.unit}>
       <div className={`${styles.number} ${small && styles.small}`}>

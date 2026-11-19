@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 // CredentialDialogContext.tsx
 import { useCredentialDialogState } from '@hooks/useCredentials'
 import { createContext, useContext } from 'react'
@@ -5,6 +6,8 @@ import { createContext, useContext } from 'react'
 const CredentialDialogContext = createContext(null)
 
 export function CredentialDialogProvider({ children, autoStart = false }) {
+  useLingui()
+
   const dialogState = useCredentialDialogState(autoStart)
   return (
     <CredentialDialogContext.Provider value={dialogState}>

@@ -120,7 +120,10 @@ export function markdownToHtmlWithToc(markdown: string): string {
   const result = remark()
     .use(remarkGfm)
     .use(remarkBreaks)
-    .use(remarkToc)
+    .use(remarkToc, {
+      heading:
+        '(table[ -]of[ -])?contents?|toc|tabla de contenido(s)?|índice|inhaltsverzeichnis'
+    })
     .use(remarkRehype)
     .use(rehypeSlug)
     .use(rehypeStringify)

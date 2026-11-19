@@ -1,9 +1,10 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Input from '../../FormInput'
 import { getFieldContent } from '@utils/form'
 import styles from './Block.module.css'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 import DeleteButton from '../../DeleteButton/DeleteButton'
 import InputGroup from '../../FormInput/InputGroup'
 
@@ -22,6 +23,8 @@ export default function StaticPolicyBlock({
   onDelete,
   readOnly = false
 }: StaticPolicyBlockProps): ReactElement {
+  useLingui()
+
   const fieldName =
     innerIndex !== undefined
       ? `${name}.requestCredentials[${index}].policies[${innerIndex}].name`

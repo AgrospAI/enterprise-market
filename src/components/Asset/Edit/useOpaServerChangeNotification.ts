@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { ssiEnabled } from 'app.config.cjs'
@@ -48,7 +49,7 @@ export function useOpaServerChangeNotification(
       })
 
       if (hasChanged) {
-        toast.info(message, { toastId, autoClose: false })
+        toast.info(i18n._(message), { toastId, autoClose: false })
       }
     }
 

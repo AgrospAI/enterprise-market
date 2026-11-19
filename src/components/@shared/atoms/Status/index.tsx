@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
@@ -13,6 +14,8 @@ export default function Status({
   state,
   className
 }: StatusProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     status: true,
     warning: state === 'warning',

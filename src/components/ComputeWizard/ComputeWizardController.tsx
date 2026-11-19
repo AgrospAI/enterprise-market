@@ -1,3 +1,6 @@
+import { translate } from '../../i18n/translate'
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import {
   ReactElement,
   useCallback,
@@ -59,6 +62,7 @@ import { resetCredentialCache } from './hooks/resetCredentialCache'
 import { resolveVerifierSessionId } from '@utils/verifierSession'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import appConfig from 'app.config.cjs'
+import { requiresSsi } from '@utils/credentials'
 import { ComputeRerunConfig } from '@utils/computeRerun'
 import {
   createComputeOutput,
@@ -311,6 +315,8 @@ export default function ComputeWizardController({
   mode,
   rerunConfig
 }: ControllerProps): ReactElement {
+  useLingui()
+
   useUserPreferences()
   const { isAssetNetwork } = useAsset()
   const { isConnected } = useAccount()
@@ -692,7 +698,12 @@ export default function ComputeWizardController({
             (s) => s.id === service.id
           )
           if (datasetIndex === -1)
-            throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+            throw new Error(
+              i18n._('ServiceId {value0} not found in {value1}', {
+                value0: service.id,
+                value1: asset.id
+              })
+            )
 
           return {
             asset,
@@ -796,7 +807,9 @@ export default function ComputeWizardController({
       }
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Failed to initialize provider.'
+        err instanceof Error
+          ? err.message
+          : i18n._('Failed to initialize provider.')
       if (isDockerRegistryAuthError(err)) {
         setError(undefined)
         await formikRef.current?.setFieldValue(
@@ -861,7 +874,9 @@ export default function ComputeWizardController({
         if (!cancelled) setError(undefined)
       } catch (err) {
         if (!cancelled) {
-          setError((err as Error)?.message || 'Failed to load compute assets.')
+          setError(
+            (err as Error)?.message || i18n._('Failed to load compute assets.')
+          )
         }
       } finally {
         if (!cancelled) setIsLoading(false)
@@ -888,34 +903,36 @@ export default function ComputeWizardController({
     const newError = error
     if (!newError) return
     const errorMsg = newError + '. Please retry.'
-    toast.error(errorMsg)
+    toast.error(i18n._(errorMsg))
   }, [error])
 
   useEffect(() => {
     if (!initError) return
     toast.error(
-      isDockerRegistryAuthError(initError)
-        ? getDockerRegistryAuthErrorMessage(initError)
-        : initError
+      i18n._(
+        isDockerRegistryAuthError(initError)
+          ? getDockerRegistryAuthErrorMessage(initError)
+          : initError
+      )
     )
     setInitError(undefined)
   }, [initError, setInitError])
 
   useEffect(() => {
     if (!submitError) return
-    toast.error(submitError)
+    toast.error(i18n._(submitError))
     setSubmitError(undefined)
   }, [submitError, setSubmitError])
 
   useEffect(() => {
     if (computeEnvsError) {
-      toast.error(computeEnvsError)
+      toast.error(i18n._(computeEnvsError))
     }
   }, [computeEnvsError])
 
   useEffect(() => {
     if (computeJobsError) {
-      toast.error(computeJobsError)
+      toast.error(i18n._(computeJobsError))
     }
   }, [computeJobsError])
 
@@ -1041,12 +1058,12 @@ export default function ComputeWizardController({
           'MetaMask Tx Signature: User denied'
         )
       ) {
-        toast.info('Transaction was cancelled by user')
+        toast.info(i18n._('Transaction was cancelled by user'))
         return
       }
 
       const message =
-        (error as Error)?.message || 'Failed to start compute job.'
+        (error as Error)?.message || i18n._('Failed to start compute job.')
       if (!isDockerRegistryAuthError(error)) {
         setError(message)
       }
@@ -1061,13 +1078,20 @@ export default function ComputeWizardController({
       if (isAlgorithmFlow) {
         const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
-        if (appConfig.ssiEnabled && !skip) {
+        if (
+          appConfig.ssiEnabled &&
+          (requiresSsi(asset.credentialSubject?.credentials) ||
+            requiresSsi(service?.credentials)) &&
+          !skip
+        ) {
           try {
             const sessionId = lookupVerifierSessionId(asset.id, service.id)
             const result = await checkVerifierSessionId(sessionId)
             if (!result?.success) {
               toast.error(
-                'Credentials expired. Please re-verify your credentials.'
+                i18n._(
+                  'Credentials expired. Please re-verify your credentials.'
+                )
               )
               return
             }
@@ -1084,7 +1108,7 @@ export default function ComputeWizardController({
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
       ) {
-        toast.error('Please complete all required fields.')
+        toast.error(i18n._('Please complete all required fields.'))
         return
       }
 
@@ -1093,7 +1117,7 @@ export default function ComputeWizardController({
         values.outputStorage
       )
       if (outputStorageError) {
-        toast.error(outputStorageError)
+        toast.error(i18n._(outputStorageError))
         return
       }
 
@@ -1104,7 +1128,7 @@ export default function ComputeWizardController({
           values.queueMaxWaitTimeUnit
         )
       ) {
-        toast.error('Please enter a valid maximum waiting time.')
+        toast.error(i18n._('Please enter a valid maximum waiting time.'))
         return
       }
 
@@ -1112,7 +1136,9 @@ export default function ComputeWizardController({
         selectEnvAndResources(values)
       if (!selectedComputeEnv || !selectedResources) {
         toast.error(
-          'Please configure the compute environment resources before proceeding.'
+          i18n._(
+            'Please configure the compute environment resources before proceeding.'
+          )
         )
         return
       }
@@ -1123,7 +1149,9 @@ export default function ComputeWizardController({
         (!values.dataset || values.dataset.length === 0)
       ) {
         toast.error(
-          'Please select at least one dataset to run against the algorithm.'
+          i18n._(
+            'Please select at least one dataset to run against the algorithm.'
+          )
         )
         return
       }
@@ -1138,7 +1166,7 @@ export default function ComputeWizardController({
       } else {
         actualSelectedDataset = [asset]
         if (!actualSelectedAlgorithm) {
-          toast.error('Please select an algorithm before continuing.')
+          toast.error(i18n._('Please select an algorithm before continuing.'))
           return
         }
       }
@@ -1209,11 +1237,11 @@ export default function ComputeWizardController({
         error?.message?.includes('User denied') ||
         error?.message?.includes('MetaMask Tx Signature: User denied')
       ) {
-        toast.info('Transaction was cancelled by user')
+        toast.info(i18n._('Transaction was cancelled by user'))
         return
       }
 
-      toast.error(error.message)
+      toast.error(i18n._(error.message))
       LoggerInstance.error(error)
     }
   }
@@ -1228,7 +1256,9 @@ export default function ComputeWizardController({
       !datasetServices.length &&
       !formikValues?.withoutDataset
     ) {
-      toast.error('Please select at least one dataset before calculating fees.')
+      toast.error(
+        i18n._('Please select at least one dataset before calculating fees.')
+      )
       return
     }
 
@@ -1246,13 +1276,13 @@ export default function ComputeWizardController({
         true,
         false
       )
-      toast.error('Enter both the registry username and password.')
+      toast.error(i18n._('Enter both the registry username and password.'))
       return
     }
 
     try {
       await initPriceAndFees(datasetServices, formikValues, false)
-      toast.info('Compute provider initialized successfully.')
+      toast.info(i18n._('Compute provider initialized successfully.'))
     } catch {
       // Initialization errors are surfaced once through initError.
     }
@@ -1271,7 +1301,7 @@ export default function ComputeWizardController({
       <ErrorState
         containerClassName={styles.container}
         errorClassName={styles.error}
-        message={error}
+        message={translate(error)}
       />
     )
   }

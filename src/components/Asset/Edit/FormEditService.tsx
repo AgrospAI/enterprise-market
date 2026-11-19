@@ -1,10 +1,14 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import content from '../../../../content/publish/form.json'
+import {
+  contentPublishConsumerParameters as consumerParametersContent,
+  contentPublishForm as content
+} from '../../../i18n/content'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
@@ -33,6 +37,8 @@ export default function FormEditService({
   assetType: string
   existingFileType?: string
 }): ReactElement {
+  useLingui()
+
   const formUniqueId = service.id
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
   const hasNormalizedExistingFileRef = useRef(false)
@@ -205,7 +211,7 @@ export default function FormEditService({
           name="providerUrl"
           disabled={true}
         />
-        <SectionContainer title="File" border padding="16px">
+        <SectionContainer title={i18n._('File')} border padding="16px">
           <Field
             {...getFieldContent('files', content.services.fields)}
             component={Input}
@@ -213,13 +219,13 @@ export default function FormEditService({
             activeFileType={existingFileType}
             existingFilePlaceholder={
               existingFileType
-                ? '[Encrypted file - URL not available for editing]'
+                ? i18n._('[Encrypted file - URL not available for editing]')
                 : undefined
             }
             showExistingFileNotice={showExistingFileNotice}
           />
         </SectionContainer>
-        <SectionContainer title="Sample File" border padding="16px">
+        <SectionContainer title={i18n._('Sample File')} border padding="16px">
           <Field
             {...getFieldContent('links', content.services.fields)}
             component={Input}

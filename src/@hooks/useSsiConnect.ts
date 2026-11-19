@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useCallback } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
@@ -65,7 +66,7 @@ export default function useSsiConnect() {
 
       try {
         if (!walletClient) {
-          toast.error('Connect your wallet before starting SSI setup.')
+          toast.error(i18n._('Connect your wallet before starting SSI setup.'))
           return false
         }
 
@@ -88,8 +89,10 @@ export default function useSsiConnect() {
       } catch (error) {
         LoggerInstance.error(error)
         const message =
-          error instanceof Error ? error.message : 'SSI connection failed'
-        toast.error(message)
+          error instanceof Error
+            ? error.message
+            : i18n._('SSI connection failed')
+        toast.error(i18n._(message))
         return false
       } finally {
         setIsSsiSessionHydrating(false)
@@ -106,7 +109,8 @@ export default function useSsiConnect() {
       fetchWallets,
       fetchKeys,
       setShowSsiWalletModule,
-      setIsSsiSessionHydrating
+      setIsSsiSessionHydrating,
+      i18n.locale
     ]
   )
 

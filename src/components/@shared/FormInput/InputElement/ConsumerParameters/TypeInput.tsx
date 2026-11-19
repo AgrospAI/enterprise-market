@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Input, { InputProps } from '../..'
 import { Field, useField, useFormikContext } from 'formik'
@@ -15,6 +16,8 @@ export default function TypeInput({
   index: number
   inputName: string
 }): ReactElement {
+  useLingui()
+
   const { setFieldTouched } = useFormikContext<FormPublishData>()
   const [field, , helpers] = useField<FormConsumerParameter[]>(inputName)
 

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import AddToken from '@components/@shared/AddToken'
 import EUROeLogo from '@images/EUROe_Symbol_Black.svg'
@@ -31,6 +32,8 @@ interface AddTokenListProps {
 export default function AddTokenList({
   disabled = false
 }: AddTokenListProps): ReactElement {
+  useLingui()
+
   const { approvedBaseTokens } = useMarketMetadata()
 
   return (

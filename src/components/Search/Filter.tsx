@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useEffect } from 'react'
 import classNames from 'classnames/bind'
 import { addExistingParamsToUrl } from './utils'
@@ -84,6 +86,8 @@ export default function Filter({
   showTime?: boolean
   showPrice?: boolean
 }): ReactElement {
+  useLingui()
+
   const { filters, setFilters, ignorePurgatory, setIgnorePurgatory } =
     useFilter()
   const connectorSupportedChains = useConnectorSupportedChains()
@@ -155,57 +159,57 @@ export default function Filter({
   const filterList: FilterStructure[] = [
     {
       id: 'serviceType',
-      label: 'Service Type',
+      label: i18n._('Service Type'),
       type: 'filterList',
       options: [
-        { label: 'datasets', value: FilterByTypeOptions.Data },
-        { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
-        { label: 'saas', value: FilterByTypeOptions.Saas }
+        { label: i18n._('Datasets'), value: FilterByTypeOptions.Data },
+        { label: i18n._('Algorithms'), value: FilterByTypeOptions.Algorithm },
+        { label: i18n._('SaaS'), value: FilterByTypeOptions.Saas }
       ]
     },
     {
       id: 'accessType',
-      label: 'Access Type',
+      label: i18n._('Access Type'),
       type: 'filterList',
       options: [
-        { label: 'download', value: FilterByAccessOptions.Download },
-        { label: 'compute', value: FilterByAccessOptions.Compute }
+        { label: i18n._('Download'), value: FilterByAccessOptions.Download },
+        { label: i18n._('Compute'), value: FilterByAccessOptions.Compute }
       ]
     },
     ...(showPrice
       ? [
           {
             id: 'priceType',
-            label: 'Price',
+            label: i18n._('Price'),
             type: 'filterList',
             options: [
-              { label: 'free', value: FilterByPriceOptions.Free },
-              { label: 'paid', value: FilterByPriceOptions.Paid }
+              { label: i18n._('Free'), value: FilterByPriceOptions.Free },
+              { label: i18n._('Paid'), value: FilterByPriceOptions.Paid }
             ]
           }
         ]
       : []),
     {
       id: 'assetState',
-      label: 'Asset State',
+      label: i18n._('Asset State'),
       type: 'filterList',
       options: [
-        { label: 'Active', value: State.Active },
+        { label: i18n._('Active'), value: State.Active },
         // { label: 'EndOfLife', value: State.EndOfLife },
         // { label: 'Deprecated', value: State.Deprecated },
         // { label: 'RevokedByPublisher', value: State.RevokedByPublisher },
         {
-          label: 'TemporaryDisabled',
+          label: i18n._('TemporaryDisabled'),
           value: State.OrderingIsTemporaryDisabled
         },
-        { label: 'Unlisted', value: State.Unlisted }
+        { label: i18n._('Unlisted'), value: State.Unlisted }
       ]
     },
     ...(connectorSupportedChains.length > 1
       ? [
           {
             id: 'supportedBlockchain',
-            label: 'Blockchain',
+            label: i18n._('Blockchain'),
             type: 'filterList',
             options: connectorSupportedChains.map((chainId: number) => {
               const network = getNetworkDataById(networkdata, chainId)
@@ -222,18 +226,21 @@ export default function Filter({
       ? [
           {
             id: 'filterTime',
-            label: 'Time',
+            label: i18n._('Time'),
             type: 'filterList',
             options: [
               {
-                label: 'last 3 months',
+                label: i18n._('last 3 months'),
                 value: FilterByTimeOptions.Last3Months
               },
               {
-                label: 'last 6 months',
+                label: i18n._('last 6 months'),
                 value: FilterByTimeOptions.Last6Months
               },
-              { label: 'last year', value: FilterByTimeOptions.LastYear }
+              {
+                label: i18n._('last year'),
+                value: FilterByTimeOptions.LastYear
+              }
             ]
           }
         ]
@@ -242,7 +249,7 @@ export default function Filter({
       ? [
           {
             id: 'nodeUriIndex',
-            label: 'Provider URL',
+            label: i18n._('Provider URL'),
             type: 'filterList',
             options: nodeUriIndex.map((nodeUri: string) => ({
               label: formatProviderLabel(nodeUri),
@@ -274,7 +281,7 @@ export default function Filter({
     <>
       <div className={styles.sidePositioning}>
         <Accordion
-          title="Filters"
+          title={i18n._('Filters')}
           defaultExpanded={expanded}
           badgeNumber={selectedFiltersCount}
           action={
@@ -286,7 +293,7 @@ export default function Filter({
                   clearFilters(addFiltersToUrl)
                 }}
               >
-                Clear filters
+                <Trans id="Clear filters" />{' '}
               </Button>
             )
           }
@@ -315,7 +322,9 @@ export default function Filter({
             ))}
             {showPurgatoryOption && (
               <div className={styles.filterType}>
-                <h5 className={styles.filterTypeLabel}>Purgatory</h5>
+                <h5 className={styles.filterTypeLabel}>
+                  <Trans id="Purgatory" />
+                </h5>
                 <Input
                   name={purgatoryFilterItem.value}
                   type="checkbox"
@@ -363,7 +372,7 @@ export default function Filter({
         {showPurgatoryOption && (
           <div className={styles.compactFilterContainer}>
             <Accordion
-              title="Purgatory"
+              title={i18n._('Purgatory')}
               badgeNumber={ignorePurgatory ? 1 : 0}
               compact
             >

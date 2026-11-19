@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { generateBaseQuery, queryMetadata } from '@utils/aquarius'
@@ -10,6 +11,8 @@ import { generateQuery } from './_utils'
 import { Asset } from 'src/@types/Asset'
 
 export default function RelatedAssets(): ReactElement {
+  useLingui()
+
   const { asset } = useAsset()
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
@@ -113,7 +116,9 @@ export default function RelatedAssets(): ReactElement {
 
   return (
     <section className={styles.section}>
-      <h3>Related Assets</h3>
+      <h3>
+        <Trans id="Related Assets" />
+      </h3>
       <AssetList
         assets={relatedAssets}
         showPagination={false}

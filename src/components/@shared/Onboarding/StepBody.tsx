@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './StepBody.module.css'
 import StepAction, { IStepAction } from './StepAction'
@@ -22,6 +23,8 @@ export default function StepBody({
   refreshOption?: boolean
   children?: ReactElement
 }): ReactElement {
+  useLingui()
+
   const { connector: activeConnector } = useAccount()
   return (
     <div className={styles.content}>
@@ -30,11 +33,10 @@ export default function StepBody({
           {refreshOption && (
             <div className={styles.refresh}>
               <p>
-                Please, before you continue click on the button below to refresh
-                the page info.
+                <Trans id="Please, before you continue click on the button below to refresh the page info." />{' '}
               </p>
               <Button style="text" onClick={() => location.reload()}>
-                <Refresh /> Refresh
+                <Refresh /> <Trans id="Refresh" />{' '}
               </Button>
             </div>
           )}

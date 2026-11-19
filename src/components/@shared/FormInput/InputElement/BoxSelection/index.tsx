@@ -1,3 +1,5 @@
+import { i18n } from '../../../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ChangeEvent } from 'react'
 import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
@@ -27,6 +29,8 @@ export default function BoxSelection({
   size?: BoxSelectionSize
   handleChange?: (event: ChangeEvent<HTMLInputElement>) => void
 }): JSX.Element {
+  const { i18n } = useLingui()
+
   const styleClassesWrapper = `${styles.boxSelectionsWrapper} ${
     disabled ? styles.disabled : ''
   } ${size === 'mini' ? styles.small : ''}`
@@ -54,11 +58,17 @@ export default function BoxSelection({
             <label
               className={`${styles.boxSelection} ${styles.label}`}
               htmlFor={option.name}
-              title={option.name}
+              title={i18n._(option.name)}
             >
               {option.icon}
-              <span className={styles.title}>{option.title}</span>
-              {option.text}
+              <span className={styles.title}>
+                {typeof option.title === 'string'
+                  ? i18n._(option.title)
+                  : option.title}
+              </span>
+              {typeof option.text === 'string'
+                ? i18n._(option.text)
+                : option.text}
             </label>
           </div>
         ))

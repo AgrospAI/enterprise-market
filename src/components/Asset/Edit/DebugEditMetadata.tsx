@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { MetadataEditForm } from './_types'
@@ -21,6 +23,8 @@ export default function DebugEditMetadata({
   values: MetadataEditForm
   asset: Asset
 }): ReactElement {
+  useLingui()
+
   const [valuePreview, setValuePreview] = useState({})
   const [updatedAsset, setUpdatedAsset] = useState<Asset>()
 
@@ -100,9 +104,13 @@ export default function DebugEditMetadata({
 
   return (
     <>
-      <DebugOutput title="Collected Form Values" output={valuePreview} large />
       <DebugOutput
-        title="Transformed Asset Values"
+        title={i18n._('Collected Form Values')}
+        output={valuePreview}
+        large
+      />
+      <DebugOutput
+        title={i18n._('Transformed Asset Values')}
         output={updatedAsset}
         large
       />

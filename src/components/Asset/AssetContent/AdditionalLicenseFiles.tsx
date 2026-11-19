@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useMemo, useState } from 'react'
 import { prettySize } from '@shared/FormInput/InputElement/FilesInput/utils'
 import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
@@ -48,6 +50,8 @@ function getDocumentKey(document: RemoteObject, index: number): string {
 export default function AdditionalLicenseFiles({
   licenseDocuments = []
 }: AdditionalLicenseFilesProps): ReactElement | null {
+  useLingui()
+
   const [isExpanded, setIsExpanded] = useState(false)
   const additionalLicenseDocuments = useMemo(
     () => licenseDocuments.slice(1),
@@ -66,8 +70,10 @@ export default function AdditionalLicenseFiles({
         onClick={() => setIsExpanded((current) => !current)}
       >
         <span className={styles.toggleText}>
-          {isExpanded ? 'Hide additional files' : 'Show additional files'} (
-          {additionalLicenseDocuments.length})
+          {isExpanded
+            ? i18n._('Hide additional files')
+            : i18n._('Show additional files')}{' '}
+          ({additionalLicenseDocuments.length})
         </span>
         <ChevronDown className={styles.chevron} aria-hidden="true" />
       </button>
@@ -78,7 +84,9 @@ export default function AdditionalLicenseFiles({
             {additionalLicenseDocuments.map((document, index) => {
               const primaryMirror = document.mirrors?.[0]
               const documentLabel =
-                document.name || primaryMirror?.url || 'License document'
+                document.name ||
+                primaryMirror?.url ||
+                i18n._('License document')
               const fileSize = getFormattedFileSize(document)
               const fileType = getFormattedFileType(
                 document,

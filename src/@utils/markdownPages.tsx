@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import fs from 'fs'
 import { join } from 'path'
 import matter from 'gray-matter'
@@ -116,7 +117,8 @@ async function fetchExternalContent(url: string): Promise<string | null> {
 
     clearTimeout(timeoutId)
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    if (!response.ok)
+      throw new Error(i18n._('HTTP {value0}', { value0: response.status }))
     return await response.text()
   } catch (error) {
     console.error(`Error fetching external content from ${url}:`, error)
@@ -214,7 +216,9 @@ export async function getPageBySlug(
           .join(' '),
         description: ''
       },
-      content: `# Content Not Found\n\nThe requested content could not be found.`,
+      content: i18n._(
+        '# Content Not Found\n\nThe requested content could not be found.'
+      ),
       fileLastUpdated: new Date().toISOString().split('T')[0],
       notFound: true
     }

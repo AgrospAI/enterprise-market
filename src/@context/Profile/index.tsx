@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import {
   useContext,
   useState,
@@ -76,6 +78,8 @@ function ProfileProvider({
   ownAccount: boolean
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const walletClient = useEthersSigner() // FIX: Replaced useSigner
   const { address: wagmiAccountId } = useAccount()
   const chainId = useChainId() // FIX: Replaced useNetwork
@@ -283,7 +287,7 @@ function ProfileProvider({
 
     updateDownloads()
 
-    return () => cancelToken.cancel('Request cancelled.')
+    return () => cancelToken.cancel(i18n._('Request cancelled.'))
   }, [currentPage, fetchDownloads])
 
   useEffect(() => {
@@ -309,7 +313,7 @@ function ProfileProvider({
 
     updateActiveDownloadsTotal()
 
-    return () => cancelToken.cancel('Request cancelled.')
+    return () => cancelToken.cancel(i18n._('Request cancelled.'))
   }, [chainId, fetchDownloadAssetsForChains])
 
   //

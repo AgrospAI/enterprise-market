@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../_types'
@@ -5,6 +6,8 @@ import Price from './Price'
 import Alert from '../../@shared/atoms/Alert'
 
 export default function Free({ content }: { content: any }): ReactElement {
+  useLingui()
+
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 

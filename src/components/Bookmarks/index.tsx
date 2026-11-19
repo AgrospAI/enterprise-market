@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { useUserPreferences } from '@context/UserPreferences'
 import Link from 'next/link'
 import {
@@ -30,6 +32,8 @@ function getErrorMessage(error: unknown): string {
 }
 
 export default function Bookmarks(): ReactElement {
+  useLingui()
+
   const { appConfig } = useMarketMetadata()
   const { bookmarks, removeBookmark, removeBookmarks, chainIds } =
     useUserPreferences()
@@ -138,9 +142,15 @@ export default function Bookmarks(): ReactElement {
         {selectedRows.length > 0 && (
           <div className={styles.bulkBar}>
             <span className={styles.bulkCount}>
-              {selectedRows.length} selected
+              <Trans
+                id="{count} selected"
+                values={{ count: selectedRows.length }}
+              />
             </span>
-            <DeleteButton text="Remove" onClick={handleRemoveSelected} />
+            <DeleteButton
+              text={i18n._('Remove')}
+              onClick={handleRemoveSelected}
+            />
           </div>
         )}
         {isLoading && !pinned ? (
@@ -152,15 +162,14 @@ export default function Bookmarks(): ReactElement {
             isLoading={isLoading}
             emptyMessage={
               chainIds.length === 0 ? (
-                'No network selected'
+                i18n._('No network selected')
               ) : (
                 <>
-                  Your bookmarks will appear here. Go to the{' '}
+                  <Trans id="Your bookmarks will appear here. Go to the" />{' '}
                   <Link href="/search?sort=indexedMetadata.event.block&sortOrder=desc">
-                    catalogue
+                    <Trans id="catalogue" />{' '}
                   </Link>{' '}
-                  and save your favourite assets by clicking the bookmark icon
-                  on the asset card or from the asset details page.
+                  <Trans id="and save your favourite assets by clicking the bookmark icon on the asset card or from the asset details page." />{' '}
                 </>
               )
             }

@@ -1,3 +1,5 @@
+import { i18n } from '../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { markdownToHtmlWithToc } from '@utils/markdown'
 import { getPageBySlug, PageData } from '@utils/markdownPages'
@@ -13,12 +15,27 @@ import { useRouter } from 'next/router'
 
 interface PrivacyPageData extends PageData {
   headings: Heading[]
+  markdown?: string
 }
 
 export default function PageMarkdown(page: PrivacyPageData): ReactElement {
+  useLingui()
+
   const router = useRouter()
-  const { title, description, lastUpdated } = page.frontmatter
-  const { content, headings, fileLastUpdated } = page
+  const { lastUpdated } = page.frontmatter
+  const title = i18n._(page.frontmatter.title || '')
+  const description = i18n._(page.frontmatter.description || '')
+  const { fileLastUpdated } = page
+  const translatedMarkdown = page.markdown
+    ?.split(/\n\s*\n/)
+    .map((block) => (/[a-zA-Z]/.test(block) ? i18n._(block) : block))
+    .join('\n\n')
+  const content = translatedMarkdown
+    ? markdownToHtmlWithToc(translatedMarkdown)
+    : page.content
+  const headings = translatedMarkdown
+    ? extractHeadingsFromMarkdown(translatedMarkdown)
+    : page.headings
 
   if (!page || page.content === '') return null
 
@@ -76,6 +93,6 @@ export async function getServerSideProps({
   const headings = extractHeadingsFromMarkdown(page.content)
 
   return {
-    props: { ...page, content, headings }
+    props: { ...page, markdown: page.content, content, headings }
   }
 }

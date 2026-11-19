@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import Price from '@shared/Price'
@@ -81,6 +83,8 @@ export default function ExpandedServices({
 }: {
   data: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const { approvedBaseTokens } = useMarketMetadata()
   const services = data.credentialSubject?.services || []
   const [fetchedTokenSymbols, setFetchedTokenSymbols] = useState<
@@ -158,7 +162,9 @@ export default function ExpandedServices({
   if (!services.length) {
     return (
       <div className={styles.expanded}>
-        <div className={styles.servicesCard}>No services for this asset.</div>
+        <div className={styles.servicesCard}>
+          <Trans id="No services for this asset." />
+        </div>
       </div>
     )
   }
@@ -167,10 +173,18 @@ export default function ExpandedServices({
     <div className={styles.expanded}>
       <div className={styles.servicesCard}>
         <div className={styles.expandedHeader}>
-          <div className={styles.expandedNameHeader}>Name</div>
-          <div className={styles.expandedType}>Service type</div>
-          <div className={styles.expandedDuration}>Duration</div>
-          <div className={styles.expandedPrice}>Price</div>
+          <div className={styles.expandedNameHeader}>
+            <Trans id="Name" />
+          </div>
+          <div className={styles.expandedType}>
+            <Trans id="Service type" />
+          </div>
+          <div className={styles.expandedDuration}>
+            <Trans id="Duration" />
+          </div>
+          <div className={styles.expandedPrice}>
+            <Trans id="Price" />
+          </div>
         </div>
         {services.map((service, index) => {
           const isCompute = service.type === 'compute'
@@ -193,16 +207,19 @@ export default function ExpandedServices({
                   aria-hidden="true"
                 />
                 <span className={styles.serviceNameText} title={service.name}>
-                  {service.name || `Service ${index + 1}`}
+                  {service.name ||
+                    i18n._('Service {value0}', { value0: index + 1 })}
                 </span>
               </div>
               <div className={styles.expandedType}>
                 <TypeIcon
                   role="img"
-                  aria-label={isCompute ? 'Compute' : 'Download'}
+                  aria-label={
+                    isCompute ? i18n._('Compute') : i18n._('Download')
+                  }
                   className={styles.serviceIcon}
                 />
-                {isCompute ? 'Compute' : 'Download'}
+                {isCompute ? i18n._('Compute') : i18n._('Download')}
               </div>
               <div className={styles.expandedDuration}>
                 {formatServiceTimeout(service.timeout)}

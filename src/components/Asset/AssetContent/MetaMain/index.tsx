@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 import MetaAsset from './MetaAsset'
@@ -11,6 +12,8 @@ export default function MetaMain({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const isBlockscoutExplorer = blockscoutNetworks.includes(
     asset?.credentialSubject?.chainId
   )

@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useState } from 'react'
 import Modal from '@shared/atoms/Modal'
 import Button from '@shared/atoms/Button'
@@ -17,6 +19,8 @@ export default function SsiApiModal({
   onConnect,
   onClose
 }: SsiApiModalProps) {
+  useLingui()
+
   const [isConnecting, setIsConnecting] = useState(false)
 
   async function handleConnectClick() {
@@ -32,14 +36,14 @@ export default function SsiApiModal({
 
   return (
     <Modal
-      title="SSI Wallet API"
+      title={i18n._('SSI Wallet API')}
       isOpen
       onToggleModal={onClose}
       shouldCloseOnOverlayClick
       className={styles.modal}
     >
       <label>
-        API URL:
+        <Trans id="API URL:" />{' '}
         <input
           className={styles.input}
           type="text"
@@ -56,7 +60,9 @@ export default function SsiApiModal({
         disabled={isConnecting}
       >
         <span className={styles.buttonContent}>
-          <span>Set SSI Wallet API & Connect SSI</span>
+          <span>
+            <Trans id="Set SSI Wallet API & Connect SSI" />
+          </span>
           {isConnecting && (
             <Loader variant="white" noMargin className={styles.buttonLoader} />
           )}

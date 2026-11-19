@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { useEffect, useState } from 'react'
 import Alert from '@shared/atoms/Alert'
 import Button from '@shared/atoms/Button'
@@ -22,16 +24,36 @@ const SWITCH_NETWORK_PROMPT = 'Please switch to one of the supported networks:'
 const NETWORK_HINT = 'You can also switch networks directly from your wallet'
 
 const CHAIN_NAMES: Record<number, string> = {
-  1: 'Ethereum Mainnet',
-  10: 'Optimism',
-  11155111: 'Ethereum Sepolia',
-  11155420: 'OP Sepolia',
-  560048: 'Ethereum Hoodi',
-  8996: 'Pontus-X Testnet',
-  56: 'BNB Smart Chain',
-  137: 'Polygon',
-  42161: 'Arbitrum',
-  43114: 'Avalanche'
+  get 1() {
+    return i18n._('Ethereum Mainnet')
+  },
+  get 10() {
+    return i18n._('Optimism')
+  },
+  get 11155111() {
+    return i18n._('Ethereum Sepolia')
+  },
+  get 11155420() {
+    return i18n._('OP Sepolia')
+  },
+  get 560048() {
+    return i18n._('Ethereum Hoodi')
+  },
+  get 8996() {
+    return i18n._('Pontus-X Testnet')
+  },
+  get 56() {
+    return i18n._('BNB Smart Chain')
+  },
+  get 137() {
+    return i18n._('Polygon')
+  },
+  get 42161() {
+    return i18n._('Arbitrum')
+  },
+  get 43114() {
+    return i18n._('Avalanche')
+  }
 }
 
 const networksList: EthereumListsChain[] = networkdata
@@ -46,7 +68,7 @@ function getReadableNetworkName(chainId: number): string {
     return `${metadataDisplayName} (${chainId})`
   }
 
-  return `Chain ID: ${chainId}`
+  return i18n._('Chain ID: {chainId}', { chainId })
 }
 
 interface NetworkWarningModalProps {
@@ -68,6 +90,8 @@ export default function NetworkWarningModal({
   onClose,
   onSwitchChain
 }: NetworkWarningModalProps) {
+  useLingui()
+
   const [loadingChainId, setLoadingChainId] = useState<number | null>(null)
 
   useEffect(() => {
@@ -84,14 +108,20 @@ export default function NetworkWarningModal({
   const hasSupportedChains = supportedChains.length > 0
   const connectedNetworkName = chainId
     ? getReadableNetworkName(chainId)
-    : 'an unknown network'
+    : i18n._('an unknown network')
   const alertTitle = hasSupportedChains
     ? ALERT_TITLE
     : emptySwitchOptionsText
     ? SWITCH_OPTIONS_ALERT_TITLE
     : CONFIG_ALERT_TITLE
   const alertText = hasSupportedChains
-    ? `You're connected to ${connectedNetworkName}. ${NETWORK_ALERT_SUFFIX}`
+    ? i18n._(
+        "You're connected to {connectedNetworkName}. {NETWORK_ALERT_SUFFIX}",
+        {
+          connectedNetworkName,
+          NETWORK_ALERT_SUFFIX: i18n._(NETWORK_ALERT_SUFFIX)
+        }
+      )
     : emptySwitchOptionsText || CONFIG_ALERT_TEXT
 
   function handleSwitchClick(targetChainId: number) {
@@ -107,7 +137,7 @@ export default function NetworkWarningModal({
 
   return (
     <Modal
-      title={MODAL_TITLE}
+      title={i18n._(MODAL_TITLE)}
       isOpen
       onToggleModal={onClose}
       shouldCloseOnOverlayClick
@@ -120,7 +150,9 @@ export default function NetworkWarningModal({
 
         {hasSupportedChains && (
           <>
-            <p className={styles.warningSubtitle}>{SWITCH_NETWORK_PROMPT}</p>
+            <p className={styles.warningSubtitle}>
+              {i18n._(SWITCH_NETWORK_PROMPT)}
+            </p>
 
             <div className={styles.networkList}>
               {supportedChains.map((id: number) => (
@@ -145,7 +177,7 @@ export default function NetworkWarningModal({
               ))}
             </div>
 
-            <p className={styles.hint}>{NETWORK_HINT}</p>
+            <p className={styles.hint}>{i18n._(NETWORK_HINT)}</p>
           </>
         )}
       </div>

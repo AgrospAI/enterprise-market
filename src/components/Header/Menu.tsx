@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../../i18n/LanguageSwitcher'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import type { MouseEvent } from 'react'
 import Link from 'next/link'
@@ -31,6 +33,8 @@ declare type MenuItem = {
 }
 
 export function MenuLink({ name, link, className }: MenuItem) {
+  useLingui()
+
   const router = useRouter()
 
   const basePath = router?.pathname.split(/[/?]/)[1]
@@ -53,6 +57,8 @@ export function MenuLink({ name, link, className }: MenuItem) {
 }
 
 export default function Menu(): ReactElement {
+  useLingui()
+
   const { validatedSupportedChains } = useMarketMetadata()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isAuthenticated, authEnabled } = useAuth()
@@ -103,7 +109,9 @@ export default function Menu(): ReactElement {
         <Link href="/" className={styles.logo}>
           <Logo />
         </Link>
-        <div className={styles.demoText}>Marketplace</div>
+        <div className={styles.demoText}>
+          <Trans id="Marketplace" />
+        </div>
 
         {/* <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
@@ -120,6 +128,7 @@ export default function Menu(): ReactElement {
         <div className={styles.actions}>
           {/* <SearchButton /> */}
           {validatedSupportedChains.length > 1 && <Networks />}
+          <LanguageSwitcher />
           <UserPreferences />
           {canAccessWalletControls && !isAuthRoute && <Wallet />}
           {/* Desktop view - show SSiWallet and buttons normally */}
@@ -135,14 +144,18 @@ export default function Menu(): ReactElement {
                 <Link className={styles.ctaButton} href={publishLink}>
                   <div className={styles.buttonContent}>
                     <Upload className={styles.uploadIcon} />
-                    <span className={styles.buttonText}>Publish</span>
+                    <span className={styles.buttonText}>
+                      <Trans id="Publish" />
+                    </span>
                   </div>
                 </Link>
               )}
               {showCatalogButton && (
                 <Link className={styles.ctaButton} href={catalogLink}>
                   <div className={styles.buttonContent}>
-                    <span className={styles.buttonText}>Catalogue</span>
+                    <span className={styles.buttonText}>
+                      <Trans id="Catalogue" />
+                    </span>
                   </div>
                 </Link>
               )}
@@ -195,7 +208,9 @@ export default function Menu(): ReactElement {
               >
                 <div className={styles.buttonContent}>
                   <Upload className={styles.uploadIcon} />
-                  <span className={styles.buttonText}>Publish</span>
+                  <span className={styles.buttonText}>
+                    <Trans id="Publish" />
+                  </span>
                 </div>
               </button>
             )}
@@ -205,7 +220,9 @@ export default function Menu(): ReactElement {
                 onClick={handleCatalogClick}
               >
                 <div className={styles.buttonContent}>
-                  <span className={styles.buttonText}>Catalogue</span>
+                  <span className={styles.buttonText}>
+                    <Trans id="Catalogue" />
+                  </span>
                 </div>
               </button>
             )}

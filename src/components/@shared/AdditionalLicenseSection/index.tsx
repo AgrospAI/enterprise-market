@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ChangeEvent, ReactElement, useState } from 'react'
 import { Field } from 'formik'
 import Input from '@shared/FormInput'
@@ -7,7 +9,7 @@ import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import Tooltip from '@shared/atoms/Tooltip'
 import Button from '@shared/atoms/Button'
 import InfoIcon from '@images/info.svg'
-import content from '../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../i18n/content'
 import { getFieldContent } from '@utils/form'
 import { FileItem } from '@utils/fileItem'
 import {
@@ -75,6 +77,8 @@ function AdditionalLicenseItem({
   onUpload,
   onUrlValidate
 }: AdditionalLicenseItemProps): ReactElement {
+  useLingui()
+
   const [isUrlValidating, setIsUrlValidating] = useState(false)
   const isNameDisabled = isUploading || isUrlValidating
   const fieldNamePrefix = `${fieldPathPrefix}[${index}]`
@@ -101,7 +105,7 @@ function AdditionalLicenseItem({
           <DeleteButton
             onClick={onDelete}
             loading={isDeleting}
-            loadingText="Deleting..."
+            loadingText={i18n._('Deleting...')}
             disabled={isDeleting}
           />
         </div>
@@ -127,7 +131,7 @@ function AdditionalLicenseItem({
             component={Input}
             name={`${fieldNamePrefix}.name`}
             label={LICENSE_UI.fileNameLabel}
-            placeholder="e.g. terms.pdf"
+            placeholder={i18n._('e.g. terms.pdf')}
             required
             disabled={isNameDisabled}
           />
@@ -155,7 +159,7 @@ function AdditionalLicenseItem({
                     ?.size as number | undefined
                 }
                 fileType={additionalFile.uploadedDocument?.fileType}
-                buttonLabel="Upload File"
+                buttonLabel={i18n._('Upload File')}
                 setFileItem={onUpload}
                 buttonStyle="accent"
                 disabled={!!additionalFile.uploadedDocument || isUploading}
@@ -184,6 +188,8 @@ export default function AdditionalLicenseSection({
   onUpload,
   onUrlValidate
 }: AdditionalLicenseSectionProps): ReactElement | null {
+  useLingui()
+
   if (!primaryLicenseReady) return null
   const lastAdditionalFile = additionalFiles[additionalFiles.length - 1]
   const isLastAdditionalFileIncomplete = hasInvalidAdditionalLicenseFiles(

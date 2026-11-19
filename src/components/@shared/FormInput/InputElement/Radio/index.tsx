@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { InputHTMLAttributes, ReactElement } from 'react'
 import slugify from 'slugify'
 import classNames from 'classnames/bind'
@@ -26,6 +27,8 @@ export default function InputRadio({
   variant = 'default',
   ...props
 }: InputRadioProps): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.radioGroup}>
       {options &&

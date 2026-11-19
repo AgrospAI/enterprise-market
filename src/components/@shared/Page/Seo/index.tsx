@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Head from 'next/head'
 
@@ -23,6 +24,8 @@ export default function Seo({
   description?: string
   uri: string
 }): ReactElement {
+  useLingui()
+
   const { siteContent } = useMarketMetadata()
 
   // Some pages pass the route pattern (e.g. /publish/[step]) as uri; use the
@@ -118,6 +121,11 @@ export default function Seo({
           {JSON.stringify(datasetSchema).replace(/</g, '\\u003c')}
         </script>
       )}
+      <script
+        defer
+        src="https://umami.agrospai.udl.cat/umami"
+        data-website-id="dd68db0f-4cc5-4114-b3b2-9d9621a7ce27"
+      ></script>
     </Head>
   )
 }

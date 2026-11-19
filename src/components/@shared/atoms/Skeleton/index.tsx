@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { CSSProperties, ReactElement } from 'react'
 import styles from './index.module.css'
 
@@ -16,6 +17,8 @@ export default function Skeleton({
   borderRadius,
   className
 }: SkeletonProps): ReactElement {
+  useLingui()
+
   const style: CSSProperties = {
     width: width ?? '100%',
     height,

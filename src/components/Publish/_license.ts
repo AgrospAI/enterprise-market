@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import {
   AdditionalLicenseSourceType,
   FormAdditionalLicenseFile,
@@ -11,18 +12,37 @@ export const additionalLicenseSourceOptions: AdditionalLicenseSourceType[] = [
 ]
 
 export const LICENSE_UI = {
-  additionalFilesHeader: 'Additional Files',
-  additionalFilePrefix: 'Additional File',
-  addAdditionalFileButton: 'Add Additional File',
-  sourceLabel: 'Source',
-  fileNameLabel: 'File Name',
-  fileLabel: 'File'
+  get additionalFilesHeader() {
+    return i18n._('Additional Files')
+  },
+  get additionalFilePrefix() {
+    return i18n._('Additional File')
+  },
+  get addAdditionalFileButton() {
+    return i18n._('Add Additional File')
+  },
+  get sourceLabel() {
+    return i18n._('Source')
+  },
+  get fileNameLabel() {
+    return i18n._('File Name')
+  },
+  get fileLabel() {
+    return i18n._('File')
+  }
 } as const
 
 const ADDITIONAL_LICENSE_TEXTS = {
-  url: 'Optional extra license documents (in addition to the primary license). Add additional license URLs and validate them.',
-  upload:
-    'Optional extra license documents (in addition to the primary license). Upload additional license files and set their name, if needed.'
+  get url() {
+    return i18n._(
+      'Optional extra license documents (in addition to the primary license). Add additional license URLs and validate them.'
+    )
+  },
+  get upload() {
+    return i18n._(
+      'Optional extra license documents (in addition to the primary license). Upload additional license files and set their name, if needed.'
+    )
+  }
 } as const
 
 export function createAdditionalLicenseFileId(): string {

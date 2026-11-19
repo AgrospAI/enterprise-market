@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Tabs from '@shared/atoms/Tabs'
 import PublishedList from './PublishedList'
@@ -27,16 +29,16 @@ function getTabs(
 ): HistoryTab[] {
   const defaultTabs: HistoryTab[] = [
     {
-      title: 'Published',
+      title: i18n._('Published'),
       content: <PublishedList accountId={accountId} />
     },
     {
-      title: 'Downloads',
+      title: i18n._('Downloads'),
       content: <Downloads accountId={accountId} />
     }
   ]
   const computeTab: HistoryTab = {
-    title: 'Compute Jobs',
+    title: i18n._('Compute Jobs'),
     content: (
       <ComputeJobs
         jobs={jobs}
@@ -50,7 +52,7 @@ function getTabs(
   }
 
   const history: HistoryTab = {
-    title: 'History',
+    title: i18n._('History'),
     content: <HistoryData accountId={accountId} />
   }
   if (accountId === userAccountId) {
@@ -73,6 +75,8 @@ export default function HistoryPage({
 }: {
   accountIdentifier: string
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const signer = useEthersSigner()
   const { chainIds } = useUserPreferences()

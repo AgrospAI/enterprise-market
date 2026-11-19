@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { FormEvent, ReactElement } from 'react'
 import Alert from '../atoms/Alert'
 import Button from '../atoms/Button'
@@ -22,6 +23,8 @@ export default function StepAction({
   completed,
   loadingMessage
 }: IStepAction): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.container}>
       {loading ? (

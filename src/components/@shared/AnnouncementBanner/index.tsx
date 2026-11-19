@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import Markdown from '@shared/Markdown'
@@ -25,6 +26,8 @@ export default function AnnouncementBanner({
   state,
   className
 }: AnnouncementBannerProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     banner: true,
     error: state === 'error',

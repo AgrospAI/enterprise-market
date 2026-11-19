@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import DocumentHead from './DocumentHead'
-import siteContent from '../../../../../content/site.json'
+import { contentSite as siteContent } from '../../../../i18n/content'
 
 describe('DocumentHead', () => {
   it('renders the server-side fallback title, description and share tags', () => {

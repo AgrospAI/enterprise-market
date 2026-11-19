@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import Table, { TableOceanColumn } from '@shared/atoms/Table'
 import Time from '@shared/atoms/Time'
@@ -41,6 +43,8 @@ const rowWidths = [
 ]
 
 function DownloadsSkeleton(): ReactElement {
+  useLingui()
+
   return (
     <TableSkeleton
       gridTemplateColumns="2fr 1.2fr 1fr 1fr"
@@ -96,7 +100,7 @@ function getDownloadedServicePrice(
 
 function formatPrice(value: number, tokenSymbol?: string): string {
   const amount = Number.isFinite(value) ? value : 0
-  if (amount === 0) return 'Free'
+  if (amount === 0) return i18n._('Free')
   return tokenSymbol ? `${amount} ${tokenSymbol}` : `${amount}`
 }
 
@@ -107,13 +111,15 @@ function DownloadedServices({
   data: DownloadedAsset
   tokenSymbolMap?: Record<string, string>
 }): ReactElement {
+  useLingui()
+
   const services = data.downloadedServices || []
 
   if (!services.length) {
     return (
       <div className={historyStyles.expanded}>
         <div className={historyStyles.servicesCard}>
-          No downloaded services for this asset.
+          <Trans id="No downloaded services for this asset." />{' '}
         </div>
       </div>
     )
@@ -123,11 +129,21 @@ function DownloadedServices({
     <div className={historyStyles.expanded}>
       <div className={historyStyles.servicesCard}>
         <div className={historyStyles.downloadsExpandedHeader}>
-          <div className={historyStyles.expandedNameHeader}>Service name</div>
-          <div className={historyStyles.expandedServiceId}>Service ID</div>
-          <div className={historyStyles.expandedServiceId}>Order ID</div>
-          <div className={historyStyles.expandedType}>Type</div>
-          <div className={historyStyles.expandedPrice}>Price</div>
+          <div className={historyStyles.expandedNameHeader}>
+            <Trans id="Service name" />
+          </div>
+          <div className={historyStyles.expandedServiceId}>
+            <Trans id="Service ID" />
+          </div>
+          <div className={historyStyles.expandedServiceId}>
+            <Trans id="Order ID" />
+          </div>
+          <div className={historyStyles.expandedType}>
+            <Trans id="Type" />
+          </div>
+          <div className={historyStyles.expandedPrice}>
+            <Trans id="Price" />
+          </div>
         </div>
         {services.map((service) => {
           const price = getDownloadedServicePrice(data, service, tokenSymbolMap)
@@ -169,7 +185,9 @@ function DownloadedServices({
                 )}
               </div>
               <div className={historyStyles.expandedType}>
-                {service.serviceType === 'compute' ? 'Compute' : 'Download'}
+                {service.serviceType === 'compute'
+                  ? i18n._('Compute')
+                  : i18n._('Download')}
               </div>
               <div className={historyStyles.expandedPrice}>
                 {formatPrice(price.value, price.tokenSymbol)}
@@ -192,6 +210,8 @@ export default function ComputeDownloads({
 }: {
   accountId: string
 }): ReactElement {
+  useLingui()
+
   const { downloads, downloadsTotal, isDownloadsLoading, handlePageChange } =
     useProfile()
   const { approvedBaseTokens, validatedSupportedChains } = useMarketMetadata()
@@ -308,7 +328,7 @@ export default function ComputeDownloads({
         Time: row.asset.credentialSubject?.metadata?.created
           ? new Date(
               row.asset.credentialSubject.metadata.created
-            ).toLocaleString()
+            ).toLocaleString(i18n.locale)
           : '',
         Services: (row.downloadedServices || []).map((service) => {
           const price = getDownloadedServicePrice(row, service, tokenSymbolMap)
@@ -437,7 +457,7 @@ export default function ComputeDownloads({
 
   const columns: TableOceanColumn<DownloadedAsset>[] = [
     {
-      name: 'Asset',
+      name: i18n._('Asset'),
       selector: (row) => <AssetTitle asset={row.asset} maxTitleLength={80} />,
       grow: 2.5
     },
@@ -451,12 +471,12 @@ export default function ComputeDownloads({
       grow: 1.4
     },
     {
-      name: 'Network',
+      name: i18n._('Network'),
       selector: (row) => <NetworkName networkId={row.networkId} />,
       grow: 1.6
     },
     {
-      name: 'Time',
+      name: i18n._('Time'),
       selector: (row) => {
         const created = row.asset.credentialSubject?.metadata?.created
         return created ? <Time date={created} relative /> : '-'
@@ -561,7 +581,7 @@ export default function ComputeDownloads({
           isLoading={isDownloadsLoading}
           emptyMessage={
             validatedSupportedChains.length === 0
-              ? 'No network available'
+              ? i18n._('No network available')
               : null
           }
           expandableRows
@@ -580,12 +600,14 @@ export default function ComputeDownloads({
             onClick={handleExport}
             disabled={!downloads?.length}
           >
-            Export data
+            <Trans id="Export data" />{' '}
           </Button>
         </div>
       </>
     )
   ) : (
-    <div>Please connect your wallet.</div>
+    <div>
+      <Trans id="Please connect your wallet." />
+    </div>
   )
 }

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import React from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
@@ -13,6 +14,8 @@ export default function FormErrorGroup({
   errorFields = [],
   className = ''
 }: FormErrorGroupProps) {
+  useLingui()
+
   const { errors } = useFormikContext<Record<string, string>>()
 
   const hasErrors = errorFields.some((field) => errors[field])

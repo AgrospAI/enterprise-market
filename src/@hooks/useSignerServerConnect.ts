@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useAccount, useConfig, useConnect } from 'wagmi'
@@ -86,7 +87,11 @@ export function useSignerServerConnect() {
         if (isConnectorAlreadyConnectedError(error)) return
 
         toast.error(
-          error instanceof Error ? error.message : 'Signer server failed.'
+          i18n._(
+            error instanceof Error
+              ? error.message
+              : i18n._('Signer server failed.')
+          )
         )
       } finally {
         setIsConnecting(false)
@@ -97,7 +102,8 @@ export function useSignerServerConnect() {
       account.isConnected,
       connectAsync,
       defaultChainId,
-      signerServerWagmiConnector
+      signerServerWagmiConnector,
+      i18n.locale
     ]
   )
 

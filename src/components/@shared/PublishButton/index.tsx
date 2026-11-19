@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ButtonHTMLAttributes } from 'react'
 import styles from './index.module.css'
 import AddParamIcon from '@images/add_param.svg'
@@ -23,6 +24,8 @@ export default function PublishButton({
   className,
   ...props
 }: PublishButtonProps): ReactElement {
+  useLingui()
+
   const getIcon = () => {
     switch (icon) {
       case 'add':

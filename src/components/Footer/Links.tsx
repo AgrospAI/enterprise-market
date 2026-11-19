@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import styles from './Links.module.css'
@@ -11,9 +12,11 @@ interface CookieSettingsButtonProps {
 function CookieSettingsButton({
   onClick
 }: CookieSettingsButtonProps): ReactElement {
+  useLingui()
+
   return (
     <button type="button" className={styles.linkButton} onClick={onClick}>
-      Cookie Settings
+      <Trans id="Cookie Settings" />{' '}
     </button>
   )
 }
@@ -30,6 +33,8 @@ function CookieSettingsButton({
  * the preference centre.
  */
 export default function Links(): ReactElement {
+  useLingui()
+
   const { appConfig, siteContent } = useMarketMetadata()
   const { setShowPPC } = useUserPreferences()
 

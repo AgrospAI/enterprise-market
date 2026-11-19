@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   createContext,
   ReactElement,
@@ -18,6 +19,8 @@ function PontusXIdentityResolver({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const { data } = usePontusXRegistry({ apiBaseUrl: pontusXRegistryUrl })
 
   const byAddress = useMemo(() => {
@@ -51,6 +54,8 @@ export function PontusXIdentityProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   if (!pontusXRegistryUrl) return <>{children}</>
 
   return <PontusXIdentityResolver>{children}</PontusXIdentityResolver>

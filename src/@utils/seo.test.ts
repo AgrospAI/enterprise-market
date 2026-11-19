@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import siteContent from '../../content/site.json'
+import { contentSite as siteContent } from '../i18n/content'
 
 function loadSeo(config: { siteUrl?: string | null; allowIndexing?: string }) {
   jest.resetModules()

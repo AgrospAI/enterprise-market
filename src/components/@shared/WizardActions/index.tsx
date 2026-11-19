@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
@@ -45,7 +47,7 @@ interface WizardActionsProps {
 }
 
 export default function WizardActions({
-  continueButtonText = 'Continue',
+  continueButtonText = i18n._('Continue'),
   scrollToRef,
   isContinueDisabled,
   rightAlignFirstStep = true,
@@ -80,6 +82,8 @@ export default function WizardActions({
   isInitLoading,
   onInitCompute
 }: WizardActionsProps): ReactElement {
+  useLingui()
+
   const {
     values,
     isSubmitting,
@@ -158,6 +162,8 @@ export default function WizardActions({
   )
 
   const ComputeButton = () => {
+    useLingui()
+
     if (!extraFeesLoaded) {
       return (
         <Button
@@ -166,7 +172,9 @@ export default function WizardActions({
           onClick={onInitCompute}
           disabled={isInitLoading || isFinalComputeActionDisabled}
         >
-          {isInitLoading ? 'Calculating...' : 'Calculate Extra Fees'}
+          {isInitLoading
+            ? i18n._('Calculating...')
+            : i18n._('Calculate Extra Fees')}
         </Button>
       )
     }
@@ -177,7 +185,7 @@ export default function WizardActions({
     <footer className={actionsClassName}>
       {currentStep > 1 && (
         <Button type="button" onClick={handlePrevious} disabled={isSubmitting}>
-          Back
+          <Trans id="Back" />{' '}
         </Button>
       )}
       {!isLastStep ? (

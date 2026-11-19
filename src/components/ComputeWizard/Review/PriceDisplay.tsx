@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 
@@ -18,13 +19,17 @@ export default function PriceDisplay({
   displayValue,
   valueParts
 }: PriceDisplayProps): ReactElement {
+  const { i18n } = useLingui()
+
   const numericValue = Number(value)
   const formattedValue = displayValue ?? Number(value).toFixed(3)
   const hasValueParts = Boolean(valueParts && valueParts.length > 0)
   // Access durations come from formatServiceTimeout ('Forever' for 0),
   // compute job durations use '0s' for no duration.
   const durationLabel =
-    duration === 'Forever' || duration === '0s' ? 'forever' : duration
+    duration === i18n._('Forever') || duration === '0s'
+      ? i18n._('Forever')
+      : duration
 
   let colorClass = ''
   if (valueType === 'escrow' && numericValue !== 0) {
@@ -78,7 +83,11 @@ export default function PriceDisplay({
           </span>
         )}
       </span>
-      {duration && <span className={styles.duration}>for {durationLabel}</span>}
+      {duration && (
+        <span className={styles.duration}>
+          <Trans id="for {duration}" values={{ duration: durationLabel }} />
+        </span>
+      )}
     </div>
   )
 }

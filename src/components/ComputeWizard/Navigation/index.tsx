@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { FormikContextType, useFormikContext } from 'formik'
 import { ComputeFlow, FormComputeData } from '../_types'
@@ -12,6 +14,8 @@ interface NavigationProps {
 }
 
 export default function Navigation({ flow }: NavigationProps): ReactElement {
+  useLingui()
+
   const { values, setFieldValue }: FormikContextType<FormComputeData> =
     useFormikContext()
   const isAlgorithmFlow = flow === 'algorithm'
@@ -23,7 +27,7 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
     ? getDatasetSteps(hasUserParamsStep, withoutDataset)
     : getDatasetSteps(hasUserParamsStep, withoutDataset).map((step) => ({
         ...step,
-        title: step.step === 1 ? 'Select Algorithm' : step.title
+        title: step.step === 1 ? i18n._('Select Algorithm') : step.title
       }))
   const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
@@ -62,9 +66,11 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
                 }
               }}
               aria-current={isActive ? 'step' : undefined}
-              aria-label={`Step ${step.step}: ${step.title}${
-                isCompleted ? ' (completed)' : ''
-              }`}
+              aria-label={i18n._('Step {value0}: {value1}{value2}', {
+                value0: step.step,
+                value1: i18n._(step.title),
+                value2: isCompleted ? i18n._(' (completed)') : ''
+              })}
               ref={(el) => {
                 stepRefs.current[step.step - 1] = el
               }}
@@ -81,7 +87,7 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
                   isActive ? styles.activeStepLabel : styles.inactiveStepLabel
                 }`}
               >
-                {step.title}
+                {i18n._(step.title)}
               </span>
             </div>
           )

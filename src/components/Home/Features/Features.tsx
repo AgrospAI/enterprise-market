@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   CSSProperties,
   KeyboardEvent,
@@ -5,7 +6,7 @@ import {
   useRef,
   useState
 } from 'react'
-import content from '../../../../content/pages/home/content.json'
+import { contentPagesHomeContent as content } from '../../../i18n/content'
 import shared from '../Sections/shared.module.css'
 import SectionHeader from '../Sections/SectionHeader'
 import { useReveal } from '../Sections/useReveal'
@@ -26,6 +27,8 @@ const tabId = (index: number): string => `home-features-tab-${index}`
 const pad = (value: number): string => String(value).padStart(2, '0')
 
 export default function Features(): ReactElement {
+  useLingui()
+
   const { title, titleMuted, items } = content.features
   const [ref, reveal] = useReveal<HTMLElement>(0.15)
   const [active, setActive] = useState(0)

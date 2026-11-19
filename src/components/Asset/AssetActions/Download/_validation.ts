@@ -1,3 +1,4 @@
+import { i18n } from '../../../../i18n/index'
 import * as Yup from 'yup'
 import { getUserCustomParameterValidationSchema } from '../ConsumerParameters/_validation'
 import { Option } from 'src/@types/ddo/Option'
@@ -8,10 +9,10 @@ export function getDownloadValidationSchema(
   return Yup.object().shape({
     dataServiceParams: getUserCustomParameterValidationSchema(parameters),
     termsAndConditions: Yup.boolean()
-      .required('Required')
-      .isTrue('Please agree to the Terms and Conditions.'),
+      .required(i18n._('Required'))
+      .isTrue(i18n._('Please agree to the Terms and Conditions.')),
     acceptPublishingLicense: Yup.boolean()
-      .required('Required')
-      .isTrue('Please agree to the Publishing License.')
+      .required(i18n._('Required'))
+      .isTrue(i18n._('Please agree to the Publishing License.'))
   })
 }

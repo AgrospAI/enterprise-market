@@ -1,3 +1,5 @@
+import { displayAssetState } from '@utils/assetState'
+import { useLingui } from '@lingui/react'
 import styles from './Option.module.css'
 import { ipfsGateway } from 'app.config.cjs'
 import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
@@ -13,6 +15,8 @@ export default function Option({
   postfix?: string
   action?: string
 }) {
+  const { i18n } = useLingui()
+
   let ipfsMirror = null
   if (action && action.startsWith(ipfsGateway)) {
     const ipfsCid = action.slice(ipfsGateway.length + 1) // +1 for the slash
@@ -24,9 +28,9 @@ export default function Option({
       {prefix && `${prefix} `}
       {ipfsMirror ? (
         <IpfsRemoteSource
-          noDocumentLabel="No license document available"
+          noDocumentLabel={i18n._('No license document available')}
           remoteSource={ipfsMirror}
-          name="License Terms"
+          name={i18n._('License Terms')}
           className={styles.inlineAction}
         />
       ) : action ? (
@@ -36,10 +40,16 @@ export default function Option({
           rel="noopener noreferrer"
           className={styles.actionButton}
         >
-          {option}
+          {option === 'OrderingIsTemporaryDisabled'
+            ? displayAssetState(option)
+            : i18n._(option)}
         </a>
       ) : (
-        <>{option}</>
+        <>
+          {option === 'OrderingIsTemporaryDisabled'
+            ? displayAssetState(option)
+            : i18n._(option)}
+        </>
       )}
       {postfix && ` ${postfix}`}
     </>

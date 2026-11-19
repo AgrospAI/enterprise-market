@@ -42,7 +42,8 @@ async function jestConfig() {
 
   // Add ignores for specific ESM packages so they are transformed by Jest
   // /node_modules/ is the first pattern
-  nextJestConfig.transformIgnorePatterns[0] = '/node_modules/(?!uuid|remark)/'
+  nextJestConfig.transformIgnorePatterns[0] =
+    '/node_modules/(?!uuid|remark|@lingui)/'
   return nextJestConfig
 }
 

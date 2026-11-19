@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { toDataUrl } from 'myetherwallet-blockies'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
@@ -13,11 +15,13 @@ export default function Avatar({
   src,
   className
 }: AvatarProps): ReactElement {
+  useLingui()
+
   return (
     <img
       className={`${className || ''} ${styles.avatar} `}
       src={src || (accountId ? toDataUrl(accountId) : '')}
-      alt="Avatar"
+      alt={i18n._('Avatar')}
       aria-hidden="true"
     />
   )

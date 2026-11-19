@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { getFieldContent } from '@utils/form'
 import cs from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
@@ -14,7 +16,7 @@ import {
   RequestCredentialForm,
   StaticPolicy
 } from './types'
-import fields from './editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../i18n/content'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import CredentialCard from './CredentialCard/Card'
@@ -84,6 +86,8 @@ interface PolicyViewProps {
 }
 
 function PolicyView(props: PolicyViewProps): ReactElement {
+  useLingui()
+
   const { policy, onDeletePolicy, ...rest }: PolicyViewProps = props
   switch (policy?.type) {
     case 'staticPolicy':
@@ -121,6 +125,8 @@ function PolicyView(props: PolicyViewProps): ReactElement {
 }
 
 export function PolicyEditor(props): ReactElement {
+  useLingui()
+
   const {
     credentials,
     setCredentials,
@@ -313,7 +319,7 @@ export function PolicyEditor(props): ReactElement {
       'signature_sd-jwt-vc':
         'Verifies selective disclosure JWT verifiable credential signatures.'
     }
-    return descriptions[policy] || 'Policy verification rule.'
+    return descriptions[policy] || i18n._('Policy verification rule.')
   }
 
   useEffect(() => {
@@ -699,7 +705,7 @@ export function PolicyEditor(props): ReactElement {
       {enabled && !hideDefaultPolicies && (
         <div className={styles.defaultPoliciesSection}>
           <h3 className={styles.defaultPoliciesTitle}>
-            Policies applied to all credentials
+            <Trans id="Policies applied to all credentials" />{' '}
           </h3>
           <div className={styles.defaultPoliciesList}>
             {allPolicies.map((policy) => (
@@ -737,7 +743,9 @@ export function PolicyEditor(props): ReactElement {
                 onDelete={() => handleDeleteRequestCredential(index)}
               >
                 <div className={styles.policiesRow}>
-                  <span className={styles.label}>Policies:</span>
+                  <span className={styles.label}>
+                    <Trans id="Policies:" />
+                  </span>
                   <div className={styles.addPolicyContainer}>
                     <div className={styles.dropdownButtonWrapper}>
                       <select
@@ -758,16 +766,20 @@ export function PolicyEditor(props): ReactElement {
                         defaultValue=""
                       >
                         <option value="" disabled hidden>
-                          Add policy
+                          <Trans id="Add policy" />{' '}
                         </option>
-                        <option value="staticPolicy">Static Policy</option>
+                        <option value="staticPolicy">
+                          <Trans id="Static Policy" />
+                        </option>
                         <option value="parameterizedPolicy">
-                          Allowed Issuer
+                          <Trans id="Allowed Issuer" />{' '}
                         </option>
                         <option value="customUrlPolicy">
-                          Custom URL Policy
+                          <Trans id="Custom URL Policy" />{' '}
                         </option>
-                        <option value="customPolicy">Custom Policy</option>
+                        <option value="customPolicy">
+                          <Trans id="Custom Policy" />
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -776,7 +788,7 @@ export function PolicyEditor(props): ReactElement {
                 <div>
                   {credential?.policies?.length === 0 ? (
                     <div className={styles.noPolicies}>
-                      No static policies defined.
+                      <Trans id="No static policies defined." />{' '}
                     </div>
                   ) : (
                     credential?.policies?.map((policy, innerIndex) => (
@@ -808,7 +820,7 @@ export function PolicyEditor(props): ReactElement {
           className={cs(styles.marginCenter)}
           onClick={handleNewRequestCredential}
         >
-          <AddIcon /> New{' '}
+          <AddIcon /> <Trans id="New" />{' '}
           {{ ...getFieldContent('requestCredential', fields) }.label}
         </Button>
       </div>
@@ -817,7 +829,7 @@ export function PolicyEditor(props): ReactElement {
           <div className={styles.checkboxWithTooltip}>
             <Input
               name="editAdvancedFeatures"
-              label="Edit Advanced SSI Policy Features"
+              label={i18n._('Edit Advanced SSI Policy Features')}
               type="checkbox"
               options={['Edit Advanced SSI Policy Features']}
               checked={editAdvancedFeatures}
@@ -853,7 +865,11 @@ export function PolicyEditor(props): ReactElement {
             />
             <Tooltip
               content={
-                <Markdown text="Enable advanced SSI policy features including holder binding, credential limits, and presentation requirements." />
+                <Markdown
+                  text={i18n._(
+                    'Enable advanced SSI policy features including holder binding, credential limits, and presentation requirements.'
+                  )}
+                />
               }
             />
           </div>

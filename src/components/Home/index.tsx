@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import {
   useState,
   useEffect,
@@ -20,7 +22,7 @@ import SearchLogo from '@images/search.svg'
 import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
-import content from '../../../content/pages/home/content.json'
+import { contentPagesHomeContent as content } from '../../i18n/content'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -60,6 +62,8 @@ function HeroSection({
   placeholder?: string
   initialValue?: string
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const [value, setValue] = useState(initialValue || '')
   const parsed = router.query
@@ -141,7 +145,7 @@ function HeroSection({
                 ref={searchBarRef}
                 type="search"
                 name="search"
-                aria-label="Search for data"
+                aria-label={i18n._('Search for data')}
                 placeholder={placeholder || content.hero.searchPlaceholder}
                 value={value}
                 onChange={handleChange}
@@ -155,7 +159,9 @@ function HeroSection({
                 className={styles.searchButton}
               >
                 <SearchLogo className={styles.searchIcon} />
-                <span>Search</span>
+                <span>
+                  <Trans id="Search" />
+                </span>
               </button>
             </div>
           </form>
@@ -163,10 +169,10 @@ function HeroSection({
           <div className={styles.ctaRow}>
             <button className={styles.ctaGhost} onClick={handlePublishClick}>
               <Upload className={styles.uploadIcon} />
-              Publish an asset
+              <Trans id="Publish an asset" />{' '}
             </button>
             <button className={styles.ctaPrimary} onClick={handleCatalogClick}>
-              Browse the catalogue
+              <Trans id="Browse the catalogue" />{' '}
               <span className={styles.ctaArrow} aria-hidden="true">
                 →
               </span>
@@ -218,6 +224,8 @@ function HeroSection({
 }
 
 export default function HomePage(): ReactElement {
+  useLingui()
+
   return (
     <>
       <HeroSection />

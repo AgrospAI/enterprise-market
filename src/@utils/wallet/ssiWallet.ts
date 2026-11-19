@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import axios from 'axios'
 import {
   SsiKeyDesc,
@@ -44,13 +45,13 @@ function isWalletActionRejected(error: any): boolean {
 
 function getSsiConnectErrorMessage(error: any): string {
   if (isWalletActionRejected(error)) {
-    return 'SSI connection was cancelled in your wallet.'
+    return i18n._('SSI connection was cancelled in your wallet.')
   }
 
   return (
     error?.response?.data?.message ||
     error?.message ||
-    'Failed to connect to SSI wallet'
+    i18n._('Failed to connect to SSI wallet')
   )
 }
 
@@ -68,7 +69,10 @@ export async function connectToWallet(
     const allowedChainIds = getAllowedErc20ChainIds()
     if (!allowedChainIds.includes(signerChainId)) {
       throw new Error(
-        `SSI connection is disabled on chain ${signerChainId}. Switch to an allowed network first.`
+        i18n._(
+          'SSI connection is disabled on chain {signerChainId}. Switch to an allowed network first.',
+          { signerChainId }
+        )
       )
     }
 
@@ -364,7 +368,7 @@ export async function usePresentationRequest(
 export function getSsiVerifiableCredentialType(
   credential: SsiVerifiableCredential
 ): string {
-  let result = 'Unknown'
+  let result = i18n._('Unknown')
   const list = credential?.parsedDocument?.type?.filter(
     (value) =>
       value !== 'VerifiableCredential' && value !== 'VerifiableAttestation'

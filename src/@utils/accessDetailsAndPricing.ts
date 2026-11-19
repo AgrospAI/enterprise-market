@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   Datatoken,
   FixedRateExchange,
@@ -66,7 +67,7 @@ export function getProviderInitializationErrorMessage(error: unknown): string {
       ? error.message
       : typeof error === 'string'
       ? error
-      : 'Provider initialization failed.'
+      : i18n._('Provider initialization failed.')
 
   return rawMessage.trim().startsWith('{')
     ? getErrorMessage(rawMessage)
@@ -175,7 +176,10 @@ export async function getOrderPriceAndFees(
       message.includes('ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST') ||
       message.includes('denied with code: 3')
     ) {
-      message = `Consumer address not found in allow list for service ${asset.id}. Access has been denied.`
+      message = i18n._(
+        'Consumer address not found in allow list for service {value0}. Access has been denied.',
+        { value0: asset.id }
+      )
     }
     // Customize error message for accountId included in deny list
     if (
@@ -183,7 +187,10 @@ export async function getOrderPriceAndFees(
       message.includes('ConsumableCodes.CREDENTIAL_IN_DENY_LIST') ||
       message.includes('denied with code: 4')
     ) {
-      message = `Consumer address found in deny list for service ${asset.id}. Access has been denied.`
+      message = i18n._(
+        'Consumer address found in deny list for service {value0}. Access has been denied.',
+        { value0: asset.id }
+      )
     }
     throw new Error(message)
   }

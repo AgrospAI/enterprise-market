@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { forwardRef, ReactElement } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import stylesTooltip from './index.module.css'
@@ -21,6 +23,8 @@ const DefaultTrigger = forwardRef((props, ref: any) => {
 })
 
 export default function Tooltip(props: TooltipProps): ReactElement {
+  useLingui()
+
   const { className, contentClassName, ...restProps } = props
   const { content, children, trigger, disabled, placement } = props
   const [styles, api] = useSpring(() => animation.from)
@@ -49,7 +53,7 @@ export default function Tooltip(props: TooltipProps): ReactElement {
       interactive
       interactiveBorder={5}
       zIndex={999999}
-      trigger={trigger || 'mouseenter focus'}
+      trigger={trigger || i18n._('mouseenter focus')}
       disabled={disabled || null}
       placement={placement || 'auto'}
       render={(attrs) => (

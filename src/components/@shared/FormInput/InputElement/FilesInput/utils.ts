@@ -1,9 +1,10 @@
+import { i18n } from '../../../../../i18n/index'
 export function prettySize(
   bytes: number,
   separator = ' ',
   postFix = ''
 ): string {
-  if (bytes === 0) return '0 Bytes'
+  if (bytes === 0) return i18n._('0 Bytes')
   if (!bytes) return 'n/a'
 
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']

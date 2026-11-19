@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import ExplorerLink from '@shared/ExplorerLink'
 import styles from './TransactionCount.module.css'
 
@@ -10,17 +11,22 @@ export default function TransactionCount({
   chainId: number
   txHash: string
 }) {
+  useLingui()
+
   return txHash ? (
     <ExplorerLink
       networkId={chainId}
       path={`/tx/${txHash}`}
       className={styles.txHash}
     >
-      View Transaction
+      <Trans id="View Transaction" />{' '}
     </ExplorerLink>
   ) : (
     <span className={styles.txHash}>
-      {txCount} Transaction{txCount > 1 ? 's' : ''}
+      <Trans
+        id="{count, plural, one {# transaction} other {# transactions}}"
+        values={{ count: txCount }}
+      />
     </span>
   )
 }

@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { Wallet } from 'ethers'
 import { getAddress } from 'viem'
 
@@ -25,7 +26,8 @@ export async function decryptJsonWallet(
     )
     return { success: true, privateKey: wallet.privateKey }
   } catch (error: any) {
-    const message = error?.shortMessage || error?.message || 'Decryption failed'
+    const message =
+      error?.shortMessage || error?.message || i18n._('Decryption failed')
     return { success: false, error: message }
   }
 }

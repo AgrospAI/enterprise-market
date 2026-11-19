@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import { Field, useField } from 'formik'
 import FileInfoDetails from './Info'
@@ -30,6 +32,8 @@ type FilesInputProps = InputProps & {
 }
 
 export default function FilesInput(props: FilesInputProps): ReactElement {
+  useLingui()
+
   const {
     form,
     onValidationLoadingChange,
@@ -132,7 +136,9 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
       if (storageType === 'ftp') {
         const isValidFtp = url.startsWith('ftp://') || url.startsWith('ftps://')
         if (!isValidFtp) {
-          throw Error('Invalid FTP URL. Must start with ftp:// or ftps://')
+          throw Error(
+            i18n._('Invalid FTP URL. Must start with ftp:// or ftps://')
+          )
         }
       }
 
@@ -143,12 +149,12 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
         isGoogleUrl(url)
       ) {
         throw Error(
-          'Google Drive is not supported. Use another hosting service.'
+          i18n._('Google Drive is not supported. Use another hosting service.')
         )
       }
 
       const isValid = await checkValidProvider(providerUrl)
-      if (!isValid) throw Error('✗ Provider cannot be reached.')
+      if (!isValid) throw Error(i18n._('✗ Provider cannot be reached.'))
 
       let checkedFile
 
@@ -191,7 +197,7 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
       }
 
       if (!checkedFile || checkedFile[0].valid === false)
-        throw Error('✗ No valid file detected.')
+        throw Error(i18n._('✗ No valid file detected.'))
 
       const checkedFileInfo = (checkedFile[0] || {}) as Partial<FileInfo> & {
         method?: string
@@ -460,7 +466,7 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
             />
           ) : storageType !== 's3' ? (
             <UrlInput
-              submitText="Validate"
+              submitText={i18n._('Validate')}
               {...inputProps}
               name={`${field.name}[0].url`}
               isLoading={isLoading}
@@ -578,7 +584,7 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
                         <>
                           <PublishButton
                             icon="validate"
-                            text="Submit S3 Configuration"
+                            text={i18n._('Submit S3 Configuration')}
                             buttonStyle="gradient"
                             className={styles.s3SubmitButton}
                             onClick={(e: React.SyntheticEvent) => {
@@ -672,9 +678,10 @@ export default function FilesInput(props: FilesInputProps): ReactElement {
                     >
                       <PublishButton
                         icon="validate"
-                        text={`Submit ${
-                          storageType === 'smartcontract' ? 'abi' : 'URL'
-                        }`}
+                        text={i18n._('Submit {value0}', {
+                          value0:
+                            storageType === 'smartcontract' ? 'abi' : 'URL'
+                        })}
                         buttonStyle="gradient"
                         onClick={(e: React.SyntheticEvent) => {
                           e.preventDefault()

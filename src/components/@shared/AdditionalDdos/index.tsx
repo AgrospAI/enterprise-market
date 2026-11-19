@@ -1,7 +1,9 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
-import content from '../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../i18n/content'
 import styles from './index.module.css'
 import { getFieldContent } from '@utils/form'
 import { FormAdditionalDdo, FormPublishData } from '../../Publish/_types'
@@ -11,6 +13,8 @@ import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import PublishButton from '@shared/PublishButton'
 
 export function AdditionalDdosFields(): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<
     FormPublishData | MetadataEditForm
   >()
@@ -38,7 +42,7 @@ export function AdditionalDdosFields(): ReactElement {
   return (
     <>
       <SectionContainer
-        title="Additional Asset Description"
+        title={i18n._('Additional Asset Description')}
         variant="default"
         help={content.additionalDdos.help}
         border={true}
@@ -49,7 +53,10 @@ export function AdditionalDdosFields(): ReactElement {
             <SectionContainer key={`${index}`} className={styles.assetCard}>
               <div className={styles.header}>
                 <h3 className={styles.title}>
-                  Additional Asset Description #{index + 1}
+                  <Trans
+                    id="Additional Asset Description #{number}"
+                    values={{ number: index + 1 }}
+                  />
                 </h3>
               </div>
               <Field
@@ -80,7 +87,7 @@ export function AdditionalDdosFields(): ReactElement {
         <div className={styles.createButtonContainer}>
           <PublishButton
             type="button"
-            text="Create Additional Asset Description"
+            text={i18n._('Create Additional Asset Description')}
             buttonStyle="gradient"
             icon="add"
             onClick={handleNewDdo}

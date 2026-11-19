@@ -113,7 +113,7 @@ function getSearchQuery(
   let nestedQuery
   if (tags) {
     filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else {
+  } else if (!emptySearchTerm) {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
     const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()

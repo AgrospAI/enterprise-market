@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 
@@ -14,6 +15,8 @@ export default function Loader({
   className,
   noMargin = false
 }: LoaderProps): ReactElement {
+  useLingui()
+
   const getLoaderClass = () => {
     switch (variant) {
       case 'white':

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import {
@@ -21,6 +23,8 @@ export default function ContainerUpdateCheckButton({
   onChecksumChange,
   className
 }: ContainerUpdateCheckButtonProps): ReactElement | null {
+  useLingui()
+
   const requestId = useRef(0)
   const [isChecking, setIsChecking] = useState(false)
 
@@ -46,7 +50,11 @@ export default function ContainerUpdateCheckButton({
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : 'Invalid Docker image'
+        i18n._(
+          error instanceof Error
+            ? error.message
+            : i18n._('Invalid Docker image')
+        )
       )
       return
     }
@@ -64,12 +72,12 @@ export default function ContainerUpdateCheckButton({
     if (!containerInfo.checksum) return
 
     if (containerInfo.checksum === checksum.trim()) {
-      toast.info('Docker image is already up to date.')
+      toast.info(i18n._('Docker image is already up to date.'))
       return
     }
 
     await onChecksumChange(containerInfo.checksum)
-    toast.success('Docker image checksum updated.')
+    toast.success(i18n._('Docker image checksum updated.'))
   }
 
   if (tag.trim() !== 'latest') return null
@@ -82,7 +90,7 @@ export default function ContainerUpdateCheckButton({
       disabled={!image.trim() || !tag.trim() || isChecking}
       onClick={handleCheckForUpdates}
     >
-      {isChecking ? 'Checking...' : 'Check for updates'}
+      {isChecking ? i18n._('Checking...') : i18n._('Check for updates')}
     </Button>
   )
 }

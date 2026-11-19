@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import styles from '../index.module.css'
 import {
@@ -14,6 +15,8 @@ import axios, { AxiosResponse } from 'axios'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function MostViews(): ReactElement {
+  useLingui()
+
   const [loading, setLoading] = useState<boolean>()
   const [mostViewed, setMostViewed] = useState<AssetExtended[]>([])
   const newCancelToken = useCancelToken()
@@ -61,7 +64,10 @@ export default function MostViews(): ReactElement {
   return (
     <section className={styles.section}>
       <h3>
-        Most Views <span>last 30 days</span>
+        <Trans id="Most Views" />{' '}
+        <span>
+          <Trans id="last 30 days" />
+        </span>
         <Tooltip content="Assets from all supported chains. Not affected by your selected networks." />
       </h3>
 

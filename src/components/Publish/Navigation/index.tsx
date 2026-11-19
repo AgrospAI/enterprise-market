@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { FormikContextType, useFormikContext } from 'formik'
 import React, { ReactElement, useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -9,6 +11,8 @@ import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
 
 export default function Navigation(): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { values, setFieldValue }: FormikContextType<FormPublishData> =
     useFormikContext()
@@ -66,9 +70,11 @@ export default function Navigation(): ReactElement {
               role="button"
               tabIndex={0}
               aria-current={isActive ? 'step' : undefined}
-              aria-label={`Step ${step.step}: ${step.title}${
-                isCompleted ? ' (completed)' : ''
-              }`}
+              aria-label={i18n._('Step {value0}: {value1}{value2}', {
+                value0: step.step,
+                value1: step.title,
+                value2: isCompleted ? i18n._(' (completed)') : ''
+              })}
               ref={(el) => {
                 stepRefs.current[step.step - 1] = el
               }}

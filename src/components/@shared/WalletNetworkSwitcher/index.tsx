@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 import useNetworkMetadata, {
@@ -11,6 +13,8 @@ import Button from '@shared/atoms/Button'
 import Tooltip from '@shared/atoms/Tooltip'
 
 export default function WalletNetworkSwitcher(): ReactElement {
+  useLingui()
+
   const { asset } = useAsset()
   const { switchChain } = useSwitchChain()
   const { networksList } = useNetworkMetadata()
@@ -33,9 +37,10 @@ export default function WalletNetworkSwitcher(): ReactElement {
         content={
           isManagedSignerBlocked
             ? reason
-            : `Click to switch your wallet to ${getNetworkDisplayName(
-                ddoNetworkData
-              )} network to interact with this asset.`
+            : i18n._(
+                'Click to switch your wallet to {value0} network to interact with this asset.',
+                { value0: getNetworkDisplayName(ddoNetworkData) }
+              )
         }
       >
         <Button
@@ -46,9 +51,9 @@ export default function WalletNetworkSwitcher(): ReactElement {
         >
           {isManagedSignerBlocked
             ? isSignerServer
-              ? 'Unavailable on Signer Server'
-              : 'Unavailable on DFNS'
-            : 'Switch Network'}
+              ? i18n._('Unavailable on Signer Server')
+              : i18n._('Unavailable on DFNS')
+            : i18n._('Switch Network')}
         </Button>
       </Tooltip>
     </div>

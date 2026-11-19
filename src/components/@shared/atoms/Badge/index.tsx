@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import styles from './index.module.css'
 import classNames from 'classnames/bind'
@@ -10,6 +11,8 @@ interface BadgeProps {
 }
 
 export default function Badge({ label, className }: BadgeProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     badge: true,
     [className]: className

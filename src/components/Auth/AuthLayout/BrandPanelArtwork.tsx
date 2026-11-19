@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import type { SVGProps } from 'react'
 
 export type BrandPanelIconVariant =
@@ -11,6 +12,8 @@ interface BrandPanelIconProps extends SVGProps<SVGSVGElement> {
 }
 
 export function BrandPanelIcon({ variant, ...props }: BrandPanelIconProps) {
+  useLingui()
+
   switch (variant) {
     case 'marketplace':
       return (
@@ -121,6 +124,8 @@ export function BrandPanelIcon({ variant, ...props }: BrandPanelIconProps) {
 }
 
 export function BrandPanelWaves(props: SVGProps<SVGSVGElement>) {
+  useLingui()
+
   return (
     <svg viewBox="0 0 500 200" preserveAspectRatio="none" {...props}>
       <path

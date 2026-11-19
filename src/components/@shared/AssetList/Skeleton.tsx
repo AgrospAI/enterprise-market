@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import AssetTeaserSkeleton from '@shared/AssetTeaser/Skeleton'
 import Skeleton from '@shared/atoms/Skeleton'
@@ -14,6 +15,8 @@ export default function AssetListSkeleton({
   noPublisher,
   noDescription
 }: AssetListSkeletonProps): ReactElement {
+  useLingui()
+
   const skeletonCount = Math.max(0, Math.floor(count))
 
   return (
@@ -47,6 +50,8 @@ const tableCellWidths = [
 ]
 
 export function AssetListTableSkeleton(): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.tableSkeletonWrapper} aria-hidden="true">
       <div

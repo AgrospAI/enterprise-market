@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useRef } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
@@ -5,8 +7,10 @@ import FormActions from './FormActions'
 import { useAsset } from '@context/Asset'
 import { getFieldContent } from '@utils/form'
 import { MetadataEditForm } from './_types'
-import content from '../../../../content/pages/editMetadata.json'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
+import {
+  contentPagesEditMetadata as content,
+  contentPublishConsumerParameters as consumerParametersContent
+} from '../../../i18n/content'
 import IconDataset from '@images/dataset.svg'
 import IconAlgorithm from '@images/algorithm.svg'
 import { BoxSelectionOption } from '@components/@shared/FormInput/InputElement/BoxSelection'
@@ -41,6 +45,8 @@ const { data } = content.form
 const assetTypeOptionsTitles = getFieldContent('type', data).options
 
 export default function FormEditMetadata(): ReactElement {
+  useLingui()
+
   const { asset } = useAsset()
   const { values, setFieldTouched, setFieldValue } =
     useFormikContext<MetadataEditForm>()
@@ -165,7 +171,7 @@ export default function FormEditMetadata(): ReactElement {
 
       setFieldValue('uploadedLicense', license)
     } catch (err) {
-      toast.error('Could not upload file')
+      toast.error(i18n._('Could not upload file'))
       LoggerInstance.error(err)
       setFieldValue('uploadedLicense', undefined)
       onError()
@@ -245,11 +251,13 @@ export default function FormEditMetadata(): ReactElement {
           component={Input}
           name="tags"
         />
-        <Field
-          {...getFieldContent('ontologyTerms', data)}
-          component={Input}
-          name="ontologyTerms"
-        />
+        {appConfig.agroPortalEnabled && (
+          <Field
+            {...getFieldContent('ontologyTerms', data)}
+            component={Input}
+            name="ontologyTerms"
+          />
+        )}
 
         <Field
           {...getFieldContent('author', data)}
@@ -289,7 +297,7 @@ export default function FormEditMetadata(): ReactElement {
         <GeoMetadataFields name="geoMetadata" fields={data} />
         {asset.credentialSubject?.metadata?.type === 'algorithm' && (
           <>
-            <SectionContainer title="Docker configuration" required>
+            <SectionContainer title={i18n._('Docker configuration')} required>
               <Field
                 {...getFieldContent('containerImage', data)}
                 component={Input}
@@ -376,7 +384,7 @@ export default function FormEditMetadata(): ReactElement {
           name="assetState"
         />
 
-        <SectionContainer title="License" required>
+        <SectionContainer title={i18n._('License')} required>
           <Field
             {...getFieldContent('licenseTypeSelection', content.form.data)}
             component={Input}
@@ -386,7 +394,8 @@ export default function FormEditMetadata(): ReactElement {
           {values.useRemoteLicense ? (
             <div className={styles.licenseUploadContainer}>
               <Label htmlFor="license">
-                License File <span className={styles.required}>*</span>
+                <Trans id="License File" />{' '}
+                <span className={styles.required}>*</span>
               </Label>
               <FileUpload
                 fileName={values.uploadedLicense?.name}
@@ -395,7 +404,7 @@ export default function FormEditMetadata(): ReactElement {
                     ?.size as number | undefined
                 }
                 fileType={primaryUploadedLicenseDocument?.fileType}
-                buttonLabel="Upload File"
+                buttonLabel={i18n._('Upload File')}
                 setFileItem={handleLicenseFileUpload}
                 buttonStyle="accent"
                 disabled={!!primaryUploadedLicenseDocument}

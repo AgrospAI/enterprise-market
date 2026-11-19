@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useMemo, useSyncExternalStore } from 'react'
 import { useAccount } from 'wagmi'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -76,7 +77,7 @@ export function useIsChainSupportedByConnector(
       isSupported: false,
       isDfns,
       isSignerServer,
-      reason: 'Missing chain id.'
+      reason: i18n._('Missing chain id.')
     }
   }
 
@@ -89,7 +90,7 @@ export function useIsChainSupportedByConnector(
       isSupported: false,
       isDfns: true,
       isSignerServer: false,
-      reason: DFNS_WALLET_NOT_CONNECTED_REASON
+      reason: i18n._(DFNS_WALLET_NOT_CONNECTED_REASON)
     }
   }
 
@@ -98,7 +99,7 @@ export function useIsChainSupportedByConnector(
       isSupported: false,
       isDfns: true,
       isSignerServer: false,
-      reason: DFNS_WALLET_UNAVAILABLE_REASON
+      reason: i18n._(DFNS_WALLET_UNAVAILABLE_REASON)
     }
   }
 
@@ -107,7 +108,7 @@ export function useIsChainSupportedByConnector(
       isSupported: false,
       isDfns: false,
       isSignerServer: true,
-      reason: SIGNER_SERVER_NOT_CONNECTED_REASON
+      reason: i18n._(SIGNER_SERVER_NOT_CONNECTED_REASON)
     }
   }
 
@@ -116,7 +117,7 @@ export function useIsChainSupportedByConnector(
       isSupported: false,
       isDfns: false,
       isSignerServer: true,
-      reason: SIGNER_SERVER_UNAVAILABLE_REASON
+      reason: i18n._(SIGNER_SERVER_UNAVAILABLE_REASON)
     }
   }
 

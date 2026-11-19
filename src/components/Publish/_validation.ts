@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { FileInfo } from '@oceanprotocol/lib'
 import { MAX_DECIMALS } from '@utils/constants'
 import { getMaxDecimalsValidation } from '@utils/numbers'
@@ -61,7 +62,10 @@ function getVpPolicies(parent: unknown): VpPolicyLike[] {
 const noWhitespaceTest = (fieldName: string) =>
   Yup.string().test(
     'no-whitespace',
-    `${fieldName} cannot have leading or trailing spaces`,
+    () =>
+      i18n._('{fieldName} cannot have leading or trailing spaces', {
+        fieldName: i18n._(fieldName)
+      }),
     (value) => {
       if (!value) return true
       return value === value.trim()
@@ -71,19 +75,25 @@ const noWhitespaceTest = (fieldName: string) =>
 const s3FileSchema = Yup.object().shape({
   type: Yup.string().oneOf(['s3']).required(),
   url: Yup.string().required(),
-  valid: Yup.boolean().required().oneOf([true], 'File must be valid.'),
+  valid: Yup.boolean()
+    .required()
+    .oneOf([true], () => i18n._('File must be valid.')),
   s3Access: Yup.object().shape({
-    endpoint: noWhitespaceTest('Endpoint').required('Endpoint is required'),
+    endpoint: noWhitespaceTest('Endpoint').required(() =>
+      i18n._('Endpoint is required')
+    ),
     region: noWhitespaceTest('Region').optional(),
-    bucket: noWhitespaceTest('Bucket name').required('Bucket name is required'),
-    objectKey: noWhitespaceTest('Object key').required(
-      'Object key is required'
+    bucket: noWhitespaceTest('Bucket name').required(() =>
+      i18n._('Bucket name is required')
     ),
-    accessKeyId: noWhitespaceTest('Access Key ID').required(
-      'Access Key ID is required'
+    objectKey: noWhitespaceTest('Object key').required(() =>
+      i18n._('Object key is required')
     ),
-    secretAccessKey: noWhitespaceTest('Secret Access Key').required(
-      'Secret Access Key is required'
+    accessKeyId: noWhitespaceTest('Access Key ID').required(() =>
+      i18n._('Access Key ID is required')
+    ),
+    secretAccessKey: noWhitespaceTest('Secret Access Key').required(() =>
+      i18n._('Secret Access Key is required')
     ),
     forcePathStyle: Yup.boolean().optional()
   })
@@ -91,7 +101,9 @@ const s3FileSchema = Yup.object().shape({
 
 const urlFileSchema = Yup.object().shape({
   url: testLinks(),
-  valid: Yup.boolean().required().oneOf([true], 'File must be valid.')
+  valid: Yup.boolean()
+    .required()
+    .oneOf([true], () => i18n._('File must be valid.'))
 })
 const saasFileSchema = Yup.object().shape({
   type: Yup.string().oneOf(['saas']).required(),
@@ -100,17 +112,23 @@ const saasFileSchema = Yup.object().shape({
 const ftpFileSchema = Yup.object().shape({
   type: Yup.string().oneOf(['ftp']).required(),
   url: Yup.string()
-    .required('FTP URL is required')
-    .test('ftp-protocol', 'URL must start with ftp:// or ftps://', (value) => {
-      if (!value) return false
-      return value.startsWith('ftp://') || value.startsWith('ftps://')
-    }),
-  valid: Yup.boolean().required().oneOf([true], 'File must be valid.')
+    .required(() => i18n._('FTP URL is required'))
+    .test(
+      'ftp-protocol',
+      () => i18n._('URL must start with ftp:// or ftps://'),
+      (value) => {
+        if (!value) return false
+        return value.startsWith('ftp://') || value.startsWith('ftps://')
+      }
+    ),
+  valid: Yup.boolean()
+    .required()
+    .oneOf([true], () => i18n._('File must be valid.'))
 })
 
 const fileSchema = Yup.mixed().test(
   'file-type',
-  'Invalid file type',
+  () => i18n._('Invalid file type'),
   function (value: any) {
     if (!value) return false
 
@@ -131,7 +149,7 @@ const fileSchema = Yup.mixed().test(
           message:
             error instanceof Yup.ValidationError
               ? error.message
-              : 'Must be a valid url.'
+              : i18n._('Must be a valid url.')
         })
       }
     }
@@ -140,26 +158,28 @@ const fileSchema = Yup.mixed().test(
 )
 
 const validationAdditionalLicenseFile = Yup.object().shape({
-  name: Yup.string().trim().required('Required'),
+  name: Yup.string()
+    .trim()
+    .required(() => i18n._('Required')),
   sourceType: Yup.string()
     .oneOf(additionalLicenseSourceOptions)
-    .required('Required'),
+    .required(() => i18n._('Required')),
   url: Yup.array().when('sourceType', {
     is: 'URL',
     then: Yup.array().test('urlTest', (array, context) => {
       const firstUrlEntry = getFirstUrlEntry(array)
       if (!firstUrlEntry) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
 
       const { url, valid } = firstUrlEntry
       if (!url || url.length === 0) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
 
       if (valid !== undefined && !valid) {
         return context.createError({
-          message: `Need a valid url and click Validate`
+          message: i18n._('Need a valid url and click Validate')
         })
       }
       return true
@@ -168,7 +188,7 @@ const validationAdditionalLicenseFile = Yup.object().shape({
   }),
   uploadedDocument: Yup.object().when('sourceType', {
     is: 'Upload file',
-    then: Yup.object().required('Need a file'),
+    then: Yup.object().required(() => i18n._('Need a file')),
     otherwise: Yup.object().nullable()
   })
 })
@@ -176,26 +196,35 @@ const validationAdditionalLicenseFile = Yup.object().shape({
 const validationMetadata = {
   type: Yup.string()
     .matches(/dataset|algorithm/g, { excludeEmptyString: true })
-    .required('Required'),
+    .required(() => i18n._('Required')),
   name: Yup.string()
-    .min(4, (param) => `Title must be at least ${param.min} characters`)
-    .required('Required'),
-  description: Yup.string()
-    .min(10, (param) => `Description must be at least ${param.min} characters`)
-    .max(
-      5000,
-      (param) => `Description must have maximum ${param.max} characters`
+    .min(4, (param) =>
+      i18n._('Title must be at least {value0} characters', {
+        value0: param.min
+      })
     )
-    .required('Required'),
+    .required(() => i18n._('Required')),
+  description: Yup.string()
+    .min(10, (param) =>
+      i18n._('Description must be at least {value0} characters', {
+        value0: param.min
+      })
+    )
+    .max(5000, (param) =>
+      i18n._('Description must have maximum {value0} characters', {
+        value0: param.max
+      })
+    )
+    .required(() => i18n._('Required')),
   descriptionLanguage: Yup.string(),
   descriptionDirection: Yup.string(),
   copyrightHolder: Yup.string().nullable(),
-  providedBy: testOptionalUrl('Provided By must be a valid URL.'),
+  providedBy: testOptionalUrl(() => i18n._('Provided By must be a valid URL.')),
   links: Yup.array()
     .of(
       Yup.object().shape({
         key: Yup.string(),
-        value: testOptionalUrl('Each link must be a valid URL.')
+        value: testOptionalUrl(() => i18n._('Each link must be a valid URL.'))
       })
     )
     .nullable(),
@@ -204,13 +233,13 @@ const validationMetadata = {
   geoMetadata: validationGeoMetadata,
   dockerImage: Yup.string().when('type', {
     is: 'algorithm',
-    then: Yup.string().required('Required')
+    then: Yup.string().required(() => i18n._('Required'))
   }),
   dockerImageCustom: Yup.string().when(['type', 'dockerImage'], {
     is: (type: string, dockerImage: string) =>
       type === 'algorithm' && dockerImage === 'custom',
     then: Yup.string()
-      .required('Required')
+      .required(() => i18n._('Required'))
       .test('docker-image-reference', function (value) {
         try {
           normalizeDockerImageReference(value, this.parent.dockerImageCustomTag)
@@ -223,32 +252,32 @@ const validationMetadata = {
   dockerImageCustomTag: Yup.string().when(['type', 'dockerImage'], {
     is: (type: string, dockerImage: string) =>
       type === 'algorithm' && dockerImage === 'custom',
-    then: Yup.string().required(
-      'Validate the custom Docker image to extract its tag'
+    then: Yup.string().required(() =>
+      i18n._('Validate the custom Docker image to extract its tag')
     )
   }),
   dockerImageCustomChecksum: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string().when('dockerImage', {
       is: 'custom',
-      then: Yup.string().required('Required')
+      then: Yup.string().required(() => i18n._('Required'))
     })
   }),
   dockerImageCustomEntrypoint: Yup.string().when('type', {
     is: 'algorithm',
     then: Yup.string().when('dockerImage', {
       is: 'custom',
-      then: Yup.string().required('Required')
+      then: Yup.string().required(() => i18n._('Required'))
     })
   }),
   termsAndConditions: Yup.boolean()
-    .required('Required')
-    .isTrue('Please agree to the Terms and Conditions.'),
+    .required(() => i18n._('Required'))
+    .isTrue(() => i18n._('Please agree to the Terms and Conditions.')),
   dataSubjectConsent: Yup.boolean().when('type', {
     is: 'dataset',
     then: Yup.boolean()
-      .required('Required')
-      .isTrue("Please confirm the data subject's consent.")
+      .required(() => i18n._('Required'))
+      .isTrue(() => i18n._("Please confirm the data subject's consent."))
   }),
   usesConsumerParameters: Yup.boolean(),
   consumerParameters: Yup.array().when('type', {
@@ -257,7 +286,7 @@ const validationMetadata = {
       is: true,
       then: Yup.array()
         .of(Yup.object().shape(validationConsumerParameters))
-        .required('Required'),
+        .required(() => i18n._('Required')),
       otherwise: Yup.array()
         .nullable()
         .transform((value) => value || null)
@@ -266,22 +295,22 @@ const validationMetadata = {
   useRemoteLicense: Yup.boolean(),
   licenseTypeSelection: Yup.string()
     .oneOf(['URL', 'Upload license file'])
-    .required('Required'),
+    .required(() => i18n._('Required')),
   licenseUrl: Yup.array().when('useRemoteLicense', {
     is: false,
     then: Yup.array().test('urlTest', (array, context) => {
       const firstUrlEntry = getFirstUrlEntry(array)
       if (!firstUrlEntry) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
 
       const { url, valid } = firstUrlEntry
       if (!url || url.length === 0) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
       // Only check valid flag if validation has been attempted (valid is not undefined)
       if (valid !== undefined && !valid) {
-        return context.createError({ message: `Need a valid url` })
+        return context.createError({ message: i18n._('Need a valid url') })
       }
       return true
     })
@@ -290,7 +319,7 @@ const validationMetadata = {
     is: true,
     then: Yup.object().test('remoteTest', (license, context) => {
       if (!license) {
-        return context.createError({ message: `Need a license file` })
+        return context.createError({ message: i18n._('Need a license file') })
       }
       return true
     })
@@ -299,41 +328,41 @@ const validationMetadata = {
 }
 
 const validationRequestCredentials = {
-  format: Yup.string().required('Required'),
-  type: Yup.string().required('Required'),
+  format: Yup.string().required(() => i18n._('Required')),
+  type: Yup.string().required(() => i18n._('Required')),
   policies: Yup.array().of(
     Yup.object().shape({
       type: Yup.string(),
       name: Yup.string()
         .when('type', {
           is: 'staticPolicy',
-          then: (schema) => schema.required('Required')
+          then: (schema) => schema.required(i18n._('Required'))
         })
         .when('type', {
           is: 'customUrlPolicy',
-          then: (schema) => schema.required('Required')
+          then: (schema) => schema.required(i18n._('Required'))
         })
         .when('type', {
           is: 'customPolicy',
           then: (schema) =>
             schema
-              .required('Required')
-              .matches(/^[A-Za-z]+$/, 'Only letters A–Z are allowed')
+              .required(i18n._('Required'))
+              .matches(/^[A-Za-z]+$/, i18n._('Only letters A–Z are allowed'))
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
-        then: (schema) => schema.of(Yup.string().required('Required'))
+        then: (schema) => schema.of(Yup.string().required(i18n._('Required')))
       }),
       policy: Yup.string().when('type', {
         is: 'parameterizedPolicy',
-        then: (schema) => schema.required('Required')
+        then: (schema) => schema.required(i18n._('Required'))
       }),
       policyUrl: Yup.string().when('type', {
         is: 'customUrlPolicy',
         then: (schema) =>
           schema
-            .required('Required')
-            .test('isValidUrl', 'Invalid URL format', (value) => {
+            .required(i18n._('Required'))
+            .test('isValidUrl', i18n._('Invalid URL format'), (value) => {
               if (!value) return false
               const trimmedValue = value.trim()
               if (
@@ -356,8 +385,8 @@ const validationRequestCredentials = {
           then: (schema) =>
             schema.of(
               Yup.object().shape({
-                name: Yup.string().required('Required'),
-                value: Yup.string().required('Required')
+                name: Yup.string().required(i18n._('Required')),
+                value: Yup.string().required(i18n._('Required'))
               })
             )
         })
@@ -366,8 +395,8 @@ const validationRequestCredentials = {
           then: (schema) =>
             schema.of(
               Yup.object().shape({
-                name: Yup.string().required('Required'),
-                value: Yup.string().required('Required')
+                name: Yup.string().required(i18n._('Required')),
+                value: Yup.string().required(i18n._('Required'))
               })
             )
         }),
@@ -376,9 +405,9 @@ const validationRequestCredentials = {
         then: (schema) =>
           schema.of(
             Yup.object().shape({
-              leftValue: Yup.string().required('Required'),
-              operator: Yup.string().required('Required'),
-              rightValue: Yup.string().required('Required')
+              leftValue: Yup.string().required(i18n._('Required')),
+              operator: Yup.string().required(i18n._('Required')),
+              rightValue: Yup.string().required(i18n._('Required'))
             })
           )
       })
@@ -387,11 +416,11 @@ const validationRequestCredentials = {
 }
 
 const validationVpPolicy = {
-  type: Yup.string().required('Required'),
+  type: Yup.string().required(() => i18n._('Required')),
   name: Yup.mixed().when('type', {
     is: 'staticVpPolicy',
     then: (schema) =>
-      schema.test('static-name', 'Required', (value) => {
+      schema.test('static-name', i18n._('Required'), (value) => {
         if (typeof value === 'string') return value.trim().length > 0
         if (hasPolicyString(value)) {
           return value.policy.trim().length > 0
@@ -401,16 +430,16 @@ const validationVpPolicy = {
   }),
   policy: Yup.string().when('type', {
     is: 'argumentVpPolicy',
-    then: (schema) => schema.required('Required')
+    then: (schema) => schema.required(i18n._('Required'))
   }),
   args: Yup.number().when('type', {
     is: 'argumentVpPolicy',
-    then: (schema) => schema.required('Required')
+    then: (schema) => schema.required(i18n._('Required'))
   }),
   url: Yup.string().when('type', {
     is: 'externalEvpForwardVpPolicy',
     then: (schema) =>
-      schema.test('isValidUrlOpt', 'Invalid URL format', (value) => {
+      schema.test('isValidUrlOpt', i18n._('Invalid URL format'), (value) => {
         if (!value) return true
         const trimmedValue = value.trim()
         const pattern = /^https?:\/\/\S+$/i
@@ -423,13 +452,13 @@ const validationCredentials = {
   requestCredentials: Yup.array().of(
     Yup.object().shape(validationRequestCredentials)
   ),
-  vcPolicies: Yup.array().of(Yup.string().required('Required')),
+  vcPolicies: Yup.array().of(Yup.string().required(() => i18n._('Required'))),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
   externalEvpForwardUrl: Yup.string().test(
     'external-evp-url',
-    'Invalid URL format',
+    () => i18n._('Invalid URL format'),
     function (value) {
       const vpPolicies = getVpPolicies(this.parent)
       const hasExternal = vpPolicies.some(
@@ -446,20 +475,20 @@ const validationCredentials = {
 }
 
 const validationService = {
-  name: Yup.string().required('Required'),
+  name: Yup.string().required(() => i18n._('Required')),
   description: Yup.object().shape({
     value: Yup.string()
-      .min(
-        10,
-        (param) =>
-          `Service description must be at least ${param.min} characters`
+      .min(10, (param) =>
+        i18n._('Service description must be at least {value0} characters', {
+          value0: param.min
+        })
       )
-      .required('Required')
+      .required(() => i18n._('Required'))
   }),
   files: Yup.array()
     .of(fileSchema)
-    .min(1, `At least one file is required.`)
-    .required('Enter a valid file and click Validate.'),
+    .min(1, () => i18n._('At least one file is required.'))
+    .required(() => i18n._('Enter a valid file and click Validate.')),
   links: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
@@ -474,18 +503,20 @@ const validationService = {
     symbol: Yup.string()
   }),
   timeout: Yup.string()
-    .required('Required')
+    .required(() => i18n._('Required'))
     .test(
       'valid-timeout',
-      TIMEOUT_VALIDATION_MESSAGE,
+      () => TIMEOUT_VALIDATION_MESSAGE(),
       (value) => isTimeoutPreset(value) || isCustomTimeoutValue(value)
     ),
   access: Yup.string()
     .matches(/compute|access/g)
-    .required('Required'),
+    .required(() => i18n._('Required')),
   providerUrl: Yup.object().shape({
     //    url: Yup.string().url('Must be a valid URL.').required('Required'),
-    valid: Yup.boolean().isTrue().required('Valid Provider is required.'),
+    valid: Yup.boolean()
+      .isTrue()
+      .required(() => i18n._('Valid Provider is required.')),
     custom: Yup.boolean()
   }),
   usesConsumerParameters: Yup.boolean(),
@@ -493,7 +524,7 @@ const validationService = {
     is: true,
     then: Yup.array()
       .of(Yup.object().shape(validationConsumerParameters))
-      .required('Required'),
+      .required(() => i18n._('Required')),
     otherwise: Yup.array()
       .nullable()
       .transform((value) => value || null)
@@ -504,18 +535,22 @@ const validationService = {
 const validationPricing = {
   type: Yup.string()
     .matches(/fixed|free/g, { excludeEmptyString: true })
-    .required('Required'),
+    .required(() => i18n._('Required')),
   // https://github.com/jquense/yup#mixedwhenkeys-string--arraystring-builder-object--value-schema-schema-schema
 
   price: Yup.number()
-    .min(1, (param: { min: number }) => `Must be more or equal to ${param.min}`)
-    .max(
-      1000000,
-      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    .min(1, (param: { min: number }) =>
+      i18n._('Must be more or equal to {value0}', { value0: param.min })
+    )
+    .max(1000000, (param: { max: number }) =>
+      i18n._('Must be less than or equal to {value0}', { value0: param.max })
     )
     .test(
       'maxDigitsAfterDecimal',
-      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      () =>
+        i18n._('Must have maximum {MAX_DECIMALS} decimal digits', {
+          MAX_DECIMALS
+        }),
       function (_value, ctx) {
         const rawValue = getOriginalValue(ctx, _value)
         if (rawValue === undefined || rawValue === null || rawValue === '') {
@@ -524,7 +559,7 @@ const validationPricing = {
         return getMaxDecimalsValidation(MAX_DECIMALS).test(String(rawValue))
       }
     )
-    .required('Required')
+    .required(() => i18n._('Required'))
 }
 
 // TODO: make Yup.SchemaOf<FormPublishData> work, requires conditional validation
@@ -533,8 +568,8 @@ const validationPricing = {
 export const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({
   user: Yup.object().shape({
     stepCurrent: Yup.number(),
-    chainId: Yup.number().required('Required'),
-    accountId: Yup.string().required('Required')
+    chainId: Yup.number().required(() => i18n._('Required')),
+    accountId: Yup.string().required(() => i18n._('Required'))
   }),
   metadata: Yup.object().shape(validationMetadata),
   services: Yup.array().of(Yup.object().shape(validationService)),
@@ -542,8 +577,8 @@ export const validationSchema: Yup.AnyObjectSchema = Yup.object().shape({
   additionalDdos: Yup.array()
     .of(
       Yup.object().shape({
-        data: Yup.string().required('Required'),
-        type: Yup.string().required('Required')
+        data: Yup.string().required(() => i18n._('Required')),
+        type: Yup.string().required(() => i18n._('Required'))
       })
     )
     .nullable(),

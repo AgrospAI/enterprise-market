@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { getPageBySlug, PageData } from '@utils/markdownPages'
 import Page from '@shared/Page'
@@ -8,6 +9,8 @@ import { useRouter } from 'next/router'
 import { markdownToHtmlWithToc } from '@utils/markdown'
 
 export default function PageMarkdown(page: PageData): ReactElement {
+  useLingui()
+
   const router = useRouter()
   if (!page || page.content === '') return null
 
@@ -28,7 +31,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
           {showLastUpdated && (
             <p className={styles.lastUpdated}>
               <em>
-                Last updated on{' '}
+                <Trans id="Last updated on" />{' '}
                 <Time
                   date={resolvedLastUpdated}
                   displayFormat="MMMM dd, yyyy."

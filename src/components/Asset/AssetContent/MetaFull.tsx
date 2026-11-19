@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import MetaItem from './MetaItem'
 import styles from './MetaFull.module.css'
@@ -6,13 +8,15 @@ import { useAsset } from '@context/Asset'
 import { Asset } from 'src/@types/Asset'
 import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
 import Label from '@components/@shared/FormInput/Label'
-import { assetStateToString } from '@utils/assetState'
-import { safeExternalWebUrl } from '@utils/url'
+import { assetStateToString, displayAssetState } from '@utils/assetState'
+import { isValidWebUrl, safeExternalWebUrl } from '@utils/url'
 import AdditionalLicenseFiles from './AdditionalLicenseFiles'
 import MetaLinks from './MetaLinks'
 import TruncatedMetaValue from './TruncatedMetaValue'
 
 export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
+  useLingui()
+
   const { isInPurgatory, assetState, asset } = useAsset()
   const credentialSubject = ddo?.credentialSubject
   const metadata = credentialSubject?.metadata
@@ -46,7 +50,7 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
     <>
       <div className={styles.didContainer}>
         <MetaItem
-          title="DID"
+          title={i18n._('DID')}
           content={<TruncatedMetaValue value={ddo.id} start={12} end={8} />}
         />
       </div>
@@ -54,65 +58,75 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
       <div className={styles.metaFull}>
         {!isInPurgatory && metadata?.author && (
           <span className={styles.dataAuther}>
-            <MetaItem title="Data Author" content={metadata.author} />
+            <MetaItem title={i18n._('Data Author')} content={metadata.author} />
           </span>
         )}
         {metadata?.copyrightHolder && (
           <MetaItem
-            title="Copyright Holder"
+            title={i18n._('Copyright Holder')}
             content={metadata.copyrightHolder}
           />
         )}
         {metadata?.providedBy && (
           <MetaItem
-            title="Provided By"
+            title={i18n._('Provided By')}
             content={
-              <a
-                href={safeExternalWebUrl(metadata.providedBy)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {metadata.providedBy}
-              </a>
+              metadata.providedBy.trim() &&
+              isValidWebUrl(metadata.providedBy) ? (
+                <a
+                  href={safeExternalWebUrl(metadata.providedBy)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {metadata.providedBy}
+                </a>
+              ) : (
+                metadata.providedBy
+              )
             }
           />
         )}
         <MetaItem
-          title="Owner"
+          title={i18n._('Owner')}
           content={<Publisher account={ddo?.indexedMetadata?.nft?.owner} />}
         />
         {publisherDid && (
           <MetaItem
-            title="Publisher DID"
+            title={i18n._('Publisher DID')}
             content={
               <TruncatedMetaValue value={publisherDid} start={12} end={12} />
             }
           />
         )}
         {effectiveAssetState !== 'Active' && (
-          <MetaItem title="Asset State" content={effectiveAssetState} />
+          <MetaItem
+            title={i18n._('Asset State')}
+            content={displayAssetState(effectiveAssetState)}
+          />
         )}
         {paymentCollector &&
           paymentCollector !== ddo?.indexedMetadata?.nft?.owner && (
             <MetaItem
-              title="Revenue Sent To"
+              title={i18n._('Revenue Sent To')}
               content={<Publisher account={paymentCollector} />}
             />
           )}
         {(temporalStart || temporalEnd) && (
           <MetaItem
-            title="Temporal Coverage"
+            title={i18n._('Temporal Coverage')}
             content={
               temporalStart && temporalEnd
                 ? `${temporalStart} – ${temporalEnd}`
                 : temporalStart
-                ? `From ${temporalStart}`
-                : `Until ${temporalEnd}`
+                ? i18n._('From {temporalStart}', {
+                    temporalStart
+                  })
+                : i18n._('Until {temporalEnd}', { temporalEnd })
             }
           />
         )}
         {metadata?.type === 'algorithm' && dockerImage && (
-          <MetaItem title="Docker Image" content={dockerImage} />
+          <MetaItem title={i18n._('Docker Image')} content={dockerImage} />
         )}
       </div>
 
@@ -120,7 +134,9 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
 
       <div className={styles.licenseRow}>
         <Label htmlFor="license">
-          <span className={styles.licenceTitle}>License</span>
+          <span className={styles.licenceTitle}>
+            <Trans id="License" />
+          </span>
         </Label>
         {primaryLicenseMirror?.type === 'url' && primaryLicenseMirror?.url ? (
           <a
@@ -132,13 +148,32 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
           </a>
         ) : (
           <IpfsRemoteSource
-            noDocumentLabel="No license document available"
+            noDocumentLabel={i18n._('No license document available')}
             remoteSource={primaryLicenseMirror}
             name={primaryLicenseDocument?.name}
           />
         )}
         <AdditionalLicenseFiles licenseDocuments={license?.licenseDocuments} />
-        <MetaItem title="OE Node" content={oeNode || 'Not available'} />
+        <MetaItem
+          title={i18n._('OE Node')}
+          content={
+            oeNode ? (
+              isValidWebUrl(oeNode) ? (
+                <a
+                  href={safeExternalWebUrl(oeNode)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {oeNode}
+                </a>
+              ) : (
+                oeNode
+              )
+            ) : (
+              i18n._('Not available')
+            )
+          }
+        />
       </div>
     </>
   ) : null

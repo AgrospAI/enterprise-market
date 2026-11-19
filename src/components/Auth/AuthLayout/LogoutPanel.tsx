@@ -1,8 +1,11 @@
+import { useLingui } from '@lingui/react'
 import Loader from '@shared/atoms/Loader'
 import { authLogoutCopy } from '../constants'
 import styles from './LogoutPanel.module.css'
 
 export default function LogoutPanel() {
+  useLingui()
+
   return (
     <div className={styles.panel}>
       <div className={styles.header}>

@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useEffect, useState } from 'react'
 import Modal from '@shared/atoms/Modal'
 import styles from './index.module.css'
@@ -21,7 +23,7 @@ export default function ProviderOwnerInfoModal({
   isOpen,
   onClose,
   providerUrl,
-  title = 'Provider Info',
+  title = i18n._('Provider Info'),
   overlayClassName,
   className
 }: {
@@ -32,6 +34,8 @@ export default function ProviderOwnerInfoModal({
   overlayClassName?: string
   className?: string
 }): JSX.Element {
+  useLingui()
+
   const mergedClassName = [styles.modalContent, className]
     .filter(Boolean)
     .join(' ')
@@ -73,7 +77,9 @@ export default function ProviderOwnerInfoModal({
         const response = await fetch(providerUrl)
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch provider endpoints: ${response.status}`
+            i18n._('Failed to fetch provider endpoints: {value0}', {
+              value0: response.status
+            })
           )
         }
 
@@ -109,13 +115,17 @@ export default function ProviderOwnerInfoModal({
       <div className={styles.scrollArea}>
         {providerUrl && (
           <div className={styles.providerUrlCard}>
-            <div className={styles.providerUrlLabel}>NODE URL</div>
+            <div className={styles.providerUrlLabel}>
+              <Trans id="NODE URL" />
+            </div>
             <div className={styles.providerUrlValue}>{providerUrl}</div>
           </div>
         )}
 
         {isOwnerInfoLoading ? (
-          <p className={styles.modalDescription}>Loading owner info...</p>
+          <p className={styles.modalDescription}>
+            <Trans id="Loading owner info..." />
+          </p>
         ) : ownerInfo && Object.keys(ownerInfo).length > 0 ? (
           <div className={styles.ownerInfoList}>
             {Object.entries(ownerInfo).map(([key, rawEntry]) => {
@@ -191,7 +201,9 @@ export default function ProviderOwnerInfoModal({
             })}
           </div>
         ) : (
-          <p className={styles.modalDescription}>No owner info available.</p>
+          <p className={styles.modalDescription}>
+            <Trans id="No owner info available." />
+          </p>
         )}
       </div>
     </Modal>

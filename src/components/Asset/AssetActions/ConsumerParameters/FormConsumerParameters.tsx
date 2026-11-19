@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
 import Label from '@shared/FormInput/Label'
@@ -39,6 +40,8 @@ export default function FormConsumerParameters({
   parameters: Record<string, string | number | boolean | Option[]>[]
   disabled?: boolean
 }): ReactElement {
+  useLingui()
+
   const [field] = useField<UserCustomParameters[]>(name)
 
   const getParameterOptions = (
@@ -85,7 +88,7 @@ export default function FormConsumerParameters({
   return (
     <div className={styles.container}>
       <Label htmlFor="Input the consumer parameters">
-        Input the consumer parameters
+        <Trans id="Input the consumer parameters" />{' '}
       </Label>
       <div
         className={cx({

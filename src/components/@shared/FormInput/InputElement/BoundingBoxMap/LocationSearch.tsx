@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import AsyncSelect from 'react-select/async'
 import { SingleValue } from 'react-select'
@@ -50,6 +52,8 @@ export default function LocationSearch({
 }: {
   onLocationSelect: (bounds: LatLngBoundsTuple, label: string) => void
 }): ReactElement {
+  useLingui()
+
   const debounceTimeout = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => () => clearTimeout(debounceTimeout.current), [])
@@ -89,10 +93,10 @@ export default function LocationSearch({
         noOptionsMessage={({ inputValue }) =>
           inputValue.trim().length < MIN_QUERY_LENGTH
             ? `Type at least ${MIN_QUERY_LENGTH} characters to search.`
-            : 'No locations found.'
+            : i18n._('No locations found.')
         }
         onChange={handleChange}
-        placeholder="Search for a city or region..."
+        placeholder={i18n._('Search for a city or region...')}
         value={null}
         theme={(theme) => ({
           ...theme,
