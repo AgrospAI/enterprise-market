@@ -36,6 +36,61 @@ function rehypeNewTabLinks() {
   }
 }
 
+function isHttpsUrl(href: unknown): boolean {
+  try {
+    return typeof href === 'string' && new URL(href).protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+/**
+ * For text written by the language model, which publishers can influence through
+ * their asset descriptions. Images would load a URL without any click, so they
+ * are removed, and a link is only kept if it is https. A link that is not keeps
+ * its text.
+ */
+function rehypeChatSafeContent() {
+  function clean(children: RehypeElement[] = []): RehypeElement[] {
+    return children.flatMap((node) => {
+      if (node.type !== 'element') return [node]
+      if (node.tagName === 'img') return []
+
+      const content = clean(node.children)
+      if (node.tagName !== 'a') return [{ ...node, children: content }]
+      if (!isHttpsUrl(node.properties?.href)) return content
+
+      return [
+        {
+          ...node,
+          children: content,
+          properties: {
+            href: node.properties.href,
+            target: '_blank',
+            rel: 'noopener noreferrer'
+          }
+        }
+      ]
+    })
+  }
+
+  return (tree: RehypeElement) => {
+    tree.children = clean(tree.children)
+  }
+}
+
+/** Markdown from the language model, as HTML that is safe to render. */
+export function markdownToChatHtml(markdown: string): string {
+  return remark()
+    .use(remarkGfm)
+    .use(remarkBreaks)
+    .use(remarkRehype)
+    .use(rehypeChatSafeContent)
+    .use(rehypeStringify)
+    .processSync(markdown)
+    .toString()
+}
+
 export function markdownToHtml(
   markdown: string,
   options: MarkdownToHtmlOptions = {}

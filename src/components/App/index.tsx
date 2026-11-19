@@ -1,6 +1,7 @@
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../i18n/index'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { ToastContainer, toast } from 'react-toastify'
@@ -12,6 +13,7 @@ import Header from '../Header'
 import Footer from '../Footer/Footer'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import { useChatPanel } from '@context/ChatPanel'
 import useEnterpriseFeeCollector from '@hooks/useEnterpriseFeeCollector'
 import useTokenApproval from '@hooks/useTokenApproval'
 import useAllowedTokenAddresses from '@hooks/useAllowedTokenAddresses'
@@ -24,6 +26,8 @@ import SsiWalletManager from '@components/Header/SsiWallet/SsiWalletManager'
 
 import { contentPurgatory } from '../../i18n/content'
 import styles from './index.module.css'
+
+const Chat = dynamic(() => import('@components/Chat'), { ssr: false })
 
 export default function App({
   children
@@ -40,6 +44,7 @@ export default function App({
   } = useMarketMetadata()
   const { address, connector, isConnected, chainId } = useAccount()
   const { switchChain, isPending } = useSwitchChain()
+  const chatPanel = useChatPanel()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(address)
 
   useWalletAuthSync()
@@ -169,7 +174,15 @@ export default function App({
   }
 
   return (
-    <div className={styles.app}>
+    <div
+      className={
+        chatPanel.isOpen
+          ? `${styles.app} ${
+              chatPanel.isExpanded ? styles.withWideChat : styles.withChat
+            }`
+          : styles.app
+      }
+    >
       {siteContent?.announcement && (
         <AnnouncementBanner text={siteContent.announcement} />
       )}
@@ -224,6 +237,8 @@ export default function App({
       <Footer />
 
       <SsiWalletManager />
+
+      <Chat />
 
       {appConfig?.privacyPreferenceCenter === 'true' && (
         <PrivacyPreferenceCenter />
