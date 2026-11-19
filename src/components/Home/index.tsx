@@ -102,9 +102,9 @@ function HeroSection(): ReactElement {
               AI Assistant
             </p>
             <p className={styles.lead}>
-              Ask in your own words, in any language. The assistant finds
-              datasets and algorithms for you, and prepares downloads and
-              Compute-to-Data jobs for you to confirm.
+              Ask in your own words. The assistant finds datasets and algorithms
+              for you, and prepares downloads and Compute-to-Data jobs for you
+              to confirm.
             </p>
           </div>
         )}
