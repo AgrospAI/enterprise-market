@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import { FormPublishData } from '../_types'
@@ -12,6 +13,8 @@ import { useEthersSigner } from '@hooks/useEthersSigner'
 import { Signer } from 'ethers'
 
 export default function Preview(): ReactElement {
+  useLingui()
+
   const [asset, setAsset] = useState<AssetExtended>()
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
@@ -65,7 +68,9 @@ export default function Preview(): ReactElement {
 
   return (
     <div className={styles.preview}>
-      <h3 className={styles.previewTitle}>Preview</h3>
+      <h3 className={styles.previewTitle}>
+        <Trans id="Preview" />
+      </h3>
 
       <h3 className={styles.assetTitle}>{values.metadata.name}</h3>
       {asset && <AssetContent asset={asset} />}

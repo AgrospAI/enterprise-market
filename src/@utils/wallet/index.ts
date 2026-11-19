@@ -1,4 +1,5 @@
 'use client'
+import { i18n } from '../../i18n/index'
 
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { createConfig } from 'wagmi'
@@ -205,7 +206,7 @@ export async function getTokenInfo(
   if (!web3Provider || !tokenAddress || tokenAddress === ethers.ZeroAddress) {
     return {
       address: tokenAddress,
-      name: 'Unknown',
+      name: i18n._('Unknown'),
       symbol: '???',
       decimals: 18
     }
@@ -224,23 +225,25 @@ export async function getTokenInfo(
     ])
 
     const safeString = (result: any): string => {
-      if (!result) return 'Unknown'
+      if (!result) return i18n._('Unknown')
       try {
         if (typeof result === 'string') {
           if (!result.startsWith('0x')) return result.trim() || 'Unknown'
           const bytes = ethers.hexlify(ethers.getBytes(result))
           return ethers.decodeBytes32String(bytes) || 'Unknown'
         }
-        return 'Unknown'
+        return i18n._('Unknown')
       } catch {
-        return 'Unknown'
+        return i18n._('Unknown')
       }
     }
 
     return {
       address: tokenAddress,
       name:
-        nameRaw.status === 'fulfilled' ? safeString(nameRaw.value) : 'Unknown',
+        nameRaw.status === 'fulfilled'
+          ? safeString(nameRaw.value)
+          : i18n._('Unknown'),
       symbol:
         symbolRaw.status === 'fulfilled' ? safeString(symbolRaw.value) : '???',
       decimals:
@@ -250,7 +253,7 @@ export async function getTokenInfo(
     LoggerInstance.error(`[getTokenInfo] Failed for ${tokenAddress}`, error)
     return {
       address: tokenAddress,
-      name: 'Unknown Token',
+      name: i18n._('Unknown Token'),
       symbol: '???',
       decimals: 18
     }

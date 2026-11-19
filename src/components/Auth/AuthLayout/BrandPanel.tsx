@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import Logo from '@images/agrospai_logo_horizontal.svg'
 import appConfig from 'app.config.cjs'
 import { authBrandDefaults, type AuthPanelContent } from '../constants'
@@ -9,6 +10,8 @@ interface BrandPanelProps {
 }
 
 export default function BrandPanel({ content }: BrandPanelProps) {
+  useLingui()
+
   const title = content.title || authBrandDefaults.title
   const description = content.description || authBrandDefaults.description
   const featureItems = content.features || authBrandDefaults.features

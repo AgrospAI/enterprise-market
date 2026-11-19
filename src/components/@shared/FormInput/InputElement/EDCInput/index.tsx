@@ -1,3 +1,6 @@
+import { translate } from '../../../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import { useField } from 'formik'
 import axios from 'axios'
@@ -52,8 +55,8 @@ async function getEdcErrorMessage(error: unknown): Promise<string> {
   if (detail) return JSON.stringify(detail)
 
   if (errorData?.response) {
-    return `${errorData.message || 'EDC API request failed'} (${
-      errorData.response.status || 'unknown status'
+    return `${errorData.message || i18n._('EDC API request failed')} (${
+      errorData.response.status || i18n._('unknown status')
     })`
   }
 
@@ -61,6 +64,8 @@ async function getEdcErrorMessage(error: unknown): Promise<string> {
 }
 
 export default function EDCInput(props: EDCInputProps): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField(props.name)
   const oceanProviderUrl = props.form?.values?.services?.[0]?.providerUrl?.url
 
@@ -128,14 +133,15 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
       const resolvedUrl = linkData.url
 
       const isValid = await checkValidProvider(oceanProviderUrl)
-      if (!isValid) throw Error('✗ Provider cannot be reached.')
+      if (!isValid) throw Error(i18n._('✗ Provider cannot be reached.'))
 
       // Download through EDC now: minting a link alone does not negotiate a
       // contract, and Ocean's provider cannot reach a localhost API URL.
       const { data: file, headers } = await axios.get<Blob>(resolvedUrl, {
         responseType: 'blob'
       })
-      if (!file.size) throw Error('The EDC asset returned an empty file.')
+      if (!file.size)
+        throw Error(i18n._('The EDC asset returned an empty file.'))
 
       // Keep type 'edc' so the EDC tab stays selected; normalizeFile()
       // publishes it as a plain url file.
@@ -184,7 +190,7 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
               </span>
             )}
           </div>
-          <DeleteButton onClick={handleClose} text="Remove" />
+          <DeleteButton onClick={handleClose} text={i18n._('Remove')} />
         </div>
         <FileInfoDetails file={selectedFile} />
       </div>
@@ -196,7 +202,9 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
       {!datasets ? (
         <>
           <div className={styles.field}>
-            <label htmlFor="edcParticipantId">Participant ID (DID)</label>
+            <label htmlFor="edcParticipantId">
+              <Trans id="Participant ID (DID)" />
+            </label>
             <input
               id="edcParticipantId"
               type="text"
@@ -207,7 +215,9 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
             />
           </div>
           <div className={styles.field}>
-            <label htmlFor="edcDspUrl">DSP URL</label>
+            <label htmlFor="edcDspUrl">
+              <Trans id="DSP URL" />
+            </label>
             <input
               id="edcDspUrl"
               type="text"
@@ -228,7 +238,7 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
               {isConnecting ? (
                 <Loader variant="white" />
               ) : (
-                'List provider assets'
+                i18n._('List provider assets')
               )}
             </Button>
           </div>
@@ -242,11 +252,13 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
               size="small"
               onClick={handleBack}
             >
-              &larr; Back
+              <Trans id="&larr; Back" />{' '}
             </Button>
           </div>
           {datasets.length === 0 ? (
-            <p>No assets found for this provider.</p>
+            <p>
+              <Trans id="No assets found for this provider." />
+            </p>
           ) : (
             <ul className={styles.assetList}>
               {datasets.map((dataset) => (
@@ -273,7 +285,7 @@ export default function EDCInput(props: EDCInputProps): ReactElement {
           )}
         </>
       )}
-      {error && <div className={styles.error}>{error}</div>}
+      {error && <div className={styles.error}>{translate(error)}</div>}
     </div>
   )
 }

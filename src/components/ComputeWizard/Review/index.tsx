@@ -1,4 +1,6 @@
 'use client'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 
 import {
   ChangeEvent,
@@ -33,6 +35,8 @@ import {
 } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { requiresSsi } from '@utils/credentials'
+import appConfig from 'app.config.cjs'
+import { getVerificationStatus } from './verification'
 import { getFeeTooltip } from '@utils/feeTooltips'
 import { getAsset } from '@utils/aquarius'
 import { getBaseTokenSymbol } from '@utils/getBaseTokenSymbol'
@@ -131,10 +135,10 @@ function getProgressStepClassName(step: ComputeStartProgressStep) {
 }
 
 function getProgressStatusLabel(status: ComputeStartProgressStep['status']) {
-  if (status === 'completed') return 'Done'
-  if (status === 'active') return 'In progress'
-  if (status === 'error') return 'Needs retry'
-  return 'Pending'
+  if (status === 'completed') return i18n._('Done')
+  if (status === 'active') return i18n._('In progress')
+  if (status === 'error') return i18n._('Needs retry')
+  return i18n._('Pending')
 }
 
 function getProgressPercent(steps: ComputeStartProgressStep[]) {
@@ -262,6 +266,8 @@ export default function Review({
   stepText,
   computeProgressSteps = []
 }: ReviewProps): ReactElement {
+  useLingui()
+
   const isDatasetFlow = flow === 'dataset'
   const { address: accountId } = useAccount()
   const { balance } = useBalance()
@@ -866,8 +872,6 @@ export default function Review({
     const queue: VerificationItem[] = []
     if (isDatasetFlow) {
       if (asset && service) {
-        const sessionId = lookupVerifierSessionId?.(asset.id, service.id)
-        const isVerified = Boolean(sessionId)
         const rawPrice =
           accessDetails?.validOrderTx && accessDetails.validOrderTx !== ''
             ? '0'
@@ -877,7 +881,7 @@ export default function Review({
           type: 'dataset',
           asset,
           service,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: 0,
           price: rawPrice,
           duration: formatServiceTimeout(service.timeout),
@@ -900,11 +904,6 @@ export default function Review({
           undefined)
       const algoService = algoServices?.[serviceIndex] || algoServices?.[0]
       if (selectedAlgorithmAsset && algoService) {
-        const sessionId = lookupVerifierSessionId?.(
-          selectedAlgorithmAsset.id,
-          algoService?.id
-        )
-        const isVerified = Boolean(sessionId)
         const details = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
         const rawPrice =
           details?.validOrderTx || details?.price
@@ -917,7 +916,7 @@ export default function Review({
           type: 'algorithm',
           asset: selectedAlgorithmAsset,
           service: algoService,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: queue.length,
           price: rawPrice,
           duration: formatServiceTimeout(algoService.timeout),
@@ -940,8 +939,6 @@ export default function Review({
         selectedDatasetAsset?.forEach((ds, index) => {
           const dsService =
             ds.credentialSubject?.services?.[ds.serviceIndex || 0]
-          const sessionId = lookupVerifierSessionId?.(ds.id, dsService?.id)
-          const isVerified = Boolean(sessionId)
           const details = ds.accessDetails?.[ds.serviceIndex || 0]
           const rawPrice =
             details?.validOrderTx && details.validOrderTx !== ''
@@ -952,15 +949,13 @@ export default function Review({
             type: 'dataset',
             asset: ds,
             service: dsService,
-            status: isVerified
-              ? ('verified' as const)
-              : ('unverified' as const),
+            status: 'unverified',
             index,
             price: rawPrice,
             duration: formatServiceTimeout(dsService?.timeout),
             name:
               ds.credentialSubject?.services?.[ds.serviceIndex || 0]?.name ||
-              `Dataset ${queue.length + 1}`,
+              i18n._('Dataset {value0}', { value0: queue.length + 1 }),
             symbol: resolveSymbol(
               details?.baseToken?.symbol ||
                 getBaseTokenSymbol(ds, ds.serviceIndex || 0) ||
@@ -972,8 +967,6 @@ export default function Review({
         })
       }
       if (service && asset) {
-        const sessionId = lookupVerifierSessionId?.(asset?.id, service.id)
-        const isVerified = Boolean(sessionId)
         const rawPrice = asset.credentialSubject.metadata.algorithm
           ? accessDetails?.validOrderTx
             ? '0'
@@ -986,7 +979,7 @@ export default function Review({
           type: 'algorithm',
           asset,
           service,
-          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          status: 'unverified',
           index: queue.length,
           price: rawPrice,
           duration: formatServiceTimeout(service.timeout),
@@ -1001,7 +994,18 @@ export default function Review({
         })
       }
     }
-    setVerificationQueue(queue)
+    setVerificationQueue(
+      queue.map((item) => ({
+        ...item,
+        status: getVerificationStatus(
+          item.asset,
+          item.service,
+          accountId,
+          appConfig.ssiEnabled,
+          lookupVerifierSessionId?.(item.asset.id, item.service?.id)
+        )
+      }))
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isDatasetFlow,
@@ -1011,7 +1015,8 @@ export default function Review({
     selectedAlgorithmAsset,
     selectedDatasetAsset,
     values.withoutDataset,
-    serviceIndex
+    serviceIndex,
+    accountId
   ])
 
   useEffect(() => {
@@ -1052,37 +1057,26 @@ export default function Review({
   }, [])
 
   const startVerification = (index: number) => {
-    const hasExpiredCredentials = verificationQueue.some(
-      (item) => item.status === 'failed' || item.status === 'expired'
+    if (!appConfig.ssiEnabled) return
+    const requiresVerification = (item: VerificationItem) =>
+      requiresSsi(item.asset?.credentialSubject?.credentials) ||
+      requiresSsi(item.service?.credentials)
+    const firstExpiredIndex = verificationQueue.findIndex(
+      (item) =>
+        requiresVerification(item) &&
+        (item.status === 'failed' || item.status === 'expired')
     )
-    if (hasExpiredCredentials) {
-      const expiredIndices = verificationQueue
-        .map((item, i) => ({ item, index: i }))
-        .filter(
-          ({ item }) => item.status === 'failed' || item.status === 'expired'
-        )
-        .map(({ index }) => index)
-      const firstExpiredIndex = expiredIndices[0]
-      if (firstExpiredIndex !== undefined) {
-        setVerificationQueue((prev) =>
-          prev.map((item, i) =>
-            i === firstExpiredIndex
-              ? { ...item, status: 'checking' as const }
-              : item
-          )
-        )
-        setCurrentVerificationIndex(firstExpiredIndex)
-        setShowCredentialsCheck(true)
-      }
-    } else {
-      setVerificationQueue((prev) =>
-        prev.map((item, i) =>
-          i === index ? { ...item, status: 'checking' as const } : item
-        )
+    const nextIndex = firstExpiredIndex === -1 ? index : firstExpiredIndex
+    const nextItem = verificationQueue[nextIndex]
+    if (!nextItem || !requiresVerification(nextItem)) return
+
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === nextIndex ? { ...item, status: 'checking' as const } : item
       )
-      setCurrentVerificationIndex(index)
-      setShowCredentialsCheck(true)
-    }
+    )
+    setCurrentVerificationIndex(nextIndex)
+    setShowCredentialsCheck(true)
   }
 
   const handleVerificationComplete = () => {
@@ -1572,7 +1566,7 @@ export default function Review({
 
   const computeItems = [
     {
-      name: 'C2D RESOURCES',
+      name: i18n._('C2D RESOURCES'),
       value: values.jobPrice || '0',
       duration: formatJobDuration(
         currentMode === 'paid'
@@ -1584,7 +1578,7 @@ export default function Review({
 
   const escrowFunds = [
     {
-      name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
+      name: i18n._('AMOUNT AVAILABLE IN THE ESCROW ACCOUNT'),
       value: new Decimal(values.escrowFunds || 0)
         .toDecimalPlaces(MAX_DECIMALS, Decimal.ROUND_DOWN)
         .toFixed(3)
@@ -1600,7 +1594,7 @@ export default function Review({
 
   const amountDeposit = [
     {
-      name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
+      name: i18n._('AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT'),
       value: (() => {
         const actualPaymentAmount =
           values.actualPaymentAmount !== undefined &&
@@ -1744,14 +1738,14 @@ export default function Review({
   const datasetProviderFeesList =
     datasetProviderFeeEntries.length > 0
       ? datasetProviderFeeEntries.map((fee) => ({
-          name: 'PROVIDER FEE DATASET',
+          name: i18n._('PROVIDER FEE DATASET'),
           value: fee.value,
           symbol: fee.symbol
         }))
       : datasetProviderFee
       ? [
           {
-            name: 'PROVIDER FEE DATASET',
+            name: i18n._('PROVIDER FEE DATASET'),
             value: formatUnits(datasetProviderFee, tokenInfoState?.decimals),
             symbol: fallbackProviderSymbol
           }
@@ -1760,14 +1754,14 @@ export default function Review({
   const algorithmProviderFeesList =
     algorithmProviderFeeEntries.length > 0
       ? algorithmProviderFeeEntries.map((fee) => ({
-          name: 'PROVIDER FEE ALGORITHM',
+          name: i18n._('PROVIDER FEE ALGORITHM'),
           value: fee.value,
           symbol: fee.symbol
         }))
       : algorithmProviderFee
       ? [
           {
-            name: 'PROVIDER FEE ALGORITHM',
+            name: i18n._('PROVIDER FEE ALGORITHM'),
             value: formatUnits(algorithmProviderFee, tokenInfoState?.decimals),
             symbol: fallbackProviderSymbol
           }
@@ -1806,7 +1800,7 @@ export default function Review({
       return datasetToken
         ? [
             {
-              name: 'MARKETPLACE ORDER FEE DATASET',
+              name: i18n._('MARKETPLACE ORDER FEE DATASET'),
               value: feeValue.toDecimalPlaces(MAX_DECIMALS).toString(),
               symbol: datasetToken
             }
@@ -1841,7 +1835,7 @@ export default function Review({
     })
 
     return Object.entries(totals).map(([symbolKey, value]) => ({
-      name: 'MARKETPLACE ORDER FEE DATASET',
+      name: i18n._('MARKETPLACE ORDER FEE DATASET'),
       value: value.toDecimalPlaces(MAX_DECIMALS).toString(),
       symbol: symbolKey
     }))
@@ -1854,7 +1848,7 @@ export default function Review({
 
   const datasetOecFeeEntries = Object.entries(datasetOecFeesBySymbol).map(
     ([symbolKey, value]) => ({
-      name: 'OEC FEE DATASET',
+      name: i18n._('OEC FEE DATASET'),
       value,
       symbol: symbolKey,
       isValueLoading: isOecFeesLoading || isLoadingAssets
@@ -1868,7 +1862,7 @@ export default function Review({
         accessDetails?.baseToken?.symbol || datasetSymbol || ''
       return [
         {
-          name: 'OEC FEE DATASET',
+          name: i18n._('OEC FEE DATASET'),
           value: '0',
           symbol: datasetToken,
           isValueLoading: true
@@ -1882,7 +1876,7 @@ export default function Review({
     ? [
         ...datasetMarketFeeEntries,
         {
-          name: `MARKETPLACE ORDER FEE ALGORITHM`,
+          name: i18n._('MARKETPLACE ORDER FEE ALGORITHM'),
           value: (() => {
             const algoAccessDetails =
               selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
@@ -1919,7 +1913,7 @@ export default function Review({
         },
         ...datasetOecFeeEntriesWithLoading,
         {
-          name: `OEC FEE ALGORITHM`,
+          name: i18n._('OEC FEE ALGORITHM'),
           value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
             ? '0'
             : algoOecFee.toString(),
@@ -1937,7 +1931,7 @@ export default function Review({
     : [
         ...datasetMarketFeeEntries,
         {
-          name: `MARKETPLACE ORDER FEE ALGORITHM`,
+          name: i18n._('MARKETPLACE ORDER FEE ALGORITHM'),
           value: (() => {
             const algoOwned =
               accessDetails?.isOwned ||
@@ -1969,7 +1963,7 @@ export default function Review({
         },
         ...datasetOecFeeEntriesWithLoading,
         {
-          name: `OEC FEE ALGORITHM`,
+          name: i18n._('OEC FEE ALGORITHM'),
           value: algoOecFee.toString(),
           isValueLoading: isOecFeesLoading || isLoadingAssets,
           symbol: resolveSymbol(
@@ -2020,17 +2014,27 @@ export default function Review({
   const renderC2dSummary = () => {
     const total = Number(values.jobPrice || 0)
     if (!Number.isFinite(total) || total <= 0) {
-      return <span className={styles.sectionSummaryEmpty}>Free</span>
+      return (
+        <span className={styles.sectionSummaryEmpty}>
+          <Trans id="Free" />
+        </span>
+      )
     }
 
     const netDue = Number(c2dPrice || 0)
     if (!Number.isFinite(netDue) || netDue <= 0) {
-      return <span className={styles.sectionSummary}>Covered by escrow</span>
+      return (
+        <span className={styles.sectionSummary}>
+          <Trans id="Covered by escrow" />
+        </span>
+      )
     }
 
     return (
       <span className={styles.sectionSummary}>
-        <span>To deposit:</span>
+        <span>
+          <Trans id="To deposit:" />
+        </span>
         <span className={styles.sectionSummaryValue}>
           {formatFeeValue(netDue)}
         </span>
@@ -2132,17 +2136,24 @@ export default function Review({
     if (insufficientBalances.length > 0) {
       insufficientBalances.forEach(({ symbol, required, available }) => {
         errorMessages.push(
-          `You don't have enough ${symbol} to make this purchase (required ${required}, available ${available}).`
+          i18n._(
+            "You don't have enough {symbol} to make this purchase (required {required}, available {available}).",
+            { symbol, required, available }
+          )
         )
       })
     } else {
       errorMessages.push(
-        `You don't have enough ${displaySymbol} to make this purchase.`
+        i18n._("You don't have enough {displaySymbol} to make this purchase.", {
+          displaySymbol
+        })
       )
     }
   }
   if (!isAssetNetwork) {
-    errorMessages.push('This asset is not available on the selected network.')
+    errorMessages.push(
+      i18n._('This asset is not available on the selected network.')
+    )
   }
   if (
     !isDatasetFlow &&
@@ -2154,18 +2165,22 @@ export default function Review({
         !d.accessDetails[d.serviceIndex || 0].isPurchasable
     )
   ) {
-    errorMessages.push('One or more selected datasets are not purchasable.')
+    errorMessages.push(
+      i18n._('One or more selected datasets are not purchasable.')
+    )
   }
   if (
     selectedAlgorithmAsset?.accessDetails &&
     selectedAlgorithmAsset.accessDetails[serviceIndex] &&
     !selectedAlgorithmAsset.accessDetails[serviceIndex].isPurchasable
   ) {
-    errorMessages.push('The selected algorithm asset is not purchasable.')
+    errorMessages.push(
+      i18n._('The selected algorithm asset is not purchasable.')
+    )
   }
   if (!isAccountIdWhitelisted) {
     errorMessages.push(
-      'Your account is not whitelisted to purchase this asset.'
+      i18n._('Your account is not whitelisted to purchase this asset.')
     )
   }
 
@@ -2228,7 +2243,7 @@ export default function Review({
     }
 
     if (!algoId) {
-      setAlgoLoadError('Algorithm selection missing for review.')
+      setAlgoLoadError(i18n._('Algorithm selection missing for review.'))
       return
     }
 
@@ -2237,7 +2252,7 @@ export default function Review({
       selectedServiceId
     )
     if (!algorithmAsset) {
-      setAlgoLoadError('Algorithm asset not found for review.')
+      setAlgoLoadError(i18n._('Algorithm asset not found for review.'))
       return
     }
 
@@ -2285,13 +2300,15 @@ export default function Review({
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
-        <StepTitle title="Review and Purchase" />
+        <StepTitle title={i18n._('Review and Purchase')} />
       </div>
 
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
           <div className={styles.assetSection}>
-            <h3 className={styles.assetHeading}>Assets</h3>
+            <h3 className={styles.assetHeading}>
+              <Trans id="Assets" />
+            </h3>
             <div className={styles.assetListBox}>
               {algoLoadError ? (
                 <div className={styles.loaderWrap}>
@@ -2303,9 +2320,10 @@ export default function Review({
                 </div>
               ) : (
                 assetRows.map((item, i) => {
-                  const hasSsiPolicy =
-                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                    requiresSsi(item.service?.credentials)
+                  const showSsiVerification =
+                    appConfig.ssiEnabled &&
+                    (requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                      requiresSsi(item.service?.credentials))
                   return (
                     <PricingRow
                       key={`${item.type}-${item.id}-${i}`}
@@ -2315,30 +2333,33 @@ export default function Review({
                       duration={item.duration}
                       className={styles.listRow}
                       actionLabel={
-                        item.status === 'unverified'
-                          ? 'Check Credentials'
+                        !showSsiVerification
+                          ? undefined
+                          : item.status === 'unverified'
+                          ? i18n._('Check Credentials')
                           : item.status === 'checking'
-                          ? 'Verifying...'
+                          ? i18n._('Verifying...')
                           : item.status === 'failed'
-                          ? 'Retry'
+                          ? i18n._('Retry')
                           : item.status === 'expired'
-                          ? 'Check Credentials'
-                          : 'Verified'
+                          ? i18n._('Check Credentials')
+                          : i18n._('Verified')
                       }
                       onAction={() => startVerification(i)}
                       actionDisabled={
                         item.status === 'checking' || item.status === 'verified'
                       }
                       isService={item.type === 'algorithm'}
-                      infoMessage={
-                        !hasSsiPolicy
-                          ? 'No credentials required (never expires)'
-                          : undefined
+                      credentialStatus={
+                        showSsiVerification ? item.status : undefined
                       }
-                      credentialStatus={item.status}
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
-                      onCredentialRefresh={() => startVerification(i)}
+                      onCredentialRefresh={
+                        showSsiVerification
+                          ? () => startVerification(i)
+                          : undefined
+                      }
                       symbol={item.symbol || symbol}
                       tooltip={getFeeTooltip(item.name)}
                       showStatusWithoutAction
@@ -2351,7 +2372,7 @@ export default function Review({
 
           <div className={styles.c2dSection}>
             <Accordion
-              title="C2D Resources"
+              title={i18n._('C2D Resources')}
               defaultExpanded={true}
               titleClassName={styles.sectionHeading}
               rightContent={renderC2dSummary()}
@@ -2383,10 +2404,13 @@ export default function Review({
 
           <div className={styles.marketFeesSection}>
             <Accordion
-              title="Fees"
+              title={i18n._('Fees')}
               defaultExpanded={true}
               titleClassName={styles.sectionHeading}
-              rightContent={renderSectionSummary(feesSummaryParts, 'No fees')}
+              rightContent={renderSectionSummary(
+                feesSummaryParts,
+                i18n._('No fees')
+              )}
             >
               <div className={styles.marketFeesBox}>
                 {feeGroups.map((group) => (
@@ -2396,7 +2420,7 @@ export default function Review({
                         <span className={styles.currencyGroupDot} />
                         <span>
                           {group.group === 'MULTI'
-                            ? 'MULTI TOKEN'
+                            ? i18n._('MULTI TOKEN')
                             : group.group}
                         </span>
                       </div>
@@ -2419,7 +2443,9 @@ export default function Review({
         </div>
 
         <div className={styles.totalSection}>
-          <span className={styles.totalLabel}>YOU WILL PAY</span>
+          <span className={styles.totalLabel}>
+            <Trans id="YOU WILL PAY" />
+          </span>
           <div className={styles.totalRows}>
             {isRequestingPrice ? (
               <CurrencySplitRow value="Calculating..." symbol="" />
@@ -2449,7 +2475,7 @@ export default function Review({
               name="termsAndConditions"
               type="checkbox"
               options={['Terms and Conditions']}
-              prefixes={['I agree to the']}
+              prefixes={[i18n._('I agree to the')]}
               actions={['/privacy/terms']}
               onChange={handleTermsChange}
               disabled={false}
@@ -2462,7 +2488,7 @@ export default function Review({
               options={[
                 'license terms under which each of the selected assets was made available'
               ]}
-              prefixes={['I agree to the']}
+              prefixes={[i18n._('I agree to the')]}
               onChange={handleLicenseChange}
               disabled={false}
               hideLabel={true}
@@ -2473,14 +2499,16 @@ export default function Review({
         {showComputeProgress && (
           <section
             className={styles.computeProgress}
-            aria-label="Compute job start progress"
+            aria-label={i18n._('Compute job start progress')}
           >
             <div className={styles.computeProgressHeader}>
               <span className={styles.computeProgressTitle}>
-                Starting C2D job
+                <Trans id="Starting C2D job" />{' '}
               </span>
               <span className={styles.computeProgressStatus}>
-                {activeProgressStep?.label || stepText || 'Preparing request'}
+                {activeProgressStep?.label ||
+                  stepText ||
+                  i18n._('Preparing request')}
               </span>
             </div>
             <div className={styles.computeProgressTrack}>
@@ -2553,11 +2581,11 @@ export default function Review({
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
               <h3>
-                Verify{' '}
-                {currentVerificationItem.type === 'dataset'
-                  ? 'Dataset'
-                  : 'Algorithm'}{' '}
-                Credentials
+                {currentVerificationItem.type === 'dataset' ? (
+                  <Trans id="Verify Dataset Credentials" />
+                ) : (
+                  <Trans id="Verify Algorithm Credentials" />
+                )}
               </h3>
               <button
                 className={styles.closeButton}
@@ -2573,7 +2601,7 @@ export default function Review({
                   )
                 }}
               >
-                ✕ Close
+                <Trans id="✕ Close" />{' '}
               </button>
             </div>
             <CredentialDialogProvider autoStart={true}>

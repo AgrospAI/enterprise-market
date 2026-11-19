@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   approve,
   approveWei,
@@ -69,7 +70,11 @@ export async function initializeProvider(
         )
       }
 
-      throw new Error(`Provider initialization failed: ${initializePs.error}`)
+      throw new Error(
+        i18n._('Provider initialization failed: {value0}', {
+          value0: initializePs.error
+        })
+      )
     }
     return await ProviderInstance.initialize(
       asset.id,
@@ -81,7 +86,7 @@ export async function initializeProvider(
   } catch (error: any) {
     const message = getErrorMessage(error.message)
     LoggerInstance.log('[Initialize Provider] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
     throw new Error(message)
   }
 }
@@ -116,7 +121,11 @@ export async function order(
   )
 
   if (serviceIndex === -1) {
-    throw new Error(`Service with id ${service.id} not found in the DDO.`)
+    throw new Error(
+      i18n._('Service with id {value0} not found in the DDO.', {
+        value0: service.id
+      })
+    )
   }
 
   // 1. Resolve the specific Consume Market Fee from the ENV configuration
@@ -440,7 +449,10 @@ async function approveProviderFee(
       : config?.oceanTokenAddress
   if (!baseToken) {
     throw new Error(
-      `No base token configured for network ${asset.credentialSubject?.chainId}. Add it to NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES.`
+      i18n._(
+        'No base token configured for network {value0}. Add it to NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES.',
+        { value0: asset.credentialSubject?.chainId }
+      )
     )
   }
   const txApproveWei = await approveWei(
@@ -579,12 +591,14 @@ export async function handleComputeOrder(
         transaction: orderErr.transaction,
         data: orderErr.error?.data
       })
-      toast.error(orderErr?.message || 'Order failed')
+      toast.error(i18n._(orderErr?.message || i18n._('Order failed')))
       throw orderErr
     }
   } catch (error: any) {
     console.error('Top-level handleComputeOrder error:', error)
-    toast.error(error?.message || 'Unknown error during compute order')
+    toast.error(
+      i18n._(error?.message || i18n._('Unknown error during compute order'))
+    )
     LoggerInstance.error(`[compute] ${error?.message}`)
     throw error
   }

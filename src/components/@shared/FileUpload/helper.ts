@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { getRuntimeConfig } from '@utils/runtimeConfig'
 
 const DEFAULT_MAX_LICENSE_FILE_SIZE_KB = 700
@@ -62,12 +63,15 @@ export const getMaxFileSizeBytes = (): number => {
 export const getFormattedMaxFileSize = (): string => {
   const sizeKB = getMaxLicenseFileSizeKB()
   if (sizeKB >= 1024) {
-    return `${(sizeKB / 1024).toFixed(1)} MB`
+    return i18n._('{value0} MB', { value0: (sizeKB / 1024).toFixed(1) })
   }
-  return `${sizeKB} KB`
+  return i18n._('{sizeKB} KB', { sizeKB })
 }
 
 export const getFileSizeErrorMessage = (): string => {
   const maxSize = getFormattedMaxFileSize()
-  return `File size exceeds ${maxSize} limit. Please upload a smaller file.`
+  return i18n._(
+    'File size exceeds {maxSize} limit. Please upload a smaller file.',
+    { maxSize }
+  )
 }

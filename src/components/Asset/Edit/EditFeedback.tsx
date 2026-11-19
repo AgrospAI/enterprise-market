@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import Alert from '@shared/atoms/Alert'
 import Button from '@shared/atoms/Button'
 import Loader from '@shared/atoms/Loader'
@@ -12,6 +15,8 @@ interface Action {
 }
 
 function ActionSuccess({ action }: { action: Action }) {
+  useLingui()
+
   const { name, onClick, to } = action
 
   return (
@@ -28,6 +33,8 @@ function ActionSuccess({ action }: { action: Action }) {
 }
 
 function ActionError({ setError }: { setError: (error: string) => void }) {
+  useLingui()
+
   return (
     <Button
       style="primary"
@@ -35,7 +42,7 @@ function ActionError({ setError }: { setError: (error: string) => void }) {
       className={styles.action}
       onClick={() => setError(undefined)}
     >
-      Try Again
+      <Trans id="Try Again" />{' '}
     </Button>
   )
 }
@@ -53,6 +60,8 @@ export default function EditFeedback({
   successAction: Action
   setError: (error: string) => void
 }): ReactElement {
+  useLingui()
+
   const [moreInfo, setMoreInfo] = useState<boolean>(false)
 
   function toggleMoreInfo(e: FormEvent<Element>) {
@@ -64,15 +73,17 @@ export default function EditFeedback({
     <div className={styles.feedback}>
       {error ? (
         <>
-          <p>Sorry, something went wrong. Please try again.</p>
-          {moreInfo && <Alert text={error} state="error" />}
+          <p>
+            <Trans id="Sorry, something went wrong. Please try again." />
+          </p>
+          {moreInfo && <Alert text={translate(error)} state="error" />}
           <Button
             style="text"
             size="small"
             onClick={toggleMoreInfo}
             className={styles.moreInfo}
           >
-            {moreInfo === false ? 'More Info' : 'Hide error'}
+            {moreInfo === false ? i18n._('More Info') : i18n._('Hide error')}
           </Button>
           <ActionError setError={setError} />
         </>

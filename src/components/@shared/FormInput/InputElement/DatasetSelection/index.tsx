@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { useEffect, useState } from 'react'
 import Loader from '@shared/atoms/Loader'
 import { truncateDid } from '@utils/string'
@@ -18,6 +20,8 @@ interface DatasetSelectionDataset extends AssetSelectionAsset {
 }
 
 function Empty({ message }: { message: string }) {
+  useLingui()
+
   return <div className={styles.empty}>{message}</div>
 }
 
@@ -34,6 +38,8 @@ export default function DatasetSelection({
   disabled?: boolean
   onChange?: (value: string) => void
 }): JSX.Element {
+  useLingui()
+
   const [searchValue, setSearchValue] = useState('')
   const [filteredDatasets, setfilteredDatasets] = useState<
     DatasetSelectionDataset[]
@@ -62,7 +68,7 @@ export default function DatasetSelection({
   return (
     <div className={styles.root}>
       <SearchSection
-        placeholder="Search for Datasets"
+        placeholder={i18n._('Search for Datasets')}
         value={searchValue}
         onChange={setSearchValue}
         disabled={disabled}
@@ -80,7 +86,7 @@ export default function DatasetSelection({
               const descriptionText =
                 dataset.description ||
                 dataset.serviceDescription ||
-                'No description available.'
+                i18n._('No description available.')
               return (
                 <div
                   key={selectionValue}
@@ -138,7 +144,9 @@ export default function DatasetSelection({
                           <button
                             type="button"
                             className={styles.updateInfoButton}
-                            aria-label="Why is this dataset unavailable?"
+                            aria-label={i18n._(
+                              'Why is this dataset unavailable?'
+                            )}
                             onClick={(event) => event.stopPropagation()}
                           >
                             <InfoIcon className={styles.updateInfoIcon} />
@@ -157,10 +165,10 @@ export default function DatasetSelection({
                         }}
                       >
                         {dataset.selectionDisabled
-                          ? 'Update required'
+                          ? i18n._('Update required')
                           : isSelected
-                          ? 'Selected'
-                          : 'Select'}
+                          ? i18n._('Selected')
+                          : i18n._('Select')}
                       </Button>
                     </div>
                   </div>

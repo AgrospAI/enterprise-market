@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import { SsiVerifiableCredential } from 'src/@types/SsiWallet'
@@ -30,6 +32,8 @@ interface VpFieldProps {
 }
 
 function VpField(props: VpFieldProps): ReactElement {
+  useLingui()
+
   const { credential, checked, index, onChange } = props
   const maxLength = 60
 
@@ -70,7 +74,9 @@ function VpField(props: VpFieldProps): ReactElement {
         </div>
         <div className={styles.fieldData}>
           <div className={styles.fieldNames}>
-            <div>Id</div>
+            <div>
+              <Trans id="Id" />
+            </div>
             {Object.keys(credential?.parsedDocument?.credentialSubject || {})
               .sort((key1, key2) => key1.localeCompare(key2))
               .map((key) => (
@@ -115,6 +121,8 @@ function VpField(props: VpFieldProps): ReactElement {
 }
 
 export function VpSelector(props: VpSelectorProps): ReactElement {
+  useLingui()
+
   const {
     showDialog,
     setShowDialog,
@@ -174,7 +182,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
 
   return (
     <Modal
-      title="Verifiable Credentials to present"
+      title={i18n._('Verifiable Credentials to present')}
       isOpen={showDialog}
       onToggleModal={handleAbortSelection}
       shouldCloseOnOverlayClick
@@ -183,8 +191,13 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     >
       <div className={`${styles.panelColumn} ${styles.width100p}`}>
         <div className={styles.dataInfo}>
-          Asset: {asset.credentialSubject.metadata.name}, Service:{' '}
-          {service.name}
+          <Trans
+            id="Asset: {assetName}, Service: {serviceName}"
+            values={{
+              assetName: asset.credentialSubject.metadata.name,
+              serviceName: service.name
+            }}
+          />
         </div>
 
         {(() => {
@@ -204,7 +217,10 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
 
           return minCount ? (
             <span>
-              <strong>Minimum credentials required:</strong> {minCount}
+              <strong>
+                <Trans id="Minimum credentials required:" />
+              </strong>{' '}
+              {minCount}
             </span>
           ) : null
         })()}
@@ -236,7 +252,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
                 className={styles.selectAllButton}
                 onClick={handleToggleAll}
               >
-                {allSelected ? 'Deselect all' : 'Select all'}
+                {allSelected ? i18n._('Deselect all') : i18n._('Select all')}
               </Button>
             </div>
           )}
@@ -245,7 +261,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
             style="secondary"
             onClick={handleAbortSelection}
           >
-            Close
+            <Trans id="Close" />{' '}
           </Button>
           <Button
             type="button"
@@ -253,7 +269,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
             onClick={handleAcceptSelection}
             disabled={selections.length === 0 || !selections.some(Boolean)}
           >
-            Accept
+            <Trans id="Accept" />{' '}
           </Button>
         </div>
       </div>

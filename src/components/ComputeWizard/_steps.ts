@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import React from 'react'
 import { ComputeFlow, FormComputeData, StepContent } from './_types'
 import { initialValues } from './_constants'
@@ -80,7 +81,7 @@ function getRequiredStepNumber(
   const step = steps.find((item) => item.title === title)
 
   if (!step) {
-    throw new Error(`Missing compute wizard step: ${title}`)
+    throw new Error(i18n._('Missing compute wizard step: {title}', { title }))
   }
 
   return step.step

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { markdownToHtml } from '@utils/markdown'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
@@ -13,6 +14,8 @@ const Markdown = ({
   className?: string
   openLinksInNewTab?: boolean
 }): ReactElement => {
+  useLingui()
+
   const html = markdownToHtml(text, { openLinksInNewTab })
   const content = !blockImages
     ? html

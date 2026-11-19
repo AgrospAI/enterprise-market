@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './FormActions.module.css'
@@ -21,6 +23,8 @@ export default function FormActions({
   onParameterAdded?: (index: number) => void
   onParameterDeleted?: (previousIndex: number) => void
 }): ReactElement {
+  useLingui()
+
   const { errors, setFieldTouched, validateField } =
     useFormikContext<FormPublishData>()
   const [field, , helpers] = useField<FormConsumerParameter[]>(fieldName)
@@ -42,7 +46,9 @@ export default function FormActions({
     // Check errors on current tab before creating a new param
     if (getObjectPropertyByPath(errors, `${field.name}[${index}]`)) {
       toast.error(
-        'Cannot add new parameter. Current parameter definition contains errors.'
+        i18n._(
+          'Cannot add new parameter. Current parameter definition contains errors.'
+        )
       )
       return
     }
@@ -70,7 +76,7 @@ export default function FormActions({
           deleteParameter(index)
         }}
       >
-        Delete parameter
+        <Trans id="Delete parameter" />{' '}
       </Button>
       <Button
         style="primary"
@@ -80,7 +86,7 @@ export default function FormActions({
           addParameter(index)
         }}
       >
-        Add new parameter
+        <Trans id="Add new parameter" />{' '}
       </Button>
     </div>
   )

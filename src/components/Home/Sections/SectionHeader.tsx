@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import shared from './shared.module.css'
 
@@ -17,6 +18,8 @@ export default function SectionHeader({
   intro,
   centered
 }: SectionHeaderProps): ReactElement {
+  useLingui()
+
   return (
     <header
       className={`${shared.header} ${shared.reveal}`}

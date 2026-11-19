@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   createContext,
   useContext,
@@ -109,6 +110,8 @@ function UserPreferencesProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const { appConfig, validatedSupportedChains, isValidatingSupportedChains } =
     useMarketMetadata()
   const { showOnboardingModuleByDefault } = appConfig

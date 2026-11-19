@@ -1,3 +1,6 @@
+import { translate } from '../../../i18n/translate'
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
 import {
@@ -15,7 +18,7 @@ import {
 import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
-import content from '../../../../content/pages/editService.json'
+import { contentPagesEditService as content } from '../../../i18n/content'
 import {
   isAddress,
   JsonRpcProvider,
@@ -66,6 +69,8 @@ export default function AddService({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
@@ -129,12 +134,12 @@ export default function AddService({
       }
 
       if (!isAssetNetwork) {
-        setError('Please switch to the correct network.')
+        setError(i18n._('Please switch to the correct network.'))
         return
       }
 
       if (!signer) {
-        setError('Wallet not connected or signer unavailable.')
+        setError(i18n._('Wallet not connected or signer unavailable.'))
         return
       }
 
@@ -142,7 +147,7 @@ export default function AddService({
       // is undefined for chains without one (see getOceanConfig).
       const baseTokenAddress = values.baseToken || config?.oceanTokenAddress
       if (!baseTokenAddress) {
-        setError('No base token is configured for this network.')
+        setError(i18n._('No base token is configured for this network.'))
         return
       }
 
@@ -160,7 +165,7 @@ export default function AddService({
         baseTokenAddress,
         publisherMarketFixedSwapFee,
         defaultDatatokenCap,
-        'Access Token',
+        i18n._('Access Token'),
         'OEAT',
         defaultDatatokenTemplateIndex
       )
@@ -380,11 +385,11 @@ export default function AddService({
         isSubmitting || hasFeedback ? (
           <EditFeedback
             loading="Adding a new service..."
-            error={error}
+            error={translate(error)}
             success={success}
             setError={setError}
             successAction={{
-              name: 'Back to Asset',
+              name: i18n._('Back to Asset'),
               onClick: async () => {
                 await fetchAsset()
               },

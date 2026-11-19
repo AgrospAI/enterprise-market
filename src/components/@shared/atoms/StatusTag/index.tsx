@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useState, useRef, useEffect } from 'react'
 import styles from './index.module.css'
 
@@ -14,6 +15,8 @@ export default function StatusTag({
   className,
   tooltip
 }: StatusTagProps): ReactElement {
+  useLingui()
+
   const [showTooltip, setShowTooltip] = useState(false)
   const tagRef = useRef<HTMLDivElement>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })

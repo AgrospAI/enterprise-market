@@ -1,3 +1,5 @@
+import { i18n } from '../../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 import PriceDisplay from './PriceDisplay'
@@ -66,6 +68,8 @@ export default function PricingRow({
   showStatusWithoutAction = false,
   isValueLoading = false
 }: PricingRowProps): ReactElement {
+  useLingui()
+
   const {
     credentialStatus: expirationStatus,
     timeRemainingText,
@@ -108,7 +112,7 @@ export default function PricingRow({
           <div className={styles.credentialStatusContainer}>
             <CircleX className={styles.credentialIcon} />
             <span className={styles.verifiedText}>
-              Not Allowed! Check Credentials First
+              <Trans id="Not Allowed! Check Credentials First" />{' '}
             </span>
           </div>
         )
@@ -116,7 +120,9 @@ export default function PricingRow({
         return (
           <div className={styles.credentialStatusContainer}>
             <CircleX className={styles.credentialIcon} />
-            <span className={styles.verifiedText}>Credentials expired</span>
+            <span className={styles.verifiedText}>
+              <Trans id="Credentials expired" />
+            </span>
           </div>
         )
       default:
@@ -147,8 +153,8 @@ export default function PricingRow({
                 target="_blank"
                 rel="noreferrer"
                 className={styles.assetLink}
-                aria-label={`Open ${label} asset`}
-                title={`Open ${label} asset`}
+                aria-label={i18n._('Open {label} asset', { label })}
+                title={i18n._('Open {label} asset', { label })}
               >
                 <External />
               </Link>

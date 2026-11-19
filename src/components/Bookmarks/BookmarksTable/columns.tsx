@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import { TableOceanColumn } from '@shared/atoms/Table'
 import AssetTitle from '@shared/AssetListTitle'
@@ -17,7 +18,7 @@ export function buildBookmarkColumns(
 ): TableOceanColumn<AssetExtended>[] {
   return [
     {
-      name: 'Name',
+      name: i18n._('Name'),
       cell: (row) => (
         <div className={styles.nameCell}>
           <AssetTitle
@@ -30,7 +31,7 @@ export function buildBookmarkColumns(
       grow: 1
     },
     {
-      name: 'Type',
+      name: i18n._('Type'),
       cell: (row) => (
         <AssetType
           className={styles.bookmarkType}
@@ -48,7 +49,7 @@ export function buildBookmarkColumns(
       width: '120px'
     },
     {
-      name: 'Network',
+      name: i18n._('Network'),
       cell: (row) => (
         <NetworkName
           className={styles.bookmarkNetwork}
@@ -58,7 +59,7 @@ export function buildBookmarkColumns(
       width: '240px'
     },
     {
-      name: 'Published',
+      name: i18n._('Published'),
       cell: (row) =>
         row.indexedMetadata?.nft?.created ? (
           <Time date={row.indexedMetadata.nft.created} />
@@ -75,8 +76,8 @@ export function buildBookmarkColumns(
           type="button"
           className={styles.removeButton}
           onClick={() => onRemove(row.id)}
-          title="Remove bookmark"
-          aria-label="Remove bookmark"
+          title={i18n._('Remove bookmark')}
+          aria-label={i18n._('Remove bookmark')}
         >
           <DeleteIcon />
         </button>

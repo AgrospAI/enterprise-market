@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import { Field, Form, Formik, useFormikContext } from 'formik'
 import { useAccount, useChainId } from 'wagmi'
@@ -90,6 +92,8 @@ export default function Download({
   consumableFeedback?: string
   isPSConfigured: boolean
 }): ReactElement {
+  useLingui()
+
   const isSsiConsumptionDisabled = isSsiPolicyConsumptionDisabled(
     asset,
     appConfig.ssiEnabled,
@@ -259,7 +263,7 @@ export default function Download({
         const message =
           error instanceof Error
             ? error.message
-            : 'Provider initialization failed.'
+            : i18n._('Provider initialization failed.')
         LoggerInstance.error('[getOrderPriceAndFees] Error:', message)
         setInitializationError(message)
         setIsPriceLoading(false)
@@ -375,14 +379,16 @@ export default function Download({
         error?.message?.includes('User denied') ||
         error?.message?.includes('MetaMask Tx Signature: User denied')
       ) {
-        toast.info('Transaction was cancelled by user')
+        toast.info(i18n._('Transaction was cancelled by user'))
         return
       }
 
       const message = isOwned
-        ? 'Failed to download file!'
-        : 'An error occurred, please retry. Check console for more information.'
-      toast.error(message)
+        ? i18n._('Failed to download file!')
+        : i18n._(
+            'An error occurred, please retry. Check console for more information.'
+          )
+      toast.error(i18n._(message))
     } finally {
       setIsLoading(false)
     }
@@ -399,7 +405,7 @@ export default function Download({
           lookupVerifierSessionId(asset.id, service.id)
         )
         if (!result.success) {
-          toast.error('Invalid session')
+          toast.error(i18n._('Invalid session'))
           return
         }
       }
@@ -409,7 +415,7 @@ export default function Download({
       )
       await handleOrderOrDownload(dataServiceParams)
     } catch (error) {
-      toast.error(error.message)
+      toast.error(i18n._(error.message))
       LoggerInstance.error(error)
     }
   }
@@ -429,6 +435,8 @@ export default function Download({
   )
 
   const PurchaseButton = ({ isValid }: { isValid?: boolean }) => {
+    useLingui()
+
     return (
       <ButtonBuy
         action="download"
@@ -461,6 +469,8 @@ export default function Download({
   }
 
   const AssetActionBuy = () => {
+    useLingui()
+
     const { isValid } = useFormikContext()
 
     const baseTokenDecimals =
@@ -622,7 +632,7 @@ export default function Download({
             name="termsAndConditions"
             type="checkbox"
             options={['Terms and Conditions']}
-            prefixes={['I agree to the']}
+            prefixes={[i18n._('I agree to the')]}
             actions={['/privacy/terms']}
             disabled={isLoading}
             hideLabel={true}
@@ -632,8 +642,8 @@ export default function Download({
             name="acceptPublishingLicense"
             type="checkbox"
             options={['License Terms']}
-            prefixes={['I agree to the ']}
-            postfixes={[' under which this asset was made available']}
+            prefixes={[i18n._('I agree to the ')]}
+            postfixes={[i18n._(' under which this asset was made available')]}
             actions={[licenseLink]}
             disabled={isLoading}
             hideLabel={true}
@@ -708,7 +718,7 @@ export default function Download({
                       size="small"
                       onClick={() => window.location.reload()}
                     >
-                      Refresh to Show Download Button
+                      <Trans id="Refresh to Show Download Button" />{' '}
                     </Button>
                   </div>
                 )}
@@ -727,7 +737,7 @@ export default function Download({
                   <Alert
                     state="error"
                     action={{
-                      name: 'Retry',
+                      name: i18n._('Retry'),
                       handleAction: (event) => {
                         event.preventDefault()
                         setInitializationRetry((value) => value + 1)
@@ -745,7 +755,7 @@ export default function Download({
                       <div className={styles.noMarginAlert}>
                         <Alert
                           state="success"
-                          text="SSI credential verification passed"
+                          text={i18n._('SSI credential verification passed')}
                         />
                       </div>
                     )}
@@ -773,20 +783,25 @@ export default function Download({
                                 tokenInfo?.decimals
                               )
                             ) > 0
-                              ? `This ${
-                                  saas ? 'service' : 'dataset'
-                                } is free to use. Please note that a provider fee of ${formatUnits(
-                                  orderPriceAndFees?.providerFee
-                                    ?.providerFeeAmount || '0',
-                                  tokenInfoProviderFee?.decimals
-                                )} ${
-                                  tokenInfoProviderFee?.symbol
-                                } applies, as well as possible network gas fees.`
-                              : `This ${
-                                  saas ? 'service' : 'dataset'
-                                } is free to use. Please note that network gas fees still apply, even when using free ${
-                                  saas ? 'services' : 'assets'
-                                }.`
+                              ? i18n._(
+                                  'This {value0} is free to use. Please note that a provider fee of {value1} {value2} applies, as well as possible network gas fees.',
+                                  {
+                                    value0: saas ? 'service' : 'dataset',
+                                    value1: formatUnits(
+                                      orderPriceAndFees?.providerFee
+                                        ?.providerFeeAmount || '0',
+                                      tokenInfoProviderFee?.decimals
+                                    ),
+                                    value2: tokenInfoProviderFee?.symbol
+                                  }
+                                )
+                              : i18n._(
+                                  'This {value0} is free to use. Please note that network gas fees still apply, even when using free {value1}.',
+                                  {
+                                    value0: saas ? 'service' : 'dataset',
+                                    value1: saas ? 'services' : 'assets'
+                                  }
+                                )
                           }
                         />
                       </div>
@@ -795,20 +810,24 @@ export default function Download({
                       <div className={styles.noMarginAlert}>
                         <Alert
                           state="success"
-                          text="You already have access to this service. Click 'Go to service' to open it."
+                          text={i18n._(
+                            "You already have access to this service. Click 'Go to service' to open it."
+                          )}
                         />
                       </div>
                     )}
                     {justBought && (
                       <div>
                         <SuccessConfetti
-                          success={`You successfully bought this ${
+                          success={
                             saas
-                              ? 'service'
-                              : asset.credentialSubject?.metadata?.type
-                          } and are now able to ${
-                            saas ? 'access' : 'download'
-                          } it.`}
+                              ? i18n._(
+                                  'You successfully purchased this service. You can now access it.'
+                                )
+                              : i18n._(
+                                  'You successfully purchased this asset. You can now download it.'
+                                )
+                          }
                         />
                       </div>
                     )}

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode, useEffect } from 'react'
 import { confetti } from 'dom-confetti'
 import Alert from '@shared/atoms/Alert'
@@ -32,6 +33,8 @@ export default function SuccessConfetti({
   action?: ReactNode
   className?: string
 }): ReactElement {
+  useLingui()
+
   // Have some confetti upon success
   useEffect(() => {
     if (!success || typeof window === 'undefined') return

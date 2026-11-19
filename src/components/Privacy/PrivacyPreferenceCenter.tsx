@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import {
   ReactElement,
   useCallback,
@@ -33,6 +35,8 @@ function prefersReducedMotion(): boolean {
 }
 
 export default function CookieBanner(): ReactElement {
+  useLingui()
+
   const {
     cookies: optionalCookies,
     cookieConsentStatus,
@@ -204,7 +208,7 @@ export default function CookieBanner(): ReactElement {
                   className={styles.actionButton}
                   onClick={() => handleAllCookies(true)}
                 >
-                  {content.accept || 'Accept all'}
+                  {content.accept || i18n._('Accept all')}
                 </Button>
                 <Button
                   size="small"
@@ -212,7 +216,7 @@ export default function CookieBanner(): ReactElement {
                   className={styles.actionButton}
                   onClick={() => handleAllCookies(false)}
                 >
-                  {content.reject || 'Essential only'}
+                  {content.reject || i18n._('Essential only')}
                 </Button>
                 <Button
                   size="small"
@@ -220,7 +224,7 @@ export default function CookieBanner(): ReactElement {
                   className={styles.manageButton}
                   onClick={() => switchView('manage')}
                 >
-                  {content.configure || 'Manage'}
+                  {content.configure || i18n._('Manage')}
                 </Button>
               </div>
             ) : (
@@ -231,7 +235,7 @@ export default function CookieBanner(): ReactElement {
                   className={styles.actionButton}
                   onClick={closeBanner}
                 >
-                  {content.close || 'Got it'}
+                  {content.close || i18n._('Got it')}
                 </Button>
               </div>
             )}
@@ -243,7 +247,7 @@ export default function CookieBanner(): ReactElement {
               <button
                 type="button"
                 className={styles.collapseButton}
-                aria-label="Back to summary"
+                aria-label={i18n._('Back to summary')}
                 onClick={() => switchView('compact')}
               >
                 <ChevronDown />
@@ -251,7 +255,8 @@ export default function CookieBanner(): ReactElement {
             </div>
             <Markdown
               text={
-                content.manageIntro || 'Choose which cookies this site may use.'
+                content.manageIntro ||
+                i18n._('Choose which cookies this site may use.')
               }
               className={styles.text}
               openLinksInNewTab
@@ -259,14 +264,16 @@ export default function CookieBanner(): ReactElement {
             <div className={styles.row}>
               <div>
                 <p className={styles.rowTitle}>
-                  {content.essential?.title || 'Strictly necessary'}
+                  {content.essential?.title || i18n._('Strictly necessary')}
                 </p>
                 <p className={styles.rowDescription}>
                   {content.essential?.desc ||
-                    'Sign-in, wallet connections, saved settings'}
+                    i18n._('Sign-in, wallet connections, saved settings')}
                 </p>
               </div>
-              <span className={styles.alwaysOn}>Always on</span>
+              <span className={styles.alwaysOn}>
+                <Trans id="Always on" />
+              </span>
             </div>
             {optionalCookies.map((cookie) => (
               <div className={styles.row} key={cookie.cookieName}>
@@ -295,7 +302,7 @@ export default function CookieBanner(): ReactElement {
                 className={styles.actionButton}
                 onClick={handleSavePreferences}
               >
-                {content.save || 'Save preferences'}
+                {content.save || i18n._('Save preferences')}
               </Button>
             </div>
           </>

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState, useEffect, useCallback } from 'react'
 import { useFormikContext } from 'formik'
 import { ComputeEnvironment, ProviderInstance } from '@oceanprotocol/lib'
@@ -48,6 +50,8 @@ export default function SelectEnvironment({
   providerUrl,
   setAllResourceValues
 }: SelectEnvironmentProps): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
   const providerUrlForNodeInfo = providerUrl || customProviderUrl
@@ -124,7 +128,7 @@ export default function SelectEnvironment({
 
   return (
     <>
-      <StepTitle title="Select C2D Environment" />
+      <StepTitle title={i18n._('Select C2D Environment')} />
 
       <div className={styles.environmentSelection}>
         <EnvironmentSelection

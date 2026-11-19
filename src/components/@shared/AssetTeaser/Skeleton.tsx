@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import Skeleton from '@shared/atoms/Skeleton'
 import styles from './Skeleton.module.css'
@@ -11,6 +12,8 @@ export default function AssetTeaserSkeleton({
   noPublisher,
   noDescription
 }: AssetTeaserSkeletonProps): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.card} aria-hidden="true">
       <Skeleton width="3.5rem" height="0.7rem" />

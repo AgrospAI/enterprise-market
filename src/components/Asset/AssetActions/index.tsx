@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import {
   ReactElement,
   useCallback,
@@ -74,6 +76,8 @@ export default function AssetActions({
   consumableFeedback?: string
   onComputeJobCreated?: () => void
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { address: accountId } = useAccount()
   const signer = useEthersSigner()
@@ -313,7 +317,7 @@ export default function AssetActions({
 
   const priceDisplay =
     accessDetails.type === 'free'
-      ? 'Free'
+      ? i18n._('Free')
       : `${accessDetails.price || 0} ${accessDetails.baseToken?.symbol || ''}`
   const salesCount = asset.indexedMetadata?.stats?.[0]?.orders || 0
 
@@ -380,7 +384,7 @@ export default function AssetActions({
         const algorithmDidMatchesCurrentAsset =
           parsed.algorithmDid.toLowerCase() === asset.id.toLowerCase()
         if (!algorithmDidMatchesCurrentAsset) {
-          toast.error('Algorithm is not available.')
+          toast.error(i18n._('Algorithm is not available.'))
           return
         }
 
@@ -392,7 +396,7 @@ export default function AssetActions({
           !algorithmAsset ||
           !isNftActive(algorithmAsset.indexedMetadata?.nft?.state)
         ) {
-          toast.error('Algorithm is not available.')
+          toast.error(i18n._('Algorithm is not available.'))
           return
         }
 
@@ -408,7 +412,7 @@ export default function AssetActions({
               !dataset || !isNftActive(dataset.indexedMetadata?.nft?.state)
           )
           if (hasUnavailableDataset) {
-            toast.error('One or more datasets are not available.')
+            toast.error(i18n._('One or more datasets are not available.'))
             return
           }
         }
@@ -469,7 +473,7 @@ export default function AssetActions({
           onClick={handleBack}
           className={styles.backButton}
         >
-          <BackSVG /> Back
+          <BackSVG /> <Trans id="Back" />{' '}
         </Button>
         {accountId && (
           <WhitelistIndicator
@@ -488,25 +492,36 @@ export default function AssetActions({
               {isSaas ? (
                 <>
                   <div className={styles.fileDetailItem}>
-                    <span className={styles.fileDetailLabel}>Type:</span> SaaS
+                    <span className={styles.fileDetailLabel}>
+                      <Trans id="Type:" />
+                    </span>{' '}
+                    <Trans id="SaaS" />{' '}
                   </div>
                   <div className={styles.fileDetailItem}>
-                    <span className={styles.fileDetailLabel}>Access via:</span>{' '}
-                    Redirect URL
+                    <span className={styles.fileDetailLabel}>
+                      <Trans id="Access via:" />
+                    </span>{' '}
+                    <Trans id="Redirect URL" />{' '}
                   </div>
                 </>
               ) : (
                 <>
                   <div className={styles.fileDetailItem}>
-                    <span className={styles.fileDetailLabel}>Type:</span>{' '}
-                    {fileMetadata?.type || 'Plain Text'}
+                    <span className={styles.fileDetailLabel}>
+                      <Trans id="Type:" />
+                    </span>{' '}
+                    {fileMetadata?.type || i18n._('Plain Text')}
                   </div>
                   <div className={styles.fileDetailItem}>
-                    <span className={styles.fileDetailLabel}>Size:</span>{' '}
-                    {fileMetadata?.contentLength || '5.31 kB'}
+                    <span className={styles.fileDetailLabel}>
+                      <Trans id="Size:" />
+                    </span>{' '}
+                    {fileMetadata?.contentLength || i18n._('5.31 kB')}
                   </div>
                   <div className={styles.fileDetailItem}>
-                    <span className={styles.fileDetailLabel}>Access via:</span>{' '}
+                    <span className={styles.fileDetailLabel}>
+                      <Trans id="Access via:" />
+                    </span>{' '}
                     {accessDetails.type === 'free' ? 'URL' : accessDetails.type}
                   </div>
                 </>
@@ -517,7 +532,10 @@ export default function AssetActions({
           <div className={styles.priceSection}>
             <div className={styles.priceValue}>{priceDisplay}</div>
             <div className={styles.salesCount}>
-              {salesCount} sale{salesCount !== 1 ? 's' : ''}
+              <Trans
+                id="{count, plural, one {# sale} other {# sales}}"
+                values={{ count: salesCount }}
+              />
             </div>
           </div>
         </div>
@@ -550,7 +568,7 @@ export default function AssetActions({
                 className={styles.computeButton}
                 disabled={isConsumptionDisabled || !isAccountIdWhitelisted}
               >
-                Start Compute
+                <Trans id="Start Compute" />{' '}
               </Button>
             ) : hasVerifiedCredentials ? (
               <Download
@@ -579,7 +597,7 @@ export default function AssetActions({
               className={styles.computeButton}
               disabled={isConsumptionDisabled || !isAccountIdWhitelisted}
             >
-              Start Compute
+              <Trans id="Start Compute" />{' '}
             </Button>
           ) : (
             <Download
@@ -613,9 +631,9 @@ export default function AssetActions({
             <button
               className={styles.closeButton}
               onClick={closeComputePopup}
-              aria-label="Close wizard"
+              aria-label={i18n._('Close wizard')}
             >
-              &times;
+              <Trans id="&times;" />{' '}
             </button>
             <ComputeWizard
               accountId={accountId}

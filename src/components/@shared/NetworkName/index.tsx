@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 import useNetworkMetadata, {
@@ -15,6 +16,8 @@ export default function NetworkName({
   minimal?: boolean
   className?: string
 }): ReactElement {
+  useLingui()
+
   const { networksList } = useNetworkMetadata()
   const networkData = getNetworkDataById(networksList, networkId)
   const networkName = getNetworkDisplayName(

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, ReactNode } from 'react'
 import classNames from 'classnames/bind'
 import { addTokenToWallet } from '@utils/wallet'
@@ -31,6 +33,8 @@ export default function AddToken({
   minimal,
   disabled = false
 }: AddTokenProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     button: true,
     minimal,
@@ -45,7 +49,7 @@ export default function AddToken({
     await addTokenToWallet(address, symbol, decimals, logo?.url)
   }
 
-  const buttonText = text || `Add ${symbol}`
+  const buttonText = text || i18n._('Add {symbol}', { symbol })
 
   return (
     <Button

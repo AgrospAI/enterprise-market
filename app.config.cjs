@@ -158,14 +158,14 @@ module.exports = {
     getEnv('NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL') ||
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
-  // Base URL of the eclipse-edc-mvd API, used by the EDC file source option
-  // on the publish form to list a provider's assets and resolve a file URL.
   edcApiUrl:
-    getEnv('NEXT_PUBLIC_EDC_API_URL') ||
-    process.env.NEXT_PUBLIC_EDC_API_URL ||
-    (process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8001'
-      : 'https://edc-api.agrospai.udl.cat'),
+    getEnv('NEXT_PUBLIC_EDC_URL') || process.env.NEXT_PUBLIC_EDC_URL || null,
+  reaApiUrl:
+    getEnv('NEXT_PUBLIC_REA_URL') || process.env.NEXT_PUBLIC_REA_URL || null,
+  // Derived from the server-side AGROPORTAL_API_KEY; the key is never exposed.
+  agroPortalEnabled:
+    (getEnv('AGROPORTAL_ENABLED') ??
+      (process.env.AGROPORTAL_API_KEY ? 'true' : 'false')) === 'true',
   ipfsGateway:
     getEnv('NEXT_PUBLIC_IPFS_GATEWAY') || process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUploadUrl:

@@ -13,6 +13,7 @@ src/@utils/ocean/fixedRateExchange.ts (39:28) @ async getFixedBuyPrice
 ```
 
 The market catches the error and goes on with a zero exchange fee (`opcFee: '0'`, `baseTokenAmount: '0'`). The purchase then fails:
+
 - `order()` asks the datatoken to buy from an exchange that does not hold the asset's offer, so `buyFromFreAndOrder` reverts.
 - The wallet asks for the base-token `approve` first, so that transaction (gas only) is sent for nothing.
 
@@ -31,21 +32,21 @@ config.fixedRateExchangeAddress =
 
 On OP Sepolia, ocean.js 9.2.1 lists two exchanges, and the router approves both (`Router.isFixedRateContract` returns `true` for each):
 
-| Artifact | Address |
-| --- | --- |
-| `FixedPrice` | `0x69B6E54Ad2b3c2801d11d8Ad56ea1d892555b776` |
+| Artifact               | Address                                      |
+| ---------------------- | -------------------------------------------- |
+| `FixedPrice`           | `0x69B6E54Ad2b3c2801d11d8Ad56ea1d892555b776` |
 | `FixedPriceEnterprise` | `0x6976320eC365202118B4B0B0906E13DDf21633A5` |
 
 **2. Where the paid assets actually are.** The paid assets checked are on `FixedPrice` (`0x69B6…`), including assets published between 2026-11-05 and 2026-11-09. Examples:
 
-| Asset | Service |
-| --- | --- |
-| "Fertilización, Producción y Condiciones Meteorológicas" | access |
-| "Información operativa de rutas de transporte de mercancías de Europillow" | access |
-| "Soil Quality Mapping" | compute |
-| "Binary Segmentation Model Validator" | compute |
-| "Calcular mediana y moda de un dataset (ITI)" | compute |
-| "Estructura Digital de la Organización" | compute |
+| Asset                                                                      | Service |
+| -------------------------------------------------------------------------- | ------- |
+| "Fertilización, Producción y Condiciones Meteorológicas"                   | access  |
+| "Información operativa de rutas de transporte de mercancías de Europillow" | access  |
+| "Soil Quality Mapping"                                                     | compute |
+| "Binary Segmentation Model Validator"                                      | compute |
+| "Calcular mediana y moda de un dataset (ITI)"                              | compute |
+| "Estructura Digital de la Organización"                                    | compute |
 
 **How they were published.** They were created through the market's own `ERC721Factory` (`0xDEfD…`), with `0x69B6…` passed as the exchange. An example is tx `0x46c65cfc…3989`, sent by the publisher `0xcd081BA1…1DB9c`. In the same block range, `0x6976…` had no events.
 
@@ -53,11 +54,11 @@ On OP Sepolia, ocean.js 9.2.1 lists two exchanges, and the router approves both 
 
 **3. Where the configured address is used instead of the asset's own exchange:**
 
-| File | Use |
-| --- | --- |
+| File                                       | Use                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------- |
 | `src/@utils/ocean/fixedRateExchange.ts:34` | `getFixedBuyPrice` quotes through `config.fixedRateExchangeAddress` |
-| `src/@utils/order.ts:150` | template 2: `freParams.exchangeContract` |
-| `src/@utils/order.ts:167` and `:174` | template 1: the `approve` spender and `new FixedRateExchange(...)` |
+| `src/@utils/order.ts:150`                  | template 2: `freParams.exchangeContract`                            |
+| `src/@utils/order.ts:167` and `:174`       | template 1: the `approve` spender and `new FixedRateExchange(...)`  |
 
 **4. The real exchange is already read, then thrown away.** `getAccessDetails` (`src/@utils/accessDetailsAndPricing.ts:309-312`) reads it with `datatoken.getFixedRates()` (`fixedRates[0].contractAddress`). It uses it to read the price, but does not keep it in `AccessDetails`.
 
@@ -81,22 +82,24 @@ Commits 4bcab178 and 4fa88e51:
 
 ### Tests
 
-| Test file | What it checks |
-| --- | --- |
-| `src/@utils/accessDetailsAndPricing.test.ts` | `getAccessDetails` keeps the exchange from `getFixedRates` |
-| `src/@utils/ocean/fixedRateExchange.test.ts` | the quote uses the asset's exchange, with the configured one as fallback |
-| `src/@utils/order.test.ts` | templates 1 and 2 buy on the asset's exchange and approve and cap the full quote (1.052); the fallback without a quote is 1.002 |
+| Test file                                    | What it checks                                                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `src/@utils/accessDetailsAndPricing.test.ts` | `getAccessDetails` keeps the exchange from `getFixedRates`                                                                      |
+| `src/@utils/ocean/fixedRateExchange.test.ts` | the quote uses the asset's exchange, with the configured one as fallback                                                        |
+| `src/@utils/order.test.ts`                   | templates 1 and 2 buy on the asset's exchange and approve and cap the full quote (1.052); the fallback without a quote is 1.002 |
 
 **Read-only check on the live chain:** after the fix, "Fertilización…" quotes `baseTokenAmount: 1.052` from `0x69B6…`. Before, it failed with `decimals` `BAD_DATA`.
 
 ### How to check it
 
 Buy a 1 devEURAU dataset (for example "Fertilización, Producción y Condiciones Meteorológicas") from its page with a wallet that has devEURAU and OP Sepolia ETH. Then check two things:
+
 - the runtime error is gone;
 - the wallet shows the purchase without a failure warning.
 
 ## Market chat
 
 The chat (`src/@utils/chat/verifyIntent.ts`) buys through `order()` and `handleComputeOrder`, so it gets both fixes. Two more things:
+
 - Its card shows the same total `order()` approves: the exchange's quote plus the consume market and provider fees.
 - It still refuses a paid order when the exchange gives no quote (`baseTokenAmount` is 0), instead of asking the wallet for transactions that revert.

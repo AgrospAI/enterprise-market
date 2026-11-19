@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@hooks/useAuth'
@@ -7,6 +8,8 @@ import { SsoIcon } from '../SsoIcons'
 import styles from './SignupForm.module.css'
 
 export default function SignupForm() {
+  useLingui()
+
   const { beginOidcFlow } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -50,11 +53,13 @@ export default function SignupForm() {
       </div>
 
       <div className={styles.terms}>
-        {authSignupCopy.termsIntro}{' '}
-        <Link href="/privacy/terms">{authSignupCopy.termsLabel}</Link> and{' '}
-        <Link href="/privacy/privacy-policy">
-          {authSignupCopy.privacyLabel}
-        </Link>
+        <Trans
+          id="By creating an account, you agree to our <0>Terms of Service</0> and <1>Privacy Policy</1>"
+          components={{
+            0: <Link href="/privacy/terms" />,
+            1: <Link href="/privacy/privacy-policy" />
+          }}
+        />
       </div>
     </div>
   )

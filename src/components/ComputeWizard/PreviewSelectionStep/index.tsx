@@ -1,4 +1,6 @@
 'use client'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 
 import {
   type RefObject,
@@ -61,6 +63,8 @@ interface PreviewSelectionStepProps {
 }
 
 function DidLinkPill({ value }: { value: string }): ReactElement {
+  useLingui()
+
   return (
     <Link
       href={`/asset/${value}`}
@@ -126,6 +130,8 @@ function ExpandableText({
   text: string
   className: string
 }): ReactElement {
+  useLingui()
+
   const [expanded, setExpanded] = useState(false)
   const textRef = useRef<HTMLParagraphElement>(null)
   const isExpandable = useClampedOverflow(textRef, !expanded, text)
@@ -146,7 +152,7 @@ function ExpandableText({
           className={styles.descriptionToggle}
           onClick={() => setExpanded((prev) => !prev)}
         >
-          {expanded ? 'Show less' : 'Show more'}
+          {expanded ? i18n._('Show less') : i18n._('Show more')}
         </button>
       )}
     </div>
@@ -164,6 +170,8 @@ function SelectionCard({
   id: string
   services: PreviewService[]
 }): ReactElement {
+  useLingui()
+
   return (
     <article className={styles.selectionCard}>
       <div className={styles.selectionHeader}>
@@ -182,7 +190,9 @@ function SelectionCard({
 
       <div className={styles.servicesSection}>
         <span className={styles.servicesSectionLabel}>
-          {services.length > 1 ? 'Selected services' : 'Selected service'}
+          {services.length > 1
+            ? i18n._('Selected services')
+            : i18n._('Selected service')}
         </span>
         <div className={styles.servicesList}>
           {services.map((service) => (
@@ -200,11 +210,12 @@ function SelectionCard({
               <div className={styles.serviceMeta}>
                 {service.tokenSymbol && (
                   <span className={styles.metaPill}>
-                    Currency: {service.tokenSymbol}
+                    <Trans id="Currency:" /> {service.tokenSymbol}
                   </span>
                 )}
                 <span className={styles.metaPill}>
-                  Access: {formatServiceTimeout(service.duration)}
+                  <Trans id="Access:" />{' '}
+                  {formatServiceTimeout(service.duration)}
                 </span>
               </div>
             </div>
@@ -218,7 +229,7 @@ function SelectionCard({
 function normalizePreviewService(service: RawPreviewService): PreviewService {
   return {
     id: service.serviceId ?? service.id ?? '',
-    name: service.serviceName ?? service.name ?? 'Unnamed Service',
+    name: service.serviceName ?? service.name ?? i18n._('Unnamed Service'),
     description: normalizeDescription(
       service.description ?? service.serviceDescription
     ),
@@ -266,7 +277,7 @@ function buildDatasetPreview(
 
       return {
         id: dataset.did || dataset.id || '',
-        name: dataset.name || 'Unnamed Dataset',
+        name: dataset.name || i18n._('Unnamed Dataset'),
         description: normalizeDescription(dataset.description),
         services: selectedServices.map((service) =>
           normalizePreviewService(service)
@@ -279,6 +290,8 @@ function buildDatasetPreview(
 export default function PreviewSelectionStep({
   flow
 }: PreviewSelectionStepProps): ReactElement {
+  useLingui()
+
   const isDatasetFlow = flow === 'dataset'
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
 
@@ -343,15 +356,17 @@ export default function PreviewSelectionStep({
     if (!algoPreview) {
       return (
         <div className={styles.container}>
-          <StepTitle title="Preview Algorithm & Service" />
-          <p>Please select an algorithm first</p>
+          <StepTitle title={i18n._('Preview Algorithm & Service')} />
+          <p>
+            <Trans id="Please select an algorithm first" />
+          </p>
         </div>
       )
     }
 
     return (
       <div className={styles.container}>
-        <StepTitle title="Preview Algorithm & Service" />
+        <StepTitle title={i18n._('Preview Algorithm & Service')} />
         <div className={styles.previewContainer}>
           <SelectionCard
             title={algoPreview.name}
@@ -366,7 +381,7 @@ export default function PreviewSelectionStep({
 
   return (
     <div className={styles.container}>
-      <StepTitle title="Preview Selected Datasets & Services" />
+      <StepTitle title={i18n._('Preview Selected Datasets & Services')} />
       <div className={styles.previewContainer}>
         {datasetPreview.map((dataset) => (
           <SelectionCard
@@ -378,7 +393,9 @@ export default function PreviewSelectionStep({
           />
         ))}
         {datasetPreview.length === 0 && (
-          <p className={styles.noSelection}>No services selected.</p>
+          <p className={styles.noSelection}>
+            <Trans id="No services selected." />
+          </p>
         )}
       </div>
     </div>

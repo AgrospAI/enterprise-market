@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { FormEvent, ReactElement } from 'react'
 import Button from '../../../@shared/atoms/Button'
 import styles from './index.module.css'
@@ -18,6 +19,8 @@ export default function CalculateButtonBuy({
   isLoading,
   type
 }: CalculateButtonBuyProps): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.actions}>
       {isLoading ? (
@@ -29,7 +32,7 @@ export default function CalculateButtonBuy({
           onClick={onClick}
           disabled={disabled}
         >
-          Calculate Total Price
+          <Trans id="Calculate Total Price" />{' '}
         </Button>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { CSSProperties, ReactElement } from 'react'
 import Skeleton from '@shared/atoms/Skeleton'
 import styles from './Skeleton.module.css'
@@ -23,6 +24,8 @@ export default function TableSkeleton({
   headerHeight = '0.6rem',
   cellHeight = '0.85rem'
 }: TableSkeletonProps): ReactElement {
+  useLingui()
+
   return (
     <div
       className={`${styles.skeletonTable} ${className || ''}`}

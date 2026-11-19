@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import TableSkeleton from '@shared/atoms/Table/Skeleton'
 
@@ -12,6 +13,8 @@ const rowWidths = [
 ]
 
 export default function ComputeJobsSkeleton(): ReactElement {
+  useLingui()
+
   return (
     <TableSkeleton
       gridTemplateColumns="2fr 1fr 1.5fr 1fr 1fr 1fr 0.8fr"

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, RefObject, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -12,7 +13,7 @@ import { openWalletMenu } from '@components/Chat/openWalletMenu'
 import { searchSuggestions, suggestionsFor } from '@components/Chat/suggestions'
 import { SparkleIcon } from '@components/Chat/icons'
 import styles from './index.module.css'
-import content from '../../../content/pages/home/content.json'
+import { contentPagesHomeContent as content } from '../../i18n/content'
 
 const CATALOGUE_URL = '/search?sort=indexedMetadata.event.block&sortOrder=desc'
 
@@ -26,6 +27,8 @@ function StandInComposer({
 }: {
   inputRef: RefObject<HTMLTextAreaElement>
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { isConnected } = useAccount()
   const { draft, setDraft, isSendPending, setSendPending } = useChatPanel()
@@ -66,6 +69,8 @@ function StandInComposer({
 }
 
 function HeroSection(): ReactElement {
+  useLingui()
+
   const { isAvailable, isChatting, isSearchOnly, setDraft, setInlineHost } =
     useChatPanel()
   // Without a session it only searches: the examples are searches too.

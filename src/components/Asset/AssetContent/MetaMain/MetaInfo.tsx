@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import AssetType from '@shared/AssetType'
 import Time from '@shared/atoms/Time'
 import Publisher from '@shared/Publisher'
@@ -15,6 +17,8 @@ export default function MetaInfo({
   nftPublisher: string
   verifiedServiceProviderName?: string
 }): ReactElement {
+  useLingui()
+
   const isSaas = isSaasAsset(asset)
   const nftOwner = asset?.indexedMetadata?.nft?.owner
 
@@ -27,12 +31,12 @@ export default function MetaInfo({
       />
       <div className={styles.byline}>
         <div>
-          Published{' '}
+          <Trans id="Published" />{' '}
           <Time date={asset?.credentialSubject?.metadata.created} relative />
           {(verifiedServiceProviderName ||
             (nftPublisher && nftPublisher !== nftOwner)) && (
             <span>
-              {' by '}{' '}
+              {i18n._(' by ')}{' '}
               <Publisher
                 account={nftPublisher}
                 verifiedServiceProviderName={verifiedServiceProviderName}
@@ -44,7 +48,7 @@ export default function MetaInfo({
             <>
               {' — '}
               <span className={styles.updated}>
-                updated{' '}
+                <Trans id="updated" />{' '}
                 <Time
                   date={asset?.credentialSubject?.metadata.updated}
                   relative

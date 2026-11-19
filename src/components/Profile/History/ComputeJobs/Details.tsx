@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import React, { ReactElement, useEffect, useState } from 'react'
 import Time from '@shared/atoms/Time'
 import Button from '@shared/atoms/Button'
@@ -88,6 +90,8 @@ function Asset({
   serviceName?: string
   isMobile: boolean
 }) {
+  useLingui()
+
   return (
     <div className={styles.assetBox}>
       <div className={styles.assetHeader}>
@@ -136,6 +140,8 @@ function DetailsAssets({
   job: ComputeJobMetaData
   isMobile: boolean
 }) {
+  useLingui()
+
   const { appConfig } = useMarketMetadata()
   const newCancelToken = useCancelToken()
 
@@ -208,7 +214,7 @@ function DetailsAssets({
               />
             ) : (
               <div className={styles.assetNotAvailable}>
-                Dataset Asset Not Available
+                <Trans id="Dataset Asset Not Available" />{' '}
               </div>
             )}
           </React.Fragment>
@@ -226,7 +232,7 @@ function DetailsAssets({
           />
         ) : (
           <div className={styles.assetNotAvailable}>
-            Algorithm Asset Not Available
+            <Trans id="Algorithm Asset Not Available" />{' '}
           </div>
         )}
       </div>
@@ -239,6 +245,8 @@ export default function Details({
 }: {
   job: ComputeJobMetaData
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { approvedBaseTokens } = useMarketMetadata()
@@ -268,7 +276,7 @@ export default function Details({
       }
     }
     if (parts.length === 0 && remaining > 0) {
-      parts.push(`${remaining.toFixed(3)} seconds`)
+      parts.push(i18n._('{value0} seconds', { value0: remaining.toFixed(3) }))
     }
     return parts.slice(0, 3).join(' ')
   }
@@ -318,12 +326,12 @@ export default function Details({
   return (
     <>
       <Button style="text" size="small" onClick={() => setIsDialogOpen(true)}>
-        Show Details
+        <Trans id="Show Details" />{' '}
       </Button>
 
       {isDialogOpen && (
         <Modal
-          title="Job Details"
+          title={i18n._('Job Details')}
           isOpen
           onToggleModal={() => setIsDialogOpen(false)}
           shouldCloseOnOverlayClick
@@ -333,7 +341,7 @@ export default function Details({
             <div className={styles.scrollArea}>
               <div className={styles.statusWrapper}>
                 <MetaItem
-                  title="Status"
+                  title={i18n._('Status')}
                   content={jobStatusDisplay}
                   horizontal
                 />
@@ -343,7 +351,7 @@ export default function Details({
 
               <div className={styles.meta}>
                 <MetaItem
-                  title="Created"
+                  title={i18n._('Created')}
                   content={
                     <Time
                       date={
@@ -361,7 +369,7 @@ export default function Details({
 
                 {job.dateFinished && (
                   <MetaItem
-                    title="Finished"
+                    title={i18n._('Finished')}
                     content={
                       <Time
                         date={
@@ -379,23 +387,26 @@ export default function Details({
                 )}
                 {job.dateFinished && job.dateCreated && (
                   <MetaItem
-                    title="Duration"
+                    title={i18n._('Duration')}
                     content={formatDuration(
                       Number(job.dateFinished) - Number(job.dateCreated)
                     )}
                   />
                 )}
                 {job.dateFinished && isFinishedStatus && !isFreeJob && (
-                  <MetaItem title="Job Cost" content={jobCostDisplay} />
+                  <MetaItem
+                    title={i18n._('Job Cost')}
+                    content={jobCostDisplay}
+                  />
                 )}
-                <MetaItem title="Job Type" content={jobTypeDisplay} />
+                <MetaItem title={i18n._('Job Type')} content={jobTypeDisplay} />
 
                 {job.dateFinished ? (
                   // When finished date exists, show JobDID on new line
                   <div style={{ flexBasis: '100%' }}>
                     <div className={styles.jobDID}>
                       <MetaItem
-                        title="Job ID"
+                        title={i18n._('Job ID')}
                         content={
                           <CopyToClipboard
                             value={job.jobId}
@@ -405,14 +416,17 @@ export default function Details({
                           />
                         }
                       />
-                      <MetaItem title="Status" content={jobStatusDisplay} />
+                      <MetaItem
+                        title={i18n._('Status')}
+                        content={jobStatusDisplay}
+                      />
                     </div>
                   </div>
                 ) : (
                   // Else show it in same row
                   <div className={styles.jobDID}>
                     <MetaItem
-                      title="Job ID"
+                      title={i18n._('Job ID')}
                       content={
                         <CopyToClipboard
                           value={job.jobId}
@@ -422,7 +436,10 @@ export default function Details({
                         />
                       }
                     />
-                    <MetaItem title="Status" content={jobStatusDisplay} />
+                    <MetaItem
+                      title={i18n._('Status')}
+                      content={jobStatusDisplay}
+                    />
                   </div>
                 )}
               </div>
@@ -435,14 +452,14 @@ export default function Details({
                 onClick={handleRerunJob}
                 disabled={!canRerunJob}
               >
-                Rerun Job
+                <Trans id="Rerun Job" />{' '}
               </Button>
               <Button
                 style="primary"
                 type="button"
                 onClick={() => setIsDialogOpen(false)}
               >
-                Close
+                <Trans id="Close" />{' '}
               </Button>
             </div>
           </div>

@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ChangeEvent, useState, useMemo } from 'react'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import Loader from '@shared/atoms/Loader'
@@ -13,6 +15,8 @@ export interface EnvironmentSelectionEnvironment extends ComputeEnvironment {
 }
 
 function Empty({ message }: { message: string }) {
+  useLingui()
+
   return <div className={styles.empty}>{message}</div>
 }
 const hasGPUResource = (env: ComputeEnvironment): boolean => {
@@ -89,6 +93,8 @@ export default function EnvironmentSelection({
     | ((value: string) => void)
     | ((e: ChangeEvent<HTMLInputElement>) => void)
 }): JSX.Element {
+  useLingui()
+
   const [searchValue, setSearchValue] = useState('')
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
 
@@ -128,7 +134,7 @@ export default function EnvironmentSelection({
   return (
     <div className={styles.root}>
       <SearchSection
-        placeholder="Search for C2D Environments"
+        placeholder={i18n._('Search for C2D Environments')}
         value={searchValue}
         onChange={setSearchValue}
         disabled={disabled}
@@ -160,7 +166,10 @@ export default function EnvironmentSelection({
                       <div className={styles.titleSection}>
                         <div className={styles.titleRow}>
                           <h3 className={styles.title}>
-                            Environment {index + 1}
+                            <Trans
+                              id="Environment {number}"
+                              values={{ number: index + 1 }}
+                            />
                           </h3>
                           <Button
                             style="outlined"
@@ -171,7 +180,7 @@ export default function EnvironmentSelection({
                               handleOpenInfo()
                             }}
                           >
-                            Info
+                            <Trans id="Info" />{' '}
                           </Button>
                         </div>
                         <div className={styles.envId}>
@@ -180,17 +189,24 @@ export default function EnvironmentSelection({
                       </div>
                       <div className={styles.statusTags}>
                         {freeAvailable && (
-                          <StatusTag type="free">Free</StatusTag>
+                          <StatusTag type="free">
+                            <Trans id="Free" />
+                          </StatusTag>
                         )}
-                        {hasPaid && <StatusTag type="paid">Paid</StatusTag>}
+                        {hasPaid && (
+                          <StatusTag type="paid">
+                            <Trans id="Paid" />
+                          </StatusTag>
+                        )}
                         {gpuAvailable && (
                           <StatusTag
                             type="gpu"
                             tooltip={
-                              gpuDescription || 'GPU accelerated environment'
+                              gpuDescription ||
+                              i18n._('GPU accelerated environment')
                             }
                           >
-                            GPU
+                            <Trans id="GPU" />{' '}
                           </StatusTag>
                         )}
                       </div>
@@ -199,7 +215,9 @@ export default function EnvironmentSelection({
                     <div className={styles.cardContent}>
                       <p className={styles.description}>
                         {env.description ||
-                          'Workspace configured for testing and running C2D processes.'}
+                          i18n._(
+                            'Workspace configured for testing and running C2D processes.'
+                          )}
                       </p>
 
                       <div className={styles.cardActions}>
@@ -208,10 +226,12 @@ export default function EnvironmentSelection({
                             style="slim"
                             className={styles.selectedButton}
                           >
-                            Selected
+                            <Trans id="Selected" />{' '}
                           </Button>
                         ) : (
-                          <Button style="slim">Select</Button>
+                          <Button style="slim">
+                            <Trans id="Select" />
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -224,7 +244,7 @@ export default function EnvironmentSelection({
       </div>
 
       <ProviderOwnerInfoModal
-        title="Node Owner Info"
+        title={i18n._('Node Owner Info')}
         isOpen={isInfoModalOpen}
         providerUrl={nodeUrl}
         overlayClassName={styles.infoModalOverlay}

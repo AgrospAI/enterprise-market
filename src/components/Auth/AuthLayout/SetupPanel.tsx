@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useAccount } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -34,6 +36,8 @@ function SetupStep({
   status: StepStatus
   isLast?: boolean
 }) {
+  useLingui()
+
   return (
     <div className={`${styles.step} ${isLast ? styles.stepLast : ''}`}>
       <div className={styles.stepRail}>
@@ -61,10 +65,10 @@ function SetupStep({
             }`}
           >
             {status === 'complete'
-              ? 'Complete'
+              ? i18n._('Complete')
               : status === 'active'
-              ? 'In progress'
-              : 'Pending'}
+              ? i18n._('In progress')
+              : i18n._('Pending')}
           </span>
         </div>
         <p className={styles.stepDescription}>{description}</p>
@@ -89,6 +93,8 @@ function getSetupSubtitle(
 }
 
 export default function SetupPanel() {
+  useLingui()
+
   const { isConnected } = useAccount()
   const metaMask = useMetaMaskConnect()
   const { user, logout } = useAuth()

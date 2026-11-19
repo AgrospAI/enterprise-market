@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { copyTextToClipboard } from '@utils/clipboard'
 import styles from './index.module.css'
@@ -22,8 +24,10 @@ export function CopyToClipboard({
   className,
   textClassName,
   showCopyButton = false,
-  copyButtonLabel = 'Copy'
+  copyButtonLabel = i18n._('Copy')
 }: CopyToClipboardProps): ReactElement {
+  useLingui()
+
   const [copied, setCopied] = useState(false)
   const timerRef = useRef<number | null>(null)
 
@@ -49,7 +53,7 @@ export function CopyToClipboard({
         type="button"
         className={`${styles.textButton} ${textClassName || ''}`}
         onClick={handleCopy}
-        title="Copy"
+        title={i18n._('Copy')}
       >
         <span className={styles.text}>{displayText}</span>
       </button>
@@ -64,7 +68,9 @@ export function CopyToClipboard({
       )}
       {copied && (
         <span className={styles.badge}>
-          <span>Copied!</span>
+          <span>
+            <Trans id="Copied!" />
+          </span>
           <svg className={styles.spinner} viewBox="0 0 24 24">
             <circle className={styles.circle} cx="12" cy="12" r="10" />
           </svg>

@@ -1,14 +1,18 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement } from 'react'
 import Image from 'next/image'
 
 import { OnboardingStep } from '../..'
 import StepHeader from '../../StepHeader'
-import content from '../../../../../../content/onboarding/steps/ssi.json'
+import { contentOnboardingStepsSsi as content } from '../../../../../i18n/content'
 import { getRuntimeConfig } from '@utils/runtimeConfig'
 
 import styles from './index.module.css'
 
 export default function SSIWallet(): ReactElement {
+  useLingui()
+
   const { title, subtitle, body, image }: OnboardingStep = content
 
   const ssiUiUrl = getRuntimeConfig().NEXT_PUBLIC_SSI_UI_URL
@@ -45,28 +49,33 @@ export default function SSIWallet(): ReactElement {
 
           <div className={styles.infoBox}>
             <h4 className={styles.heading}>
-              To set up the SSI Wallet provided by Ocean Enterprise follow these
-              steps:
+              <Trans id="To set up the SSI Wallet provided by Ocean Enterprise follow these steps:" />{' '}
             </h4>
 
             <div className={styles.stepsList}>
               <div className={styles.stepItem}>
-                <span className={styles.stepNumber}>Step 1.</span>
+                <span className={styles.stepNumber}>
+                  <Trans id="Step 1." />
+                </span>
                 <span className={styles.stepText}>
-                  Access your company SSI Wallet interface
+                  <Trans id="Access your company SSI Wallet interface" />{' '}
                 </span>
               </div>
               <div className={styles.stepItem}>
-                <span className={styles.stepNumber}>Step 2.</span>
+                <span className={styles.stepNumber}>
+                  <Trans id="Step 2." />
+                </span>
                 <span className={styles.stepText}>
-                  Configure the DIDs and Verifiable Credentials
+                  <Trans id="Configure the DIDs and Verifiable Credentials" />{' '}
                 </span>
               </div>
             </div>
           </div>
 
           <div className={styles.linksSection}>
-            <h4 className={styles.linksHeading}>Learn More:</h4>
+            <h4 className={styles.linksHeading}>
+              <Trans id="Learn More:" />
+            </h4>
             <div className={styles.links}>
               <a
                 href="https://docs.oceanenterprise.io/user-guides/using-the-oe-marketplace/onboarding-to-the-marketplace/setting-up-the-ssi-wallet"
@@ -74,7 +83,7 @@ export default function SSIWallet(): ReactElement {
                 rel="noopener noreferrer"
                 className={styles.primaryLink}
               >
-                📘 Read the SSI Wallet documentation
+                <Trans id="📘 Read the SSI Wallet documentation" />{' '}
               </a>
 
               <a
@@ -83,7 +92,7 @@ export default function SSIWallet(): ReactElement {
                 aria-disabled="true"
                 onClick={(e) => e.preventDefault()}
               >
-                🎥 Watch the SSI Wallet setup video (coming soon)
+                <Trans id="🎥 Watch the SSI Wallet setup video (coming soon)" />{' '}
               </a>
             </div>
           </div>
@@ -105,7 +114,7 @@ export default function SSIWallet(): ReactElement {
             >
               <Image
                 src={image}
-                alt="SSI Wallet"
+                alt={i18n._('SSI Wallet')}
                 width={420}
                 height={320}
                 className={`${styles.image} ${

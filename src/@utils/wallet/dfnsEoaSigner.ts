@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import type { DfnsApiClient } from '@dfns/sdk'
 import { DfnsWallet } from '@dfns/lib-viem'
 import {
@@ -117,15 +118,22 @@ export class DfnsEoaSigner extends AbstractSigner<JsonRpcProvider> {
 
     if (!init.walletsByChain.has(init.chainId)) {
       throw new Error(
-        `DFNS chain ${init.chainId} is not supported by this account. ` +
-          `Available: ${
-            Array.from(init.walletsByChain.keys()).join(', ') || '(none)'
-          }.`
+        i18n._('DFNS chain {value0} is not supported by this account. ', {
+          value0: init.chainId
+        }) +
+          i18n._('Available: {value0}.', {
+            value0:
+              Array.from(init.walletsByChain.keys()).join(', ') || '(none)'
+          })
       )
     }
     const chain = init.chainsById.get(init.chainId)
     if (!chain) {
-      throw new Error(`Missing viem Chain for chainId ${init.chainId}.`)
+      throw new Error(
+        i18n._('Missing viem Chain for chainId {value0}.', {
+          value0: init.chainId
+        })
+      )
     }
 
     this.address = init.address
@@ -153,15 +161,21 @@ export class DfnsEoaSigner extends AbstractSigner<JsonRpcProvider> {
 
     if (!walletsByChain.has(chainId)) {
       throw new Error(
-        `No DFNS wallet provisioned for chain ${chainId}. ` +
-          `Available: ${
-            Array.from(walletsByChain.keys()).join(', ') || '(none)'
-          }.`
+        i18n._('No DFNS wallet provisioned for chain {chainId}. ', {
+          chainId
+        }) +
+          i18n._('Available: {value0}.', {
+            value0: Array.from(walletsByChain.keys()).join(', ') || '(none)'
+          })
       )
     }
     const chain = chainsById.get(chainId)
     if (!chain) {
-      throw new Error(`Missing viem Chain for chainId ${chainId}.`)
+      throw new Error(
+        i18n._('Missing viem Chain for chainId {chainId}.', {
+          chainId
+        })
+      )
     }
 
     const walletId = walletsByChain.get(chainId) as string
@@ -204,7 +218,11 @@ export class DfnsEoaSigner extends AbstractSigner<JsonRpcProvider> {
   async createSignerForChain(nextChainId: number): Promise<DfnsEoaSigner> {
     if (nextChainId === this.chain.id) return this
     if (!this.walletsByChain.has(nextChainId)) {
-      throw new Error(`No DFNS wallet provisioned for chain ${nextChainId}.`)
+      throw new Error(
+        i18n._('No DFNS wallet provisioned for chain {nextChainId}.', {
+          nextChainId
+        })
+      )
     }
 
     return DfnsEoaSigner.createForChain({

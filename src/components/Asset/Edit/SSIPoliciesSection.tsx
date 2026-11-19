@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
@@ -17,6 +19,8 @@ export default function SSIPoliciesSection({
   isAsset = true,
   hideDefaultPolicies = false
 }: SSIPoliciesSectionProps): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<{
     credentials: CredentialForm
   }>()
@@ -89,7 +93,7 @@ export default function SSIPoliciesSection({
     <>
       <Input
         name="enableSSI"
-        label="Enable SSI Policies"
+        label={i18n._('Enable SSI Policies')}
         type="checkbox"
         options={['Enable SSI Policies']}
         checked={enabled}
@@ -98,12 +102,14 @@ export default function SSIPoliciesSection({
       />
       {enabled && (
         <SectionContainer
-          title="SSI Policies"
-          help={`Self-sovereign identity (SSI) policies define verification requirements for ${
-            isAsset ? 'asset' : 'service'
-          } consumers. Configure which credentials and verification policies are required to access this ${
-            isAsset ? 'asset' : 'service'
-          }.`}
+          title={i18n._('SSI Policies')}
+          help={i18n._(
+            'Self-sovereign identity (SSI) policies define verification requirements for {value0} consumers. Configure which credentials and verification policies are required to access this {value1}.',
+            {
+              value0: isAsset ? 'asset' : 'service',
+              value1: isAsset ? 'asset' : 'service'
+            }
+          )}
         >
           <PolicyEditor
             credentials={values.credentials}

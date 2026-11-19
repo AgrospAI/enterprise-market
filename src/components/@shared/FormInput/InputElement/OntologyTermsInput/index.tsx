@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import Select, { OnChangeValue } from 'react-select'
 import { useField } from 'formik'
@@ -45,8 +47,10 @@ function formatOptionLabel(option: OntologyTerm): ReactElement {
           href={sourceUrl}
           target="_blank"
           rel="noreferrer noopener"
-          aria-label={`Open ${option['skos:prefLabel']?.['@value']} in AgroPortal`}
-          title="Open in AgroPortal"
+          aria-label={i18n._('Open {value0} in AgroPortal', {
+            value0: option['skos:prefLabel']?.['@value']
+          })}
+          title={i18n._('Open in AgroPortal')}
           // Keep react-select from selecting the option or opening the menu
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
@@ -67,6 +71,8 @@ function formatOptionLabel(option: OntologyTerm): ReactElement {
 export default function OntologyTermsInput({
   ...props
 }: InputProps): ReactElement {
+  useLingui()
+
   const { name, placeholder } = props
   const [field, , helpers] = useField<OntologyTerm[]>(name)
 
@@ -169,10 +175,10 @@ export default function OntologyTermsInput({
         isLoading={isLoading}
         noOptionsMessage={() =>
           isUnavailable
-            ? 'Service unavailable'
+            ? i18n._('Service unavailable')
             : input
-            ? 'No results found'
-            : 'Start typing to search AgroPortal ontology terms.'
+            ? i18n._('No results found')
+            : i18n._('Start typing to search AgroPortal ontology terms.')
         }
         onBlur={() => helpers.setTouched(true)}
         onChange={handleChange}
@@ -180,7 +186,7 @@ export default function OntologyTermsInput({
         onMenuScrollToBottom={handleLoadMore}
         openMenuOnClick
         options={options}
-        placeholder={placeholder || 'e.g. agriculture, plant, soil...'}
+        placeholder={placeholder || i18n._('e.g. agriculture, plant, soil...')}
         theme={(theme) => ({
           ...theme,
           colors: { ...theme.colors, primary25: 'var(--border-color)' }
@@ -188,12 +194,12 @@ export default function OntologyTermsInput({
       />
       {isUnavailable && (
         <p className={styles.error} role="alert">
-          Service unavailable
+          <Trans id="Service unavailable" />{' '}
         </p>
       )}
       <div className={styles.filter}>
         <label className={styles.filterLabel} htmlFor={filterId}>
-          Filter search by ontology
+          <Trans id="Filter search by ontology" />{' '}
         </label>
         <OntologyFilter inputId={filterId} onChange={handleOntologiesChange} />
       </div>

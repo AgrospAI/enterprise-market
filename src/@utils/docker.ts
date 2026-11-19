@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -133,7 +134,9 @@ export async function getContainerChecksum(
     if (credentials) {
       const checksum = response?.data?.result?.checksum
       if (!response?.data?.success || !checksum) {
-        toast.error('Could not resolve the private Docker image checksum.')
+        toast.error(
+          i18n._('Could not resolve the private Docker image checksum.')
+        )
         return containerInfo
       }
 
@@ -148,7 +151,9 @@ export async function getContainerChecksum(
       response.data.status !== 'success'
     ) {
       toast.error(
-        'Could not fetch docker hub image informations. If you have it hosted in a 3rd party repository please fill in the container checksum manually.'
+        i18n._(
+          'Could not fetch docker hub image informations. If you have it hosted in a 3rd party repository please fill in the container checksum manually.'
+        )
       )
       return containerInfo
     }
@@ -162,11 +167,15 @@ export async function getContainerChecksum(
       ? error.response?.data?.error
       : undefined
     toast.error(
-      typeof responseMessage === 'string'
-        ? responseMessage
-        : credentials
-        ? 'Could not resolve the private Docker image checksum.'
-        : 'Could not fetch docker hub image informations. If you have it hosted in a 3rd party repository please fill in the container checksum manually.'
+      i18n._(
+        typeof responseMessage === 'string'
+          ? responseMessage
+          : credentials
+          ? i18n._('Could not resolve the private Docker image checksum.')
+          : i18n._(
+              'Could not fetch docker hub image informations. If you have it hosted in a 3rd party repository please fill in the container checksum manually.'
+            )
+      )
     )
     return containerInfo
   }
@@ -179,7 +188,12 @@ export async function getConcreteDockerImageTag(
   if (tag !== 'latest') {
     const containerInfo = await getContainerChecksum(image, tag)
     if (!containerInfo.checksum) {
-      throw new Error(`Could not resolve the checksum for ${image}:${tag}.`)
+      throw new Error(
+        i18n._('Could not resolve the checksum for {image}:{tag}.', {
+          image,
+          tag
+        })
+      )
     }
     return { tag, checksum: containerInfo.checksum }
   }
@@ -196,7 +210,10 @@ export async function getConcreteDockerImageTag(
       const result = response?.data?.result as ConcreteDockerImageTag
       if (!response?.data?.success || !result?.tag || !result?.checksum) {
         throw new Error(
-          `Could not resolve a concrete version tag for ${image}:${tag}.`
+          i18n._(
+            'Could not resolve a concrete version tag for {image}:{tag}.',
+            { image, tag }
+          )
         )
       }
       return result

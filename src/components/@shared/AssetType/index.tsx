@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import cs from 'classnames'
 import styles from './index.module.css'
@@ -24,6 +26,8 @@ export default function AssetType({
   showIcon?: boolean
   className?: string
 }): ReactElement {
+  useLingui()
+
   const isDataset = type === 'dataset'
   const isSaas = type === 'saas'
 
@@ -34,15 +38,19 @@ export default function AssetType({
           (isSaas ? (
             <Saas
               role="img"
-              aria-label="Software as a Service"
+              aria-label={i18n._('Software as a Service')}
               className={styles.icon}
             />
           ) : isDataset ? (
-            <Dataset role="img" aria-label="Dataset" className={styles.icon} />
+            <Dataset
+              role="img"
+              aria-label={i18n._('Dataset')}
+              className={styles.icon}
+            />
           ) : (
             <Algorithm
               role="img"
-              aria-label="Algorithm"
+              aria-label={i18n._('Algorithm')}
               className={`${styles.icon} ${styles.algorithmIcon}`}
             />
           ))}
@@ -53,7 +61,11 @@ export default function AssetType({
             saasTypeLabel: isSaas
           })}
         >
-          {isSaas ? 'saas' : isDataset ? 'dataset' : 'algorithm'}
+          {isSaas
+            ? 'SaaS'
+            : isDataset
+            ? i18n._('Dataset')
+            : i18n._('Algorithm')}
         </div>
       </div>
     )
@@ -62,24 +74,36 @@ export default function AssetType({
   return (
     <div className={cs(styles.wrapper, className || null)}>
       {accessType === 'access' ? (
-        <Download role="img" aria-label="Download" className={styles.icon} />
+        <Download
+          role="img"
+          aria-label={i18n._('Download')}
+          className={styles.icon}
+        />
       ) : accessType === 'saas' ? (
         <Saas
           role="img"
-          aria-label="Software as a Service"
+          aria-label={i18n._('Software as a Service')}
           className={styles.icon}
         />
       ) : accessType === 'compute' && type === 'algorithm' ? (
-        <Lock role="img" aria-label="Private" className={styles.icon} />
+        <Lock
+          role="img"
+          aria-label={i18n._('Private')}
+          className={styles.icon}
+        />
       ) : (
-        <Compute role="img" aria-label="Compute" className={styles.icon} />
+        <Compute
+          role="img"
+          aria-label={i18n._('Compute')}
+          className={styles.icon}
+        />
       )}
       <div className={styles.accessLabel}>
         {accessType === 'saas'
           ? null
           : accessType === 'access'
-          ? 'download'
-          : 'compute'}
+          ? i18n._('Download')
+          : i18n._('Compute')}
       </div>
       <div
         className={cx({
@@ -88,10 +112,10 @@ export default function AssetType({
         })}
       >
         {type === 'dataset'
-          ? 'dataset'
+          ? i18n._('Dataset')
           : type === 'saas'
-          ? 'saas'
-          : 'algorithm'}
+          ? 'SaaS'
+          : i18n._('Algorithm')}
       </div>
     </div>
   )

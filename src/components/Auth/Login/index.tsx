@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import appConfig from 'app.config.cjs'
@@ -15,6 +17,8 @@ interface LoginProps {
 }
 
 export default function Login({ content, initialTab = 'login' }: LoginProps) {
+  useLingui()
+
   const { isAuthenticated, authEnabled } = useAuth()
   const { isConnected } = useAccount()
   const { sessionToken, isSsiStateHydrated } = useSsiWallet()
@@ -26,13 +30,13 @@ export default function Login({ content, initialTab = 'login' }: LoginProps) {
     if (error) {
       switch (error) {
         case 'access_denied':
-          toast.error('Access denied. Please try again.')
+          toast.error(i18n._('Access denied. Please try again.'))
           break
         case 'auth_failed':
-          toast.error('Authentication failed. Please try again.')
+          toast.error(i18n._('Authentication failed. Please try again.'))
           break
         default:
-          toast.error('Authentication error. Please try again.')
+          toast.error(i18n._('Authentication error. Please try again.'))
       }
       const nextQuery = { ...router.query }
       delete nextQuery.error

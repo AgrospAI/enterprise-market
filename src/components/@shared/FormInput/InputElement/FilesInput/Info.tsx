@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { prettySize } from './utils'
 import cleanupContentType from '@utils/cleanupContentType'
@@ -10,6 +11,8 @@ export default function FileInfo({
 }: {
   file: FileInfoData
 }): ReactElement {
+  useLingui()
+
   const contentTypeCleaned = file.contentType
     ? cleanupContentType(file.contentType)
     : null
@@ -31,13 +34,15 @@ export default function FileInfo({
         {shouldShowConfirmed && (
           <div className={styles.defaultContainer}>
             <CircleCheckIcon />
-            <div className={styles.confirmed}>File confirmed</div>
+            <div className={styles.confirmed}>
+              <Trans id="File confirmed" />
+            </div>
           </div>
         )}
         {isEncrypted && (
           <div className={styles.defaultContainer}>
             <div className={styles.confirmed}>
-              Encrypted file (URL not editable)
+              <Trans id="Encrypted file (URL not editable)" />{' '}
             </div>
           </div>
         )}

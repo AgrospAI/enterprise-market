@@ -1,10 +1,12 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Button from '../../atoms/Button'
 import Input from '../../FormInput'
 import { getFieldContent } from '@utils/form'
 import styles from './Block.module.css'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 import DeleteButton from '../../DeleteButton/DeleteButton'
 
 interface CustomUrlPolicyBlockProps {
@@ -24,6 +26,8 @@ export default function CustomUrlPolicyBlock({
   onDelete,
   onValueChange
 }: CustomUrlPolicyBlockProps): ReactElement {
+  useLingui()
+
   function newArgument() {
     if (!policy.arguments) {
       policy.arguments = []
@@ -41,8 +45,8 @@ export default function CustomUrlPolicyBlock({
     <div className={styles.block}>
       <div className={`${styles.header}`}>
         <Field
-          label="Custom URL Policy Name"
-          placeholder="Enter policy name"
+          label={i18n._('Custom URL Policy Name')}
+          placeholder={i18n._('Enter policy name')}
           component={Input}
           name={`${name}.requestCredentials[${index}].policies[${innerIndex}].name`}
           required
@@ -87,7 +91,7 @@ export default function CustomUrlPolicyBlock({
           onClick={newArgument}
           className={styles.newArgument}
         >
-          New argument
+          <Trans id="New argument" />{' '}
         </Button>
       </div>
     </div>

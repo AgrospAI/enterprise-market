@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useEffect, useState } from 'react'
 import { Heading } from '@utils/extractHeadings'
 import styles from './index.module.css'
@@ -9,6 +10,8 @@ interface TableOfContentsProps {
 export default function TableOfContents({
   headings
 }: TableOfContentsProps): ReactElement {
+  useLingui()
+
   const [activeId, setActiveId] = useState<string>('')
 
   useEffect(() => {
@@ -114,7 +117,9 @@ export default function TableOfContents({
   return (
     <nav className={styles.container}>
       <div className={styles.sticky}>
-        <h3 className={styles.title}>Contents</h3>
+        <h3 className={styles.title}>
+          <Trans id="Contents" />
+        </h3>
         <ul className={styles.list}>
           {headings.map((heading) => (
             <li

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import { useRouter } from 'next/router'
 import PageTemplateAssetDetails from '../../../components/Asset'
@@ -6,6 +7,8 @@ import ProfileProvider from '@context/Profile'
 import { useAccount } from 'wagmi'
 
 export default function PageAssetDetails(): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { did } = router.query
 

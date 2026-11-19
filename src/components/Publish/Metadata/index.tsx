@@ -1,7 +1,9 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
-import content from '../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../i18n/content'
 import { getFieldContent } from '@utils/form'
 import { FileUpload } from '@components/@shared/FileUpload'
 import Label from '@components/@shared/FormInput/Label'
@@ -12,9 +14,12 @@ import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
 import DockerRegistryChecksum from '@shared/DockerRegistryChecksum'
 import { FormPublishData } from '../_types'
+import appConfig from 'app.config.cjs'
 import GeoMetadataFields from '@shared/GeoMetadataFields'
 
 export default function MetadataFields(): ReactElement {
+  useLingui()
+
   const { setFieldTouched, setFieldValue } = useFormikContext<FormPublishData>()
   const {
     values,
@@ -80,11 +85,13 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.tags"
       />
-      <Field
-        {...getFieldContent('ontologyTerms', content.metadata.fields)}
-        component={Input}
-        name="metadata.ontologyTerms"
-      />
+      {appConfig.agroPortalEnabled && (
+        <Field
+          {...getFieldContent('ontologyTerms', content.metadata.fields)}
+          component={Input}
+          name="metadata.ontologyTerms"
+        />
+      )}
       <Field
         {...getFieldContent('author', content.metadata.fields)}
         component={Input}
@@ -146,7 +153,7 @@ export default function MetadataFields(): ReactElement {
 
       {values.metadata.type === 'algorithm' && (
         <>
-          <SectionContainer title="Docker configuration" required>
+          <SectionContainer title={i18n._('Docker configuration')} required>
             <Field
               {...getFieldContent('dockerImage', content.metadata.fields)}
               component={Input}
@@ -205,7 +212,7 @@ export default function MetadataFields(): ReactElement {
         </>
       )}
 
-      <SectionContainer title="License Type" required>
+      <SectionContainer title={i18n._('License Type')} required>
         <div
           className={`${styles.licenseContainer} ${styles.licenseInteractionScope}`}
         >
@@ -233,7 +240,8 @@ export default function MetadataFields(): ReactElement {
           {primaryLicenseType === 'Upload license file' && (
             <div className={styles.licenseUrlContainer}>
               <Label htmlFor="license" className={styles.primaryLicenseLabel}>
-                License File <span className={styles.required}>*</span>
+                <Trans id="License File" />{' '}
+                <span className={styles.required}>*</span>
               </Label>
               <FileUpload
                 fileName={values.metadata.uploadedLicense?.name}
@@ -242,7 +250,7 @@ export default function MetadataFields(): ReactElement {
                     ?.size as number | undefined
                 }
                 fileType={primaryUploadedLicenseDocument?.fileType}
-                buttonLabel="Upload File"
+                buttonLabel={i18n._('Upload File')}
                 setFileItem={handleLicenseFileUpload}
                 buttonStyle="accent"
                 disabled={!!primaryUploadedLicenseDocument}

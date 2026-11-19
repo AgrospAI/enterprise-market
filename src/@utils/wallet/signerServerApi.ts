@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import type { Address, Hex } from 'viem'
 import { getCookieValue } from '../cookies'
 
@@ -50,7 +51,7 @@ async function signerServerRequest<T>(
   }
 
   if (!response.ok) {
-    throw new Error(data.error || 'Signer server request failed.')
+    throw new Error(data.error || i18n._('Signer server request failed.'))
   }
 
   return data as T

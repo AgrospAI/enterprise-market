@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { isCID } from '@utils/ipfs'
 import isUrl from 'is-url-superb'
 import * as Yup from 'yup'
@@ -19,7 +20,9 @@ export function getOriginalValue(
 
 // Optional URL field validation, reused by the metadata `providedBy` and
 // `links` value fields. Empty passes; scheme-less hosts are accepted.
-export function testOptionalUrl(message = 'Must be a valid URL.') {
+export function testOptionalUrl(
+  message: string | (() => string) = () => i18n._('Must be a valid URL.')
+) {
   return Yup.string().test('optional-url', message, (value) =>
     isValidWebUrl(value)
   )
@@ -44,7 +47,7 @@ export function testLinks(_isEdit?: boolean) {
         // if we're in publish, the field must be valid
         if (!validField) {
           validField = false
-          errorMessage = 'Must be a valid url.'
+          errorMessage = i18n._('Must be a valid url.')
         }
         // we allow submit on empty sample field
         if (
@@ -57,25 +60,28 @@ export function testLinks(_isEdit?: boolean) {
         // if the url has google drive, we need to block the user from submit
         if (isGoogleUrl(value?.toString())) {
           validField = false
-          errorMessage =
+          errorMessage = i18n._(
             'Google Drive is not a supported hosting service. Please use an alternative.'
+          )
         }
         break
       case 'ipfs':
         validField = isCID(value?.toString())
-        errorMessage = !value?.toString() ? 'CID required.' : 'CID not valid.'
+        errorMessage = !value?.toString()
+          ? i18n._('CID required.')
+          : i18n._('CID not valid.')
         break
       case 'arweave':
         validField = value && !value?.toString().includes('http')
         errorMessage = !value?.toString()
-          ? 'Transaction ID required.'
-          : 'Transaction ID not valid.'
+          ? i18n._('Transaction ID required.')
+          : i18n._('Transaction ID not valid.')
         break
       case 'smartcontract':
         validField = isAddress(value?.toString())
         errorMessage = !value?.toString()
-          ? 'Address required.'
-          : 'Address not valid.'
+          ? i18n._('Address required.')
+          : i18n._('Address not valid.')
         break
     }
 
@@ -95,13 +101,13 @@ export const validationGeoMetadata = Yup.object()
   .shape({
     boundingBox: Yup.object().shape({
       wkt: Yup.string(),
-      label: Yup.string().max(256, 'Location name is too long')
+      label: Yup.string().max(256, () => i18n._('Location name is too long'))
     }),
     temporalCoverage: Yup.object().shape({
       startDate: Yup.string(),
       endDate: Yup.string().test(
         'endAfterStart',
-        'End date must be on or after the start date',
+        () => i18n._('End date must be on or after the start date'),
         (endDate, context) => {
           const { startDate } = context.parent
           return !startDate || !endDate || endDate >= startDate

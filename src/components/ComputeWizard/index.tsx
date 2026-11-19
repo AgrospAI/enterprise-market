@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import ComputeWizardController from './ComputeWizardController'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -25,6 +26,8 @@ interface ComputeWizardProps {
 }
 
 export default function ComputeWizard(props: ComputeWizardProps): ReactElement {
+  useLingui()
+
   const { asset, mode: explicitMode } = props
   const assetType = asset?.credentialSubject?.metadata?.type
   const mode: ComputeMode =

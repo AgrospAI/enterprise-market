@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useCallback, useEffect, useState } from 'react'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getComputeEnvironments } from '@utils/provider'
@@ -28,12 +29,13 @@ export function useComputeEnvironments({
       setComputeEnvs(envs)
     } catch (error) {
       const message =
-        (error as Error)?.message || 'Failed to load compute environments'
+        (error as Error)?.message ||
+        i18n._('Failed to load compute environments')
       setComputeEnvsError(message)
     } finally {
       setIsLoadingComputeEnvs(false)
     }
-  }, [serviceEndpoint, chainId])
+  }, [serviceEndpoint, chainId, i18n.locale])
 
   useEffect(() => {
     if (!enabled) return

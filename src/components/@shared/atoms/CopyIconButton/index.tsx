@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import {
   ReactElement,
   ReactNode,
@@ -29,16 +31,18 @@ export default function CopyIconButton({
   text,
   variant = 'inline',
   disabled,
-  copyAriaLabel = 'Copy to clipboard',
-  copiedAriaLabel = 'Copied',
-  copyTitle = 'Copy to clipboard',
-  copiedTitle = 'Copied',
+  copyAriaLabel = i18n._('Copy to clipboard'),
+  copiedAriaLabel = i18n._('Copied'),
+  copyTitle = i18n._('Copy to clipboard'),
+  copiedTitle = i18n._('Copied'),
   showStateLabel,
-  copyLabel = 'Copy',
-  copiedLabel = 'Copied',
+  copyLabel = i18n._('Copy'),
+  copiedLabel = i18n._('Copied'),
   resetAfterMs = 2000,
   renderStatus
 }: CopyIconButtonProps): ReactElement {
+  useLingui()
+
   const [copied, setCopied] = useState(false)
   const timeoutRef = useRef<number | null>(null)
 

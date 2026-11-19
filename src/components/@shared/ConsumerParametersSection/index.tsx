@@ -1,9 +1,13 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { Field, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
 import { getFieldContent } from '@utils/form'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import content from '../../../../content/publish/form.json'
+import {
+  contentPublishConsumerParameters as consumerParametersContent,
+  contentPublishForm as content
+} from '../../../i18n/content'
 import SectionContainer from '../SectionContainer/SectionContainer'
 import { FormPublishData } from '../../Publish/_types'
 import { isFileTypeCompatibleWithConsumerParameters } from '@utils/fileTypes'
@@ -16,11 +20,13 @@ interface ConsumerParametersSectionProps {
 }
 
 export default function ConsumerParametersSection({
-  title = 'Consumer Parameters',
+  title = i18n._('Consumer Parameters'),
   fieldNamePrefix,
   type = 'consumerParameters',
   help
 }: ConsumerParametersSectionProps): ReactElement {
+  useLingui()
+
   const { values } = useFormikContext<FormPublishData>()
 
   const getFieldValue = (field: string) => {

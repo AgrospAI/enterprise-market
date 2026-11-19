@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useEffect, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { Contract, getAddress, JsonRpcProvider } from 'ethers'
@@ -21,7 +22,14 @@ function withTimeout<T>(
 ): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-      reject(new Error(`${context} timed out after ${timeoutMs}ms`))
+      reject(
+        new Error(
+          i18n._('{context} timed out after {timeoutMs}ms', {
+            context,
+            timeoutMs
+          })
+        )
+      )
     }, timeoutMs)
 
     promise
@@ -158,7 +166,9 @@ export default function useValidatedSupportedChains() {
         if (!cancelled) {
           setValidatedSupportedChains([])
           setSupportedChainsValidationError(
-            error instanceof Error ? error.message : 'Chain validation failed'
+            error instanceof Error
+              ? error.message
+              : i18n._('Chain validation failed')
           )
         }
       } finally {

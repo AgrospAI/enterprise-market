@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import {
   ChangeEvent,
   ReactElement,
@@ -65,6 +67,8 @@ export default function SsiWalletControl({
   walletRequiredMessage,
   showConnectedToast = false
 }: SsiWalletControlProps): ReactElement {
+  useLingui()
+
   const {
     sessionToken,
     setSessionToken,
@@ -193,12 +197,12 @@ export default function SsiWalletControl({
 
   const reconnectSession = useCallback(async () => {
     if (!isConnected) {
-      toast.error(walletRequiredMessage)
+      toast.error(i18n._(walletRequiredMessage))
       return { success: false as const, session: undefined }
     }
 
     if (!walletClient) {
-      toast.error('Wallet signer not available')
+      toast.error(i18n._('Wallet signer not available'))
       return { success: false as const, session: undefined }
     }
 
@@ -221,7 +225,7 @@ export default function SsiWalletControl({
       const nextSession = await connectToWallet(walletClient)
       setSessionToken(nextSession)
       if (showConnectedToast) {
-        toast.success('SSI Wallet Connected')
+        toast.success(i18n._('SSI Wallet Connected'))
       }
 
       return { success: true as const, session: nextSession }
@@ -229,8 +233,8 @@ export default function SsiWalletControl({
       setSessionToken(undefined)
       LoggerInstance.error('SSI connect error:', error)
       const message =
-        error instanceof Error ? error.message : 'SSI connection failed'
-      toast.error(message)
+        error instanceof Error ? error.message : i18n._('SSI connection failed')
+      toast.error(i18n._(message))
       return { success: false as const, session: undefined }
     }
   }, [
@@ -240,7 +244,8 @@ export default function SsiWalletControl({
     ensureAllowedChainForSsi,
     sessionToken,
     setSessionToken,
-    showConnectedToast
+    showConnectedToast,
+    i18n.locale
   ])
 
   const runWhileBusy = useCallback(
@@ -269,10 +274,17 @@ export default function SsiWalletControl({
         setShowDialog(true)
       } catch (error) {
         LoggerInstance.error(error)
-        toast.error('Failed to load SSI data')
+        toast.error(i18n._('Failed to load SSI data'))
       }
     })
-  }, [runWhileBusy, reconnectSession, fetchWallets, fetchDids, fetchKeys])
+  }, [
+    runWhileBusy,
+    reconnectSession,
+    fetchWallets,
+    fetchDids,
+    fetchKeys,
+    i18n.locale
+  ])
 
   const handleConnectClick = useCallback(async () => {
     await runWhileBusy(async () => {
@@ -321,8 +333,13 @@ export default function SsiWalletControl({
     ssiWalletCache.clearCredentials()
     setCachedCredentials([])
     clearVerifierSessionCache()
-    toast.info('SSI wallet cache cleared')
-  }, [ssiWalletCache, setCachedCredentials, clearVerifierSessionCache])
+    toast.info(i18n._('SSI wallet cache cleared'))
+  }, [
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache,
+    i18n.locale
+  ])
 
   if (!appConfig.ssiEnabled) {
     return <></>
@@ -331,7 +348,7 @@ export default function SsiWalletControl({
   return (
     <>
       <Modal
-        title="SSI Wallets & Keys"
+        title={i18n._('SSI Wallets & Keys')}
         isOpen={showDialog}
         onToggleModal={() => setShowDialog(false)}
         shouldCloseOnOverlayClick={false}
@@ -339,12 +356,14 @@ export default function SsiWalletControl({
       >
         <div className={styles.panelColumn}>
           <div className={styles.marginBottom1}>
-            <label>SSI Wallet URL:</label>
+            <label>
+              <Trans id="SSI Wallet URL:" />
+            </label>
             <div className={styles.inputField}>{getSsiWalletApi()}</div>
           </div>
 
           <label htmlFor="ssiWallets" className={styles.marginBottom7px}>
-            Choose your wallet:
+            <Trans id="Choose your wallet:" />{' '}
           </label>
           <select
             value={selectedWallet?.id}
@@ -360,7 +379,7 @@ export default function SsiWalletControl({
           </select>
 
           <label htmlFor="ssiDids" className={styles.marginBottom7px}>
-            Choose the Publisher&apos;s DID:
+            <Trans id="Choose the Publisher's DID:" />{' '}
           </label>
           <select
             value={selectedDid}
@@ -376,7 +395,7 @@ export default function SsiWalletControl({
           </select>
 
           <label htmlFor="ssiKeys" className={styles.marginBottom7px}>
-            Choose your signing key:
+            <Trans id="Choose your signing key:" />{' '}
           </label>
           <select
             value={selectedKey?.keyId.id}
@@ -397,7 +416,9 @@ export default function SsiWalletControl({
 
           {safeCachedCredentials.length > 0 ? (
             <div className={styles.marginBottom2}>
-              <label>Cached Credentials:</label>
+              <label>
+                <Trans id="Cached Credentials:" />
+              </label>
               <ul className={styles.list}>
                 {safeCachedCredentials.map((credential, index) => (
                   <li
@@ -420,7 +441,7 @@ export default function SsiWalletControl({
               className={`${styles.width100p} ${styles.closeButton}`}
               onClick={() => setShowDialog(false)}
             >
-              Close
+              <Trans id="Close" />{' '}
             </Button>
             <Button
               style="primary"
@@ -428,7 +449,7 @@ export default function SsiWalletControl({
               className={`${styles.width100p} ${styles.resetButton} ${styles.marginBottom1}`}
               onClick={handleResetWalletCache}
             >
-              Reset Wallet Cache
+              <Trans id="Reset Wallet Cache" />{' '}
             </Button>
           </div>
         </div>
@@ -443,11 +464,13 @@ export default function SsiWalletControl({
         disabled={isSsiBusy}
         aria-label={
           isConnectedWithSession
-            ? 'Open SSI wallet selector'
-            : 'Connect to SSI wallet'
+            ? i18n._('Open SSI wallet selector')
+            : i18n._('Connect to SSI wallet')
         }
       >
-        <span className={styles.text}>SSI</span>
+        <span className={styles.text}>
+          <Trans id="SSI" />
+        </span>
 
         <span className={styles.iconWrapper}>
           {isSsiBusy ? (

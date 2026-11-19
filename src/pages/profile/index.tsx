@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import Page from '@shared/Page'
 import ProfilePage from '../../components/Profile'
@@ -5,9 +7,11 @@ import ProfileProvider from '@context/Profile'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { isAddress } from 'ethers'
-import content from '../../../content/pages/profile.json'
+import { contentPagesProfile as content } from '../../i18n/content'
 
 export default function PageProfile(): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { address: accountId, isConnecting, isReconnecting } = useAccount()
   const [finalAccountId, setFinalAccountId] = useState<string>()
@@ -54,7 +58,7 @@ export default function PageProfile(): ReactElement {
   return (
     <Page
       uri={router.route}
-      title={ownAccount ? 'My Profile' : content.title}
+      title={ownAccount ? i18n._('My Profile') : content.title}
       description={content.description}
       noPageHeader
     >

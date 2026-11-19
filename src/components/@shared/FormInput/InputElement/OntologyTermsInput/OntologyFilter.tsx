@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import { OnChangeValue } from 'react-select'
@@ -19,6 +21,8 @@ export default function OntologyFilter({
   inputId,
   onChange
 }: Props): ReactElement {
+  useLingui()
+
   const [options, setOptions] = useState<AutoCompleteOption[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isUnavailable, setIsUnavailable] = useState<boolean>(false)
@@ -68,9 +72,9 @@ export default function OntologyFilter({
       openMenuOnClick
       isLoading={isLoading}
       noOptionsMessage={() =>
-        isUnavailable ? 'Service unavailable' : 'No options'
+        isUnavailable ? i18n._('Service unavailable') : i18n._('No options')
       }
-      placeholder="e.g. AGROVOC"
+      placeholder={i18n._('e.g. AGROVOC')}
       theme={(theme) => ({
         ...theme,
         colors: { ...theme.colors, primary25: 'var(--border-color)' }

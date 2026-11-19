@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import { FixedRateExchange, PriceAndFees } from '@oceanprotocol/lib'
 import { Signer } from 'ethers'
 import { getOceanConfig } from '.'

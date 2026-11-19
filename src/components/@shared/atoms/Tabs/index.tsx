@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import { Tab, Tabs as ReactTabs, TabList, TabPanel } from 'react-tabs'
 import InputRadio from '@shared/FormInput/InputElement/Radio'
@@ -29,6 +30,8 @@ export default function Tabs({
   variant = 'default',
   isEditPage = false
 }: TabsProps): ReactElement {
+  useLingui()
+
   const currentSelectedIndex = selectedIndex ?? 0
 
   return (

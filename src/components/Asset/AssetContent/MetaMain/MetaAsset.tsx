@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import Publisher from '@shared/Publisher'
 import { ReactElement } from 'react'
 import styles from './MetaAsset.module.css'
@@ -8,10 +9,13 @@ export default function MetaAsset({
 }: {
   asset: AssetExtended
 }): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.wrapper}>
       <span className={styles.owner}>
-        Owned by <Publisher account={asset?.indexedMetadata?.nft?.owner} />
+        <Trans id="Owned by" />{' '}
+        <Publisher account={asset?.indexedMetadata?.nft?.owner} />
       </span>
     </div>
   )

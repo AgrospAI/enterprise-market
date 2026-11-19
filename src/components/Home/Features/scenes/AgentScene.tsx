@@ -1,3 +1,5 @@
+import { i18n } from '../../../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 import { CSSProperties, ReactElement } from 'react'
 import styles from './AgentScene.module.css'
 
@@ -8,25 +10,43 @@ const LOG = { x: '81%', y: '68%' }
 // Order = animation order (step index drives the stagger)
 const NODES = [
   {
-    org: 'Org A',
-    kind: 'Dataset',
-    action: 'discover',
+    get org() {
+      return i18n._('Org A')
+    },
+    get kind() {
+      return i18n._('Dataset')
+    },
+    get action() {
+      return i18n._('discover')
+    },
     x: '21%',
     y: '24%',
     dot: 'var(--deck-blue)'
   },
   {
-    org: 'Org C',
-    kind: 'Compute',
-    action: 'compute',
+    get org() {
+      return i18n._('Org C')
+    },
+    get kind() {
+      return i18n._('Compute')
+    },
+    get action() {
+      return i18n._('compute')
+    },
     x: '79%',
     y: '24%',
     dot: 'var(--deck-cyan)'
   },
   {
-    org: 'Org B',
-    kind: 'Model',
-    action: 'pay',
+    get org() {
+      return i18n._('Org B')
+    },
+    get kind() {
+      return i18n._('Model')
+    },
+    get action() {
+      return i18n._('pay')
+    },
     x: '21%',
     y: '70%',
     dot: 'var(--brand-highlight)'
@@ -39,6 +59,8 @@ const DASHES = `${Array(25).fill('2 2').join(' ')} 0 100`
 const stepClass = [styles.s1, styles.s2, styles.s3]
 
 function Check(): ReactElement {
+  useLingui()
+
   return (
     <svg className={styles.icon} viewBox="0 0 24 24">
       <path d="M20 6 9 17l-5-5" />
@@ -47,6 +69,8 @@ function Check(): ReactElement {
 }
 
 export default function AgentScene(): ReactElement {
+  useLingui()
+
   return (
     <div
       className={styles.scene}
@@ -118,7 +142,9 @@ export default function AgentScene(): ReactElement {
             <path d="m9 12 2 2 4-4" />
           </svg>
         </span>
-        <span className={styles.agentLabel}>AI agent</span>
+        <span className={styles.agentLabel}>
+          <Trans id="AI agent" />
+        </span>
       </div>
 
       <div
@@ -127,7 +153,7 @@ export default function AgentScene(): ReactElement {
       >
         <span className={styles.logTitle}>
           <span className={styles.live} />
-          Activity log
+          <Trans id="Activity log" />{' '}
         </span>
         <ul className={styles.rows}>
           {NODES.map((node, i) => (

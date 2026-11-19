@@ -1,7 +1,9 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement } from 'react'
 import { useChainId } from 'wagmi'
 import Image from 'next/image'
-import content from '../../../../../../content/onboarding/steps/faucet.json'
+import { contentOnboardingStepsFaucet as content } from '../../../../../i18n/content'
 import StepHeader from '../../StepHeader'
 import USDCIcon from '@images/USDC_Token_Logo.svg'
 import EURCIcon from '@images/EURC_Token_Logo.svg'
@@ -39,11 +41,15 @@ interface NetworkFaucets {
 
 const FAUCETS_BY_CHAIN: Record<number, NetworkFaucets> = {
   11155111: {
-    name: 'Ethereum Sepolia',
+    get name() {
+      return i18n._('Ethereum Sepolia')
+    },
     isTestnet: true,
     gas: [
       {
-        label: 'ETH Sepolia Faucet',
+        get label() {
+          return i18n._('ETH Sepolia Faucet')
+        },
         url: 'https://cloud.google.com/application/web3/faucet/ethereum/sepolia',
         icon: ETHIcon
       }
@@ -55,11 +61,15 @@ const FAUCETS_BY_CHAIN: Record<number, NetworkFaucets> = {
     ]
   },
   11155420: {
-    name: 'Optimism Sepolia',
+    get name() {
+      return i18n._('Optimism Sepolia')
+    },
     isTestnet: true,
     gas: [
       {
-        label: 'OP Sepolia Faucet',
+        get label() {
+          return i18n._('OP Sepolia Faucet')
+        },
         url: 'https://www.alchemy.com/faucets/optimism-sepolia',
         icon: ETHIcon
       }
@@ -69,28 +79,40 @@ const FAUCETS_BY_CHAIN: Record<number, NetworkFaucets> = {
     ]
   },
   1: {
-    name: 'Ethereum Mainnet',
+    get name() {
+      return i18n._('Ethereum Mainnet')
+    },
     isTestnet: false
   },
   10: {
-    name: 'Optimism Mainnet',
+    get name() {
+      return i18n._('Optimism Mainnet')
+    },
     isTestnet: false
   },
   137: {
-    name: 'Polygon Mainnet',
+    get name() {
+      return i18n._('Polygon Mainnet')
+    },
     isTestnet: false
   },
   56: {
-    name: 'BNB Smart Chain',
+    get name() {
+      return i18n._('BNB Smart Chain')
+    },
     isTestnet: false
   },
   43114: {
-    name: 'Avalanche C-Chain',
+    get name() {
+      return i18n._('Avalanche C-Chain')
+    },
     isTestnet: false
   }
 }
 
 const TokenIcon = ({ icon, label }: { icon?: string | any; label: string }) => {
+  useLingui()
+
   if (!icon) {
     return (
       <div className={styles.iconWrapper}>
@@ -125,6 +147,8 @@ const ExchangeIcon = ({
   icon?: string | any
   name: string
 }) => {
+  useLingui()
+
   if (!icon) {
     return (
       <div className={styles.exchangeIconWrapper}>
@@ -173,7 +197,10 @@ const FaucetLink = ({ label, url, icon }: FaucetLinkType): ReactElement => (
         </a>
       ) : (
         <span className={styles.disabled}>
-          {label} <small className={styles.comingSoon}>(coming soon)</small>
+          {label}{' '}
+          <small className={styles.comingSoon}>
+            <Trans id="(coming soon)" />
+          </small>
         </span>
       )}
     </div>
@@ -187,6 +214,8 @@ const ExchangeLink = ({
   name: string
   url: string
 }): ReactElement => {
+  useLingui()
+
   const icon = EXCHANGE_ICONS[name]
 
   return (
@@ -218,7 +247,9 @@ const TestnetView = ({
           <summary className={styles.summary}>
             <div className={styles.summaryLabel}>
               <span className={styles.emoji}>⛽</span>
-              <span>Gas Faucets</span>
+              <span>
+                <Trans id="Gas Faucets" />
+              </span>
             </div>
             <div className={styles.chevron} />
           </summary>
@@ -235,7 +266,9 @@ const TestnetView = ({
           <summary className={styles.summary}>
             <div className={styles.summaryLabel}>
               <span className={styles.emoji}>🪙</span>
-              <span>Token Faucets</span>
+              <span>
+                <Trans id="Token Faucets" />
+              </span>
             </div>
             <div className={styles.chevron} />
           </summary>
@@ -266,6 +299,8 @@ const MainnetView = ({ content }: { content: any }): ReactElement => (
 )
 
 export default function Faucet(): ReactElement {
+  useLingui()
+
   const chainId = useChainId()
   const network = chainId ? FAUCETS_BY_CHAIN[chainId] : undefined
 
@@ -281,7 +316,7 @@ export default function Faucet(): ReactElement {
         {!network && (
           <div className={styles.errorContainer}>
             <p className={styles.error}>
-              ❌ Please connect to a supported network.
+              <Trans id="❌ Please connect to a supported network." />{' '}
             </p>
           </div>
         )}

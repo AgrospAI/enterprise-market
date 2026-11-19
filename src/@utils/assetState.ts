@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 export function assetStateToString(state: number): string {
   switch (state) {
     case 0:
@@ -36,4 +37,11 @@ export function assetStateToNumber(state: string): number {
     default:
       break
   }
+}
+
+/** Localize state labels without changing values serialized by the edit forms. */
+export function displayAssetState(state: string): string {
+  return state === 'OrderingIsTemporaryDisabled'
+    ? i18n._('Ordering temporarily disabled')
+    : i18n._(state)
 }

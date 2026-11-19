@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { getRuntimeConfig } from './runtimeConfig'
 
 export interface CredentialStatus {
@@ -50,16 +51,19 @@ export function checkCredentialExpiration(expiresAt: number): CredentialStatus {
 
 export function getTimeRemainingText(timeRemaining: number): string {
   if (timeRemaining <= 0) {
-    return 'Credentials expired'
+    return i18n._('Credentials expired')
   }
 
   const minutes = Math.floor(timeRemaining / (1000 * 60))
   const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000)
 
   if (minutes > 0) {
-    return `Credentials valid for ${minutes}m ${seconds}s`
+    return i18n._('Credentials valid for {minutes}m {seconds}s', {
+      minutes,
+      seconds
+    })
   } else {
-    return `Credentials valid for ${seconds}s`
+    return i18n._('Credentials valid for {seconds}s', { seconds })
   }
 }
 

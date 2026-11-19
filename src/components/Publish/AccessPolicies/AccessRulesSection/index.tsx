@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { useFormikContext } from 'formik'
 import { ReactElement, useState, useEffect } from 'react'
 import Input from '@components/@shared/FormInput'
@@ -22,6 +24,8 @@ interface AccessRulesSectionProps {
 export default function AccessRulesSection({
   fieldPrefix = 'credentials'
 }: AccessRulesSectionProps = {}): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<any>()
   const [allowInputValue, setAllowInputValue] = useState(
     values.credentials?.allowInputValue || ''
@@ -100,22 +104,22 @@ export default function AccessRulesSection({
     e.preventDefault()
 
     if (allowDropdownValue === 'Please select an option') {
-      toast.error('Please select an option for Allow ETH Address')
+      toast.error(i18n._('Please select an option for Allow ETH Address'))
       return
     }
 
     if (!allowInputValue.trim()) {
-      toast.error('Please enter an address')
+      toast.error(i18n._('Please enter an address'))
       return
     }
 
     if (!(allowInputValue === '*' || isAddress(allowInputValue))) {
-      toast.error('Wallet address is invalid')
+      toast.error(i18n._('Wallet address is invalid'))
       return
     }
 
     if (allowList.includes(allowInputValue.toLowerCase())) {
-      toast.error('Wallet address already added to the allow list')
+      toast.error(i18n._('Wallet address already added to the allow list'))
       return
     }
 
@@ -142,22 +146,22 @@ export default function AccessRulesSection({
     e.preventDefault()
 
     if (denyDropdownValue === 'Please select an option') {
-      toast.error('Please select an option for Deny ETH Address')
+      toast.error(i18n._('Please select an option for Deny ETH Address'))
       return
     }
 
     if (!denyInputValue.trim()) {
-      toast.error('Please enter an address')
+      toast.error(i18n._('Please enter an address'))
       return
     }
 
     if (!(denyInputValue === '*' || isAddress(denyInputValue))) {
-      toast.error('Wallet address is invalid')
+      toast.error(i18n._('Wallet address is invalid'))
       return
     }
 
     if (denyList.includes(denyInputValue.toLowerCase())) {
-      toast.error('Wallet address already added to the deny list')
+      toast.error(i18n._('Wallet address already added to the deny list'))
       return
     }
 
@@ -195,14 +199,18 @@ export default function AccessRulesSection({
   }
 
   return (
-    <SectionContainer title="Access Rules" gap="16px">
+    <SectionContainer title={i18n._('Access Rules')} gap="16px">
       <ContainerForm>
         <div>
           <Label htmlFor="allowDropdown">
-            Allow ETH Address
+            <Trans id="Allow ETH Address" />{' '}
             <Tooltip
               content={
-                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by selecting 'Allow all addresses'." />
+                <Markdown
+                  text={i18n._(
+                    "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by selecting 'Allow all addresses'."
+                  )}
+                />
               }
             />
           </Label>
@@ -234,7 +242,7 @@ export default function AccessRulesSection({
                 marginTop: '8px'
               }}
             >
-              All wallet addresses are allowed access.
+              <Trans id="All wallet addresses are allowed access." />{' '}
             </div>
           )}
         </div>
@@ -243,7 +251,7 @@ export default function AccessRulesSection({
           <>
             <InputElement
               name="allowAddress"
-              placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+              placeholder={i18n._('e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa')}
               value={allowInputValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setAllowInputValue(e.target.value)
@@ -258,7 +266,7 @@ export default function AccessRulesSection({
               type="button"
               disabled={!allowInputValue.trim()}
             >
-              <AddIcon /> Add new address
+              <AddIcon /> <Trans id="Add new address" />{' '}
             </Button>
           </>
         )}
@@ -269,7 +277,7 @@ export default function AccessRulesSection({
               <InputGroup key={`allow-${index}`}>
                 <InputElement
                   name={`allowAddress-${index}`}
-                  value={address === '*' ? 'All Wallets (*)' : address}
+                  value={address === '*' ? i18n._('All Wallets (*)') : address}
                   disabled
                 />
                 <DeleteButton
@@ -284,10 +292,14 @@ export default function AccessRulesSection({
       <ContainerForm gap="16px">
         <div>
           <Label htmlFor="denyDropdown">
-            Deny ETH Address
+            <Trans id="Deny ETH Address" />{' '}
             <Tooltip
               content={
-                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by selecting 'Deny all addresses'." />
+                <Markdown
+                  text={i18n._(
+                    "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by selecting 'Deny all addresses'."
+                  )}
+                />
               }
             />
           </Label>
@@ -319,7 +331,7 @@ export default function AccessRulesSection({
                 marginTop: '8px'
               }}
             >
-              All wallet addresses are denied access.
+              <Trans id="All wallet addresses are denied access." />{' '}
             </div>
           )}
         </div>
@@ -328,7 +340,7 @@ export default function AccessRulesSection({
           <>
             <InputElement
               name="denyAddress"
-              placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+              placeholder={i18n._('e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa')}
               value={denyInputValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setDenyInputValue(e.target.value)
@@ -343,7 +355,7 @@ export default function AccessRulesSection({
               type="button"
               disabled={!denyInputValue.trim()}
             >
-              <AddIcon /> Add new address
+              <AddIcon /> <Trans id="Add new address" />{' '}
             </Button>
           </>
         )}
@@ -354,7 +366,7 @@ export default function AccessRulesSection({
               <InputGroup key={`deny-${index}`}>
                 <InputElement
                   name={`denyAddress-${index}`}
-                  value={address === '*' ? 'All Wallets (*)' : address}
+                  value={address === '*' ? i18n._('All Wallets (*)') : address}
                   disabled
                 />
                 <DeleteButton

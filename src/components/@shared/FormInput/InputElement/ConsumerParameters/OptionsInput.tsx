@@ -1,3 +1,5 @@
+import { i18n } from '../../../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { FormPublishData } from '@components/Publish/_types'
 import classNames from 'classnames/bind'
@@ -9,6 +11,8 @@ import styles from './OptionsInput.module.css'
 const cx = classNames.bind(styles)
 
 export default function OptionsInput(props: any): ReactElement {
+  useLingui()
+
   const { errors, touched } = useFormikContext<FormPublishData>()
 
   const hasError = (): boolean =>
@@ -22,8 +26,8 @@ export default function OptionsInput(props: any): ReactElement {
         {...props}
         component={FormAlignedKeyValue}
         uniqueKeys
-        keyPlaceholder="value"
-        valuePlaceholder="label"
+        keyPlaceholder={i18n._('value')}
+        valuePlaceholder={i18n._('label')}
       />
 
       {hasError() && (

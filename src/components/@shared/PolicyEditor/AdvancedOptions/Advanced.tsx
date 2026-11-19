@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Input from '../../FormInput'
@@ -8,7 +10,7 @@ import cs from 'classnames'
 import VpRequiredCredentialsSection, {
   VpCredentialEntry
 } from './VpRequiredCredentialsSection'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 
 interface AdvancedOptionsProps {
   name: string
@@ -56,6 +58,8 @@ export default function AdvancedOptions({
   vpRequiredCredentials,
   onVpRequiredCredentialsChange
 }: AdvancedOptionsProps): ReactElement {
+  useLingui()
+
   const typeField = fields.find((f) => f.name === 'type')
   const credentialTypeOptions =
     typeField && Array.isArray(typeField.options)
@@ -68,10 +72,16 @@ export default function AdvancedOptions({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Advanced SSI Policy Features</h3>
+        <h3 className={styles.title}>
+          <Trans id="Advanced SSI Policy Features" />
+        </h3>
         <Tooltip
           content={
-            <Markdown text="Enable advanced features to customize your policy." />
+            <Markdown
+              text={i18n._(
+                'Enable advanced features to customize your policy.'
+              )}
+            />
           }
         />
       </div>
@@ -88,7 +98,11 @@ export default function AdvancedOptions({
           />
           <Tooltip
             content={
-              <Markdown text="Ensures that the entity presenting the credential is the same as the entity to whom the credential was issued." />
+              <Markdown
+                text={i18n._(
+                  'Ensures that the entity presenting the credential is the same as the entity to whom the credential was issued.'
+                )}
+              />
             }
           />
         </div>
@@ -106,7 +120,11 @@ export default function AdvancedOptions({
           />
           <Tooltip
             content={
-              <Markdown text="When enabled, all specified credential types must be presented for successful verification." />
+              <Markdown
+                text={i18n._(
+                  'When enabled, all specified credential types must be presented for successful verification.'
+                )}
+              />
             }
           />
         </div>
@@ -123,7 +141,11 @@ export default function AdvancedOptions({
             />
             <Tooltip
               content={
-                <Markdown text="Set the minimum number of credentials that must be presented for successful verification." />
+                <Markdown
+                  text={i18n._(
+                    'Set the minimum number of credentials that must be presented for successful verification.'
+                  )}
+                />
               }
             />
           </div>
@@ -162,7 +184,11 @@ export default function AdvancedOptions({
             />
             <Tooltip
               content={
-                <Markdown text="Set the maximum number of credentials that can be presented. Useful for limiting the scope of verification." />
+                <Markdown
+                  text={i18n._(
+                    'Set the maximum number of credentials that can be presented. Useful for limiting the scope of verification.'
+                  )}
+                />
               }
             />
           </div>
@@ -198,7 +224,11 @@ export default function AdvancedOptions({
             />
             <Tooltip
               content={
-                <Markdown text="Submits the Enveloped Verifiable Presentation to an external service for verification. Provide the service URL when enabled." />
+                <Markdown
+                  text={i18n._(
+                    'Submits the Enveloped Verifiable Presentation to an external service for verification. Provide the service URL when enabled.'
+                  )}
+                />
               }
             />
           </div>
@@ -240,7 +270,11 @@ export default function AdvancedOptions({
               />
               <Tooltip
                 content={
-                  <Markdown text="Specify which verifiable credentials are mandatory and which are optional" />
+                  <Markdown
+                    text={i18n._(
+                      'Specify which verifiable credentials are mandatory and which are optional'
+                    )}
+                  />
                 }
               />
             </div>

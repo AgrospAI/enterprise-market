@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useFormikContext } from 'formik'
 import { useEffect, useState, useMemo } from 'react'
 import { MetadataEditForm, FormAdditionalLicenseFile } from './_types'
@@ -325,7 +326,7 @@ export default function useEditMetadata() {
       await setAdditionalFiles(additionalFiles)
       await updateLicenseDocuments(additionalFiles)
     } catch (error) {
-      toast.error('Could not upload file')
+      toast.error(i18n._('Could not upload file'))
       LoggerInstance.error(error)
 
       const additionalFiles = getAdditionalFilesSnapshot()

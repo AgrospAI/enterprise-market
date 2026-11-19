@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { forwardRef, useEffect } from 'react'
 import Caret from '@images/caret.svg'
 import { accountTruncate } from '@utils/wallet'
@@ -24,7 +26,7 @@ const Account = forwardRef<HTMLButtonElement, AccountProps>(
         <button
           type="button"
           className={`${styles.button} ${!accountId ? styles.initial : ''}`}
-          aria-label={accountId ? 'Account' : 'Wallet menu'}
+          aria-label={accountId ? i18n._('Account') : i18n._('Wallet menu')}
           ref={ref}
           onClick={(e) => {
             e.preventDefault()
@@ -38,7 +40,9 @@ const Account = forwardRef<HTMLButtonElement, AccountProps>(
               </span>
             </>
           ) : (
-            <span className={styles.initialLabel}>Account</span>
+            <span className={styles.initialLabel}>
+              <Trans id="Account" />
+            </span>
           )}
           <Caret aria-hidden="true" className={styles.caret} />
         </button>

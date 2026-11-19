@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useCallback } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
@@ -10,13 +11,19 @@ export default function useSsiChainGuard() {
 
   const getUnsupportedChainMessage = useCallback(() => {
     const networkName =
-      networkDisplayName || (chainId ? `Chain ID ${chainId}` : 'Unknown')
-    return `Blockchain ${networkName} not supported. SSI signature cannot be initiated on this network.`
-  }, [networkDisplayName, chainId])
+      networkDisplayName ||
+      (chainId ? i18n._('Chain ID {chainId}', { chainId }) : i18n._('Unknown'))
+    return i18n._(
+      'Blockchain {networkName} not supported. SSI signature cannot be initiated on this network.',
+      { networkName }
+    )
+  }, [networkDisplayName, chainId, i18n.locale])
 
   const ensureAllowedChainForSsi = useCallback((): boolean => {
     if (!isSsiChainReady) {
-      toast.info('Checking network support. Please try again in a moment.')
+      toast.info(
+        i18n._('Checking network support. Please try again in a moment.')
+      )
       return false
     }
 
@@ -24,9 +31,14 @@ export default function useSsiChainGuard() {
 
     const message = getUnsupportedChainMessage()
     LoggerInstance.error(message)
-    toast.error(message)
+    toast.error(i18n._(message))
     return false
-  }, [isSsiChainAllowed, isSsiChainReady, getUnsupportedChainMessage])
+  }, [
+    isSsiChainAllowed,
+    isSsiChainReady,
+    getUnsupportedChainMessage,
+    i18n.locale
+  ])
 
   return {
     isAllowedChain: isSsiChainAllowed,

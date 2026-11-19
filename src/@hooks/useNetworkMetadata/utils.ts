@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 export enum NetworkType {
   Mainnet = 'mainnet',
   Testnet = 'testnet'
@@ -20,20 +21,20 @@ export function getNetworkType(network: EthereumListsChain): string {
 
 export function getNetworkDisplayName(data: EthereumListsChain): string {
   let displayName
-  if (!data) return 'Unknown'
+  if (!data) return i18n._('Unknown')
 
   switch (data?.chainId) {
     case 137:
       displayName = 'Polygon'
       break
     case 10:
-      displayName = 'OP Mainnet'
+      displayName = i18n._('OP Mainnet')
       break
     case 11155111:
-      displayName = 'Ethereum Sepolia'
+      displayName = i18n._('Ethereum Sepolia')
       break
     case 11155420:
-      displayName = 'OP Sepolia'
+      displayName = i18n._('OP Sepolia')
       break
     case 1285:
       displayName = 'Moonriver'
@@ -48,7 +49,7 @@ export function getNetworkDisplayName(data: EthereumListsChain): string {
       displayName = 'Görli'
       break
     case 100:
-      displayName = 'OEC Testnet'
+      displayName = i18n._('OEC Testnet')
       break
     default:
       displayName = data?.name || data?.title || data?.chain || 'Unknown'

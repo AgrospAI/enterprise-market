@@ -1,3 +1,4 @@
+import { i18n } from '../../../i18n/index'
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS } from '@utils/aquarius'
 import { PaginationProps } from './_types'
@@ -77,7 +78,7 @@ export default function usePagination({
   }, [displayedPageCount, isControlled, uncontrolledSelectedPage])
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 600px)')
+    const mediaQuery = window.matchMedia(i18n._('(min-width: 600px)'))
     const viewportChange = (mediaQuery: { matches: boolean }) => {
       setSmallViewport(!mediaQuery.matches)
     }

@@ -1,3 +1,5 @@
+import { i18n } from '../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './index.module.css'
 import { ComputeFlow } from '../_types'
@@ -11,8 +13,12 @@ interface TitleProps {
 }
 
 const titleCopy: Record<ComputeFlow, string> = {
-  dataset: 'Buy Compute Job',
-  algorithm: 'Buy Compute Job'
+  get dataset() {
+    return i18n._('Buy Compute Job')
+  },
+  get algorithm() {
+    return i18n._('Buy Compute Job')
+  }
 }
 
 export default function Title({
@@ -20,6 +26,8 @@ export default function Title({
   asset,
   service
 }: TitleProps): ReactElement {
+  useLingui()
+
   const assetTitle = `${asset.credentialSubject.metadata.name} - ${service.name}`
 
   return (

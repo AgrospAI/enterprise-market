@@ -1,3 +1,5 @@
+import { i18n } from '../../i18n/index'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import SuccessConfetti from '@shared/SuccessConfetti'
 import Button from '@shared/atoms/Button'
@@ -21,37 +23,47 @@ export default function SuccessState({
   jobIdContainerClassName,
   buttonClassName
 }: SuccessStateProps): ReactElement {
+  useLingui()
+
   return (
     <div className={containerClassName}>
       <SuccessConfetti success="Job Started Successfully!" />
       <div className={detailsClassName}>
-        <h3>Compute Job Started!</h3>
-        <p>Your compute job is now running and processing your data.</p>
+        <h3>
+          <Trans id="Compute Job Started!" />
+        </h3>
+        <p>
+          <Trans id="Your compute job is now running and processing your data." />
+        </p>
         {jobId && jobId !== 'N/A' && (
           <div className={jobIdContainerClassName}>
             <div className={styles.jobIdRow}>
-              <strong>Job ID:</strong>
+              <strong>
+                <Trans id="Job ID:" />
+              </strong>
               <CopyToClipboard
                 value={jobId}
                 truncate={8}
                 className={styles.jobIdCopy}
                 textClassName={styles.jobIdValue}
                 showCopyButton
-                copyButtonLabel="Copy"
+                copyButtonLabel={i18n._('Copy')}
               />
             </div>
           </div>
         )}
         <p>
-          You can monitor the progress in your profile or on the asset page.
+          <Trans id="You can monitor the progress in your profile or on the asset page." />{' '}
         </p>
-        <p>Please close this wizard to continue.</p>
+        <p>
+          <Trans id="Please close this wizard to continue." />
+        </p>
         <Button
           style="gradient"
           className={buttonClassName}
           onClick={onContinue}
         >
-          Continue
+          <Trans id="Continue" />{' '}
         </Button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   LoggerInstance,
   getHash,
@@ -124,7 +125,7 @@ export async function setNftMetadata(
   } catch (err: any) {
     const message = getErrorMessage(err.message)
     LoggerInstance.error('[Encrypt Data] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
   }
   LoggerInstance.log('[setNftMetadata] Got encrypted DDO', encryptedDdo)
 
@@ -165,7 +166,7 @@ export async function setNFTMetadataAndTokenURI(
   } catch (err: any) {
     const message = getErrorMessage(err.message)
     LoggerInstance.error('[Encrypt Data] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
   }
   LoggerInstance.log(
     '[setNFTMetadataAndTokenURI] Got encrypted DDO',
@@ -190,7 +191,13 @@ export async function setNFTMetadataAndTokenURI(
         : {
             name: (asset as Asset).indexedMetadata.nft.name,
             symbol: (asset as Asset).indexedMetadata.nft.symbol,
-            description: `${nftMetadataTemplate.description}\n\nView on the AgrospAI Marketplace: ${externalUrl}`,
+            description: i18n._(
+              '{value0}\n\nView on the AgrospAI Marketplace: {externalUrl}',
+              {
+                value0: nftMetadataTemplate.description,
+                externalUrl
+              }
+            ),
             external_url: externalUrl
           }
     )

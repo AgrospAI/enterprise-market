@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import {
   ChangeEvent,
   ReactElement,
@@ -36,6 +38,8 @@ export default function FormAlignedKeyValue({
   valuePlaceholder = 'value',
   ...props
 }: FormAlignedKeyValueProps): ReactElement {
+  useLingui()
+
   const { label, help, prominentHelp, form, field } = props
 
   const [currentKey, setCurrentKey] = useState('')
@@ -102,7 +106,7 @@ export default function FormAlignedKeyValue({
       <Label htmlFor={props.name}>
         {label}
         {props.required && (
-          <span title="Required" className={styles.required}>
+          <span title={i18n._('Required')} className={styles.required}>
             *
           </span>
         )}
@@ -135,7 +139,7 @@ export default function FormAlignedKeyValue({
             />
             <PublishButton
               icon="add"
-              text="Add"
+              text={i18n._('Add')}
               buttonStyle="primary"
               onClick={(e: React.SyntheticEvent) => {
                 e.preventDefault()
@@ -149,7 +153,9 @@ export default function FormAlignedKeyValue({
 
       {uniqueKeys && !hasOnlyUniqueKeys && (
         <p className={styles.error}>
-          {`The ${keyPlaceholder} field must be unique`}
+          {i18n._('The {keyPlaceholder} field must be unique', {
+            keyPlaceholder
+          })}
         </p>
       )}
 
@@ -183,7 +189,7 @@ export default function FormAlignedKeyValue({
                     }}
                     disabled={false}
                   >
-                    remove
+                    <Trans id="remove" />{' '}
                   </Button>
                 </div>
               </div>

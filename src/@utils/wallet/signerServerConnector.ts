@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import {
   type Address,
   type Chain,
@@ -66,11 +67,13 @@ function assertRequestedAccount(
   method: string
 ) {
   if (!requestedAddress) {
-    throw new Error(`${method} requires an account address.`)
+    throw new Error(i18n._('{method} requires an account address.', { method }))
   }
 
   if (getAddress(requestedAddress) !== getAddress(signerAddress)) {
-    throw new Error(`${method} requested a different account.`)
+    throw new Error(
+      i18n._('{method} requested a different account.', { method })
+    )
   }
 }
 
@@ -92,7 +95,9 @@ async function rpcRequest(
   const data = await response.json()
 
   if (data.error) {
-    throw new Error(data.error.message || `RPC request failed: ${method}`)
+    throw new Error(
+      data.error.message || i18n._('RPC request failed: {method}', { method })
+    )
   }
 
   return data.result
@@ -250,7 +255,9 @@ export function signerServerConnector() {
             method
           )
           if (!message || !isHex(message)) {
-            throw new Error(`${method} requires a hex message.`)
+            throw new Error(
+              i18n._('{method} requires a hex message.', { method })
+            )
           }
 
           return currentSigner.signMessage(fromHex(message, 'bytes'))
@@ -278,7 +285,9 @@ export function signerServerConnector() {
           const nextChainId = getRequestedSwitchChainId(params)
           if (!currentSigner.hasWalletForChain(nextChainId)) {
             throw new Error(
-              `Signer server does not support chain ${nextChainId}.`
+              i18n._('Signer server does not support chain {nextChainId}.', {
+                nextChainId
+              })
             )
           }
           await switchToChain(nextChainId)
@@ -297,7 +306,7 @@ export function signerServerConnector() {
 
     return {
       id: SIGNER_SERVER_CONNECTOR_ID,
-      name: 'Signer Server',
+      name: i18n._('Signer Server'),
       type: SIGNER_SERVER_CONNECTOR_ID,
       async connect<withCapabilities extends boolean = false>(
         parameters?: SignerServerConnectParameters<withCapabilities>
@@ -389,7 +398,9 @@ export function signerServerConnector() {
         if (!chain) throw new Error('Unsupported chain')
         if (!signer.hasWalletForChain(nextChainId)) {
           throw new Error(
-            `Signer server does not support chain ${nextChainId}.`
+            i18n._('Signer server does not support chain {nextChainId}.', {
+              nextChainId
+            })
           )
         }
         await switchToChain(nextChainId)

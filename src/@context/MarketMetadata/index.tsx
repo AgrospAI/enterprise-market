@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   createContext,
   ReactElement,
@@ -8,7 +9,7 @@ import {
   useState
 } from 'react'
 import { MarketMetadataProviderValue, OpcFee } from './_types'
-import siteContent from '../../../content/site.json'
+import { contentSite as siteContent } from '../../i18n/content'
 import appConfig from '../../../app.config.cjs'
 import { useConnect, useChainId } from 'wagmi'
 import useEnterpriseFeeColletor from '@hooks/useEnterpriseFeeCollector'
@@ -24,6 +25,8 @@ function MarketMetadataProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const { status } = useConnect()
   const isLoading = status === 'pending'
   const chainId = useChainId()

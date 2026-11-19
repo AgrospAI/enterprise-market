@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { FormPublishData } from '../_types'
@@ -11,6 +13,8 @@ import { useEthersSigner } from '@hooks/useEthersSigner'
 import { Signer } from 'ethers'
 
 export default function Debug(): ReactElement {
+  useLingui()
+
   const { values } = useFormikContext<FormPublishData>()
   const [valuePreview, setValuePreview] = useState({})
   const [ddo, setDdo] = useState<Asset>()
@@ -35,8 +39,16 @@ export default function Debug(): ReactElement {
 
   return (
     <div className={styles.debug}>
-      <DebugOutput title="Collected Form Values" output={valuePreview} large />
-      <DebugOutput title="Transformed DDO Values" output={ddo} large />
+      <DebugOutput
+        title={i18n._('Collected Form Values')}
+        output={valuePreview}
+        large
+      />
+      <DebugOutput
+        title={i18n._('Transformed DDO Values')}
+        output={ddo}
+        large
+      />
     </div>
   )
 }

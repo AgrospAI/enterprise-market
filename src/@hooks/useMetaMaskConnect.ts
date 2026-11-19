@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useConfig, useConnect } from 'wagmi'
@@ -12,7 +13,7 @@ function isConnectorAlreadyConnectedError(error: unknown) {
 
 function getMetaMaskErrorMessage(error: unknown) {
   if (error instanceof Error && error.message) return error.message
-  return 'MetaMask connection failed.'
+  return i18n._('MetaMask connection failed.')
 }
 
 export function useMetaMaskConnect() {
@@ -36,7 +37,7 @@ export function useMetaMaskConnect() {
       await connectAsync({ connector: metaMaskConnector })
     } catch (error) {
       if (!isConnectorAlreadyConnectedError(error)) {
-        toast.error(getMetaMaskErrorMessage(error))
+        toast.error(i18n._(getMetaMaskErrorMessage(error)))
       }
     } finally {
       setIsConnecting(false)

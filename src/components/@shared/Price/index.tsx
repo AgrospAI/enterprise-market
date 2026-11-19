@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import PriceUnit from './PriceUnit'
 import { AssetPrice } from 'src/@types/Asset'
@@ -13,6 +14,8 @@ export default function Price({
   className?: string
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {
+  useLingui()
+
   if (!price && !orderPriceAndFees) return
   return (
     <PriceUnit

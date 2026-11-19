@@ -1,3 +1,5 @@
+import { translate } from '../../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, ReactNode, FormEvent } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
@@ -39,6 +41,8 @@ export default function Alert({
   action,
   onDismiss
 }: AlertProps): ReactElement {
+  const { i18n } = useLingui()
+
   const finalState = state
 
   return (
@@ -51,11 +55,12 @@ export default function Alert({
         <div>
           {title && subtitle && (
             <div className={styles.header}>
-              <strong>{title}</strong> — <strong>{subtitle}</strong>
+              <strong>{i18n._(title)}</strong> —{' '}
+              <strong>{i18n._(subtitle)}</strong>
               {description && (
                 <>
                   <br />
-                  {description}
+                  {i18n._(description)}
                 </>
               )}
             </div>
@@ -64,14 +69,14 @@ export default function Alert({
           {title && !subtitle && (
             <>
               <div>
-                <strong>{title}</strong>
+                <strong>{i18n._(title)}</strong>
                 {badge && ` — ${badge}`}
               </div>
-              {text && <Markdown text={text} />}
+              {text && <Markdown text={translate(text)} />}
             </>
           )}
 
-          {!title && text && <Markdown text={text} />}
+          {!title && text && <Markdown text={translate(text)} />}
 
           {children}
         </div>
@@ -85,12 +90,12 @@ export default function Alert({
           onClick={action.handleAction}
           disabled={action.disabled}
         >
-          {action.name}
+          {i18n._(action.name)}
         </Button>
       )}
       {onDismiss && (
         <button className={styles.close} onClick={onDismiss}>
-          &times;
+          <Trans id="&times;" />{' '}
         </button>
       )}
     </div>

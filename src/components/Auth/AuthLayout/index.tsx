@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth } from '@hooks/useAuth'
@@ -25,6 +26,8 @@ export default function AuthLayout({
   content,
   initialTab = 'login'
 }: AuthLayoutProps) {
+  useLingui()
+
   const { isAuthenticated, isLogoutPending } = useAuth()
   const router = useRouter()
   const signupEnabled = Boolean(authConfig.oidc.signupFlow)

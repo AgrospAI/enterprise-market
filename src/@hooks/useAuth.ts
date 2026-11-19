@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useAuthStore, User } from './stores/authStore'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
@@ -182,14 +183,18 @@ export async function verifyAuthSessionDetailed({
 
       if (!isDefinitiveAuthFailure(retryResponse.status)) {
         throw new Error(
-          `Session verification retry failed with status ${retryResponse.status}`
+          i18n._('Session verification retry failed with status {value0}', {
+            value0: retryResponse.status
+          })
         )
       }
 
       definitiveFailureReason = `session_retry_${retryResponse.status}`
     } else if (!isDefinitiveAuthFailure(refreshResponse.status)) {
       throw new Error(
-        `Session refresh failed with status ${refreshResponse.status}`
+        i18n._('Session refresh failed with status {value0}', {
+          value0: refreshResponse.status
+        })
       )
     } else {
       definitiveFailureReason = `refresh_${refreshResponse.status}`
@@ -198,7 +203,9 @@ export async function verifyAuthSessionDetailed({
 
   if (!isDefinitiveAuthFailure(response.status)) {
     throw new Error(
-      `Session verification failed with status ${response.status}`
+      i18n._('Session verification failed with status {value0}', {
+        value0: response.status
+      })
     )
   }
 
@@ -383,7 +390,7 @@ export const useAuth = () => {
     } catch (error) {
       setLogoutPending(false)
       console.error('Logout flow failed:', error)
-      toast.error('Logout failed')
+      toast.error(i18n._('Logout failed'))
     } finally {
       setLoading(false)
     }

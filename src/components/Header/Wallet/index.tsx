@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Account from './Account'
 import Details from './Details'
@@ -23,6 +24,8 @@ type TooltipHandle = {
 }
 
 export default function Wallet(): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const connectors = useConnectors()
   const metaMask = useMetaMaskConnect()

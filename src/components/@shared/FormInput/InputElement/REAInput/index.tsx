@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement, useState } from 'react'
 import { useField } from 'formik'
 import Input, { InputProps } from '@shared/FormInput'
@@ -31,6 +32,8 @@ export default function REAInput({
   name,
   endpoint
 }: InputProps & { endpoint: string }): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField(name)
   const params = new URLSearchParams(
     (field.value?.[0]?.url || '').split('?')[1]
@@ -64,7 +67,9 @@ export default function REAInput({
   return (
     <>
       <div className={fieldStyles.field}>
-        <Label htmlFor={`${name}.communityCode`}>Community</Label>
+        <Label htmlFor={`${name}.communityCode`}>
+          <Trans id="Community" />
+        </Label>
         <select
           id={`${name}.communityCode`}
           className={inputStyles.select}
@@ -75,7 +80,9 @@ export default function REAInput({
             updateFile(e.target.value, holderNif)
           }}
         >
-          <option value="">Select a community</option>
+          <option value="">
+            <Trans id="Select a community" />
+          </option>
           {communities.map(([code, community]) => (
             <option key={code} value={code}>
               {community}
@@ -85,7 +92,7 @@ export default function REAInput({
       </div>
       <Input
         name={`${name}.holderNif`}
-        label="Holder NIF"
+        label={'Holder NIF'}
         type="text"
         required
         value={holderNif}

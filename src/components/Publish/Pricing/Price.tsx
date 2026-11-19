@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { Field, useField, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
@@ -15,6 +17,8 @@ export default function Price({
   approvedBaseTokens?: TokenInfo[]
   content?: any
 }): ReactElement {
+  useLingui()
+
   const [field, meta] = useField('pricing.price')
 
   const { values } = useFormikContext<FormPublishData>()
@@ -37,8 +41,10 @@ export default function Price({
           {noApprovedTokens && (
             <div style={{ marginBottom: '1.5rem' }}>
               <Alert
-                title="No Supported Currencies Used"
-                text="There are currently no approved currencies available for pricing on this network. Please contact the administrator or switch to a supported network. For details on accepted currencies, consult https://docs.oceanenterprise.io/developers/networks#supported-currencies."
+                title={i18n._('No Supported Currencies Used')}
+                text={i18n._(
+                  'There are currently no approved currencies available for pricing on this network. Please contact the administrator or switch to a supported network. For details on accepted currencies, consult https://docs.oceanenterprise.io/developers/networks#supported-currencies.'
+                )}
                 state="error"
               />
             </div>

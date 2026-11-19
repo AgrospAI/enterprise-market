@@ -1,3 +1,4 @@
+import { i18n } from '../../../../../i18n/index'
 import { FormConsumerParameter } from '@components/Publish/_types'
 import * as Yup from 'yup'
 import { SchemaLike } from 'yup/lib/types'
@@ -24,27 +25,44 @@ export const validationConsumerParameters: {
     //   )
     //   return occasions.length === 1
     // })
-    .max(50, (param) => `Name must have maximum ${param.max} characters`)
-    .required('Required'),
-  type: Yup.string().oneOf(paramTypes).required('Required'),
-  description: Yup.string()
-    .min(10, (param) => `Description must be at least ${param.min} characters`)
-    .max(
-      500,
-      (param) => `Description must have maximum ${param.max} characters`
+    .max(50, (param) =>
+      i18n._('Name must have maximum {value0} characters', {
+        value0: param.max
+      })
     )
-    .required('Required'),
+    .required(() => i18n._('Required')),
+  type: Yup.string()
+    .oneOf(paramTypes)
+    .required(() => i18n._('Required')),
+  description: Yup.string()
+    .min(10, (param) =>
+      i18n._('Description must be at least {value0} characters', {
+        value0: param.min
+      })
+    )
+    .max(500, (param) =>
+      i18n._('Description must have maximum {value0} characters', {
+        value0: param.max
+      })
+    )
+    .required(() => i18n._('Required')),
   label: Yup.string()
-    .max(50, (param) => `Label must have maximum ${param.max} characters`)
-    .required('Required'),
-  required: Yup.string().oneOf(['optional', 'required']).required('Required'),
-  default: Yup.mixed().required('Required'),
+    .max(50, (param) =>
+      i18n._('Label must have maximum {value0} characters', {
+        value0: param.max
+      })
+    )
+    .required(() => i18n._('Required')),
+  required: Yup.string()
+    .oneOf(['optional', 'required'])
+    .required(() => i18n._('Required')),
+  default: Yup.mixed().required(() => i18n._('Required')),
   options: Yup.array().when('type', {
     is: 'select',
     then: Yup.array()
       .of(Yup.object())
-      .min(2, 'At least two options are required')
-      .required('Required'),
+      .min(2, () => i18n._('At least two options are required'))
+      .required(() => i18n._('Required')),
     otherwise: Yup.array()
   })
 }

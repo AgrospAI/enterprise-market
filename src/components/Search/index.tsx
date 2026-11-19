@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useState, useEffect, useCallback } from 'react'
 import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
@@ -19,6 +21,8 @@ export default function SearchPage({
   setTotalResults: (totalResults: number) => void
   setTotalPagesNumber: (totalPagesNumber: number) => void
 }): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { validatedSupportedChains, isValidatingSupportedChains } =
@@ -89,7 +93,7 @@ export default function SearchPage({
       </div>
       <div className={styles.results}>
         <div className={styles.searchContainer}>
-          <SearchBar placeholder="Search for service offerings" />
+          <SearchBar placeholder={i18n._('Search for service offerings')} />
         </div>
         <AssetList
           assets={queryResult?.results}

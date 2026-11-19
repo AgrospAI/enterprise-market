@@ -1,3 +1,4 @@
+import { i18n } from '../../i18n/index'
 import * as Yup from 'yup'
 import { FormComputeData } from './_types'
 
@@ -7,7 +8,7 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
   .shape({
     flow: Yup.mixed<'dataset' | 'algorithm'>().oneOf(
       ['dataset', 'algorithm'],
-      'Invalid flow'
+      () => i18n._('Invalid flow')
     ),
     user: Yup.object().shape({
       stepCurrent: Yup.number().required(),
@@ -19,42 +20,53 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
       .when('flow', {
         is: 'algorithm',
         then: (schema) => schema.notRequired(),
-        otherwise: (schema) => schema.required('Algorithm is required')
+        otherwise: (schema) => schema.required(i18n._('Algorithm is required'))
       }),
     algorithms: Yup.mixed().nullable(),
     dataset: datasetArraySchema.nullable().when(['withoutDataset', 'flow'], {
       is: (withoutDataset: boolean, flow?: string) =>
         !withoutDataset && flow === 'algorithm',
-      then: (schema) => schema.min(1, 'At least one dataset is required'),
+      then: (schema) =>
+        schema.min(1, i18n._('At least one dataset is required')),
       otherwise: (schema) => schema.notRequired()
     }),
     datasets: datasetArraySchema.nullable().when(['withoutDataset', 'flow'], {
       is: (withoutDataset: boolean, flow?: string) =>
         !withoutDataset && flow === 'algorithm',
-      then: (schema) => schema.min(1, 'At least one dataset is required'),
+      then: (schema) =>
+        schema.min(1, i18n._('At least one dataset is required')),
       otherwise: (schema) => schema.notRequired()
     }),
-    computeEnv: Yup.mixed().nullable().required('Environment is required'),
+    computeEnv: Yup.mixed()
+      .nullable()
+      .required(() => i18n._('Environment is required')),
     mode: Yup.mixed<'free' | 'paid'>().oneOf(['free', 'paid']).required(),
-    cpu: Yup.number().min(0).required('CPU is required'),
-    gpu: Yup.number().min(0).required('GPU is required'),
-    ram: Yup.number().min(0).required('RAM is required'),
-    disk: Yup.number().min(0).required('Disk is required'),
-    jobDuration: Yup.number().min(0).required('Job duration is required'),
+    cpu: Yup.number()
+      .min(0)
+      .required(() => i18n._('CPU is required')),
+    gpu: Yup.number()
+      .min(0)
+      .required(() => i18n._('GPU is required')),
+    ram: Yup.number()
+      .min(0)
+      .required(() => i18n._('RAM is required')),
+    disk: Yup.number()
+      .min(0)
+      .required(() => i18n._('Disk is required')),
+    jobDuration: Yup.number()
+      .min(0)
+      .required(() => i18n._('Job duration is required')),
     environmentData: Yup.string(),
     makeAvailable: Yup.boolean(),
     description: Yup.string(),
-    termsAndConditions: Yup.boolean().oneOf(
-      [true],
-      'Terms and conditions must be accepted'
+    termsAndConditions: Yup.boolean().oneOf([true], () =>
+      i18n._('Terms and conditions must be accepted')
     ),
-    acceptPublishingLicense: Yup.boolean().oneOf(
-      [true],
-      'Publishing license must be accepted'
+    acceptPublishingLicense: Yup.boolean().oneOf([true], () =>
+      i18n._('Publishing license must be accepted')
     ),
-    credentialsVerified: Yup.boolean().oneOf(
-      [true],
-      'Dataset & Algorithm credentials must be verified'
+    credentialsVerified: Yup.boolean().oneOf([true], () =>
+      i18n._('Dataset & Algorithm credentials must be verified')
     ),
     isUserParameters: Yup.boolean(),
     userUpdatedParameters: Yup.mixed().nullable(),
@@ -122,26 +134,29 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
         is: true,
         then: (schema) =>
           schema
-            .required('Maximum waiting time is required')
-            .min(1, 'Maximum waiting time must be at least 1'),
+            .required(i18n._('Maximum waiting time is required'))
+            .min(1, i18n._('Maximum waiting time must be at least 1')),
         otherwise: (schema) => schema.notRequired().nullable()
       }),
     queueMaxWaitTimeUnit: Yup.mixed<'seconds' | 'minutes' | 'hours'>()
       .oneOf(['seconds', 'minutes', 'hours'])
       .when('queueWaitingEnabled', {
         is: true,
-        then: (schema) => schema.required('Waiting time unit is required'),
+        then: (schema) =>
+          schema.required(i18n._('Waiting time unit is required')),
         otherwise: (schema) => schema.notRequired()
       }),
     dockerRegistryAuthRequired: Yup.boolean().required(),
     dockerRegistryUsername: Yup.string().when('dockerRegistryAuthRequired', {
       is: true,
-      then: (schema) => schema.trim().required('Registry username is required'),
+      then: (schema) =>
+        schema.trim().required(i18n._('Registry username is required')),
       otherwise: (schema) => schema.notRequired()
     }),
     dockerRegistryPassword: Yup.string().when('dockerRegistryAuthRequired', {
       is: true,
-      then: (schema) => schema.required('Registry password is required'),
+      then: (schema) =>
+        schema.required(i18n._('Registry password is required')),
       otherwise: (schema) => schema.notRequired()
     }),
     outputStorageEnabled: Yup.boolean(),

@@ -1,4 +1,6 @@
 'use client'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useFormikContext } from 'formik'
@@ -172,6 +174,8 @@ export default function SelectPrimaryAsset({
   datasets,
   asset
 }: SelectPrimaryAssetProps): ReactElement {
+  useLingui()
+
   const isDatasetFlow = flow === 'dataset'
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const [datasetsForCompute, setDatasetsForCompute] = useState<DatasetItem[]>()
@@ -405,13 +409,17 @@ export default function SelectPrimaryAsset({
   return (
     <>
       <StepTitle
-        title={isDatasetFlow ? 'Select Algorithm' : 'Select Datasets'}
+        title={
+          isDatasetFlow ? i18n._('Select Algorithm') : i18n._('Select Datasets')
+        }
       />
       <div className={styles.environmentSelection}>
         {!isDatasetFlow && (
           <div className={noDatasetClasses}>
             <label className={styles.noDatasetLabel}>
-              <span>Proceed without Dataset Selection</span>
+              <span>
+                <Trans id="Proceed without Dataset Selection" />
+              </span>
               <input
                 type="checkbox"
                 className={styles.noDatasetCheckbox}

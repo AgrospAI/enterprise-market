@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { FormikContextType, useFormikContext } from 'formik'
 import { ReactElement, useEffect } from 'react'
 import { useAsset } from '@context/Asset'
@@ -11,6 +12,8 @@ export default function FormActions({
 }: {
   handleClick?: () => void
 }): ReactElement {
+  useLingui()
+
   const { isAssetNetwork, asset } = useAsset()
   const {
     errors,
@@ -34,10 +37,10 @@ export default function FormActions({
   return (
     <footer className={styles.actions}>
       <Link href={`/asset/${asset?.id}`} key={asset?.id}>
-        Cancel
+        <Trans id="Cancel" />{' '}
       </Link>
       <Button style="accent" disabled={isSubmitDisabled} onClick={handleClick}>
-        Submit
+        <Trans id="Submit" />{' '}
       </Button>
     </footer>
   )

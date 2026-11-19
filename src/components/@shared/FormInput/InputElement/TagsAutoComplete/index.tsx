@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import { OnChangeValue } from 'react-select'
@@ -17,6 +19,8 @@ interface AutoCompleteOption {
 export default function TagsAutoComplete({
   ...props
 }: InputProps): ReactElement {
+  useLingui()
+
   const { name, placeholder } = props
   const [tagsList, setTagsList] = useState<AutoCompleteOption[]>()
   const [matchedTagsList, setMatchedTagsList] = useState<AutoCompleteOption[]>(
@@ -82,7 +86,9 @@ export default function TagsAutoComplete({
       isMulti
       isClearable={false}
       noOptionsMessage={() =>
-        'Start typing to get suggestions based on tags from all published assets.'
+        i18n._(
+          'Start typing to get suggestions based on tags from all published assets.'
+        )
       }
       onChange={(value: AutoCompleteOption[]) => handleChange(value)}
       onInputChange={(value) => handleOptionsFilter(tagsList, value)}

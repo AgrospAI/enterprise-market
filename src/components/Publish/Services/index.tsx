@@ -1,9 +1,11 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
 import { ReactElement, useEffect, useMemo } from 'react'
 import IconDownload from '@images/download2.svg'
 import IconCompute from '@images/compute.svg'
-import content from '../../../../content/publish/form.json'
+import { contentPublishForm as content } from '../../../i18n/content'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
 import { supportedLanguages } from '@components/Asset/languageType'
@@ -21,6 +23,8 @@ const accessTypeOptionsTitles = getFieldContent(
 ).options
 
 export default function ServicesFields(): ReactElement {
+  useLingui()
+
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
@@ -72,7 +76,7 @@ export default function ServicesFields(): ReactElement {
     {
       name: 'download',
       value: accessTypeOptionsTitles[0].toLowerCase(),
-      title: 'Download',
+      title: i18n._('Download'),
       icon: <IconDownload fill="var(--brand-white)" />,
       // BoxSelection component is not a Formik component
       // so we need to handle checked state manually.
@@ -131,7 +135,7 @@ export default function ServicesFields(): ReactElement {
         />
       </div>
 
-      <SectionContainer title="Service Data" required>
+      <SectionContainer title={i18n._('Service Data')} required>
         <Field
           {...getFieldContent('name', content.services.fields)}
           component={Input}
@@ -187,9 +191,11 @@ export default function ServicesFields(): ReactElement {
       )}
 
       <SectionContainer
-        title="Service Configuration"
+        title={i18n._('Service Configuration')}
         required
-        help="Configure essential settings for your service here. Upload relevant files using the appropriate field. Enter your service provider's URL and any associated links, and set the access duration as needed. Ensure all details are accurately entered for optimal service performance."
+        help={i18n._(
+          "Configure essential settings for your service here. Upload relevant files using the appropriate field. Enter your service provider's URL and any associated links, and set the access duration as needed. Ensure all details are accurately entered for optimal service performance."
+        )}
       >
         {/* Card 1: Provider URL Card */}
         <SectionContainer border padding="16px">

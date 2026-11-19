@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../i18n/index'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -22,7 +24,7 @@ import DfnsRegistrationModal from '@shared/DfnsRegistrationModal'
 import NetworkWarningModal from './NetworkWarningModal'
 import SsiWalletManager from '@components/Header/SsiWallet/SsiWalletManager'
 
-import contentPurgatory from '../../../content/purgatory.json'
+import { contentPurgatory } from '../../i18n/content'
 import styles from './index.module.css'
 
 const Chat = dynamic(() => import('@components/Chat'), { ssr: false })
@@ -32,6 +34,8 @@ export default function App({
 }: {
   children: ReactElement
 }): ReactElement {
+  useLingui()
+
   const {
     siteContent,
     appConfig,
@@ -143,7 +147,9 @@ export default function App({
         setShowNoAllowedMessage(true)
 
         if (!toastShownRef.current) {
-          toast.error('No supported token addresses found for this network.')
+          toast.error(
+            i18n._('No supported token addresses found for this network.')
+          )
           toastShownRef.current = true
         }
       } else {
@@ -201,14 +207,16 @@ export default function App({
             <button
               className={styles.modalClose}
               onClick={() => setShowNoAllowedMessage(false)}
-              aria-label="Close"
+              aria-label={i18n._('Close')}
             >
               ×
             </button>
 
             <Alert
-              title="No Supported Currencies Used"
-              text="No currencies approved by O.E.C are used in this market instance. For details on accepted currencies, consult https://docs.oceanenterprise.io/developers/networks#supported-currencies."
+              title={i18n._('No Supported Currencies Used')}
+              text={i18n._(
+                'No currencies approved by O.E.C are used in this market instance. For details on accepted currencies, consult https://docs.oceanenterprise.io/developers/networks#supported-currencies.'
+              )}
               state="error"
             />
           </div>
@@ -218,7 +226,7 @@ export default function App({
       {isInPurgatory && (
         <Alert
           title={contentPurgatory.account.title}
-          badge={`Reason: ${purgatoryData?.reason}`}
+          badge={i18n._('Reason: {value0}', { value0: purgatoryData?.reason })}
           text={contentPurgatory.account.description}
           state="error"
         />

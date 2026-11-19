@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import WalletNetworkSwitcher from '../WalletNetworkSwitcher'
@@ -18,6 +20,8 @@ export default function Web3Feedback({
   accountId?: string
   isAssetNetwork?: boolean
 }): ReactElement {
+  useLingui()
+
   const [state, setState] = useState<string>()
   const [title, setTitle] = useState<string>()
   const [message, setMessage] = useState<string>()
@@ -49,16 +53,16 @@ export default function Web3Feedback({
     if (accountId && isAssetNetwork) return
     if (!accountId) {
       setState('error')
-      setTitle('No account connected')
-      setMessage('Please connect your wallet.')
+      setTitle(i18n._('No account connected'))
+      setMessage(i18n._('Please connect your wallet.'))
     } else if (isAssetNetwork === false) {
       setState('error')
-      setTitle('Not connected to asset network')
-      setMessage('Please connect your wallet.')
+      setTitle(i18n._('Not connected to asset network'))
+      setMessage(i18n._('Please connect your wallet.'))
     } else {
       setState('warning')
-      setTitle('Something went wrong.')
-      setMessage('Something went wrong.')
+      setTitle(i18n._('Something went wrong.'))
+      setMessage(i18n._('Something went wrong.'))
     }
   }, [accountId, isAssetNetwork])
 
@@ -74,9 +78,13 @@ export default function Web3Feedback({
               <Tooltip
                 content={
                   <>
-                    This asset is published on {ddoNetworkName} but your wallet
-                    is connected to {walletNetworkName}. Connect to{' '}
-                    {ddoNetworkName} to interact with this asset.
+                    <Trans
+                      id="This asset is published on {assetNetwork}, but your wallet is connected to {walletNetwork}. Connect to {assetNetwork} to interact with this asset."
+                      values={{
+                        assetNetwork: ddoNetworkName,
+                        walletNetwork: walletNetworkName
+                      }}
+                    />{' '}
                   </>
                 }
               >

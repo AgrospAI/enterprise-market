@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import AssetTeaser from '@shared/AssetTeaser'
 import { ReactElement } from 'react'
 import Link from 'next/link'
@@ -18,7 +20,9 @@ import { ServiceTypeIcons, ServicesColumnHeader } from './ServiceTypeIcons'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
-    name: 'Asset',
+    get name() {
+      return i18n._('Asset')
+    },
     cell: (row) => {
       const name = row.credentialSubject?.metadata?.name
       const owner = row.indexedMetadata?.nft?.owner
@@ -47,7 +51,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     minWidth: '12rem'
   },
   {
-    name: 'Type',
+    get name() {
+      return i18n._('Type')
+    },
     cell: (row) => (
       <AssetType
         type={isSaasAsset(row) ? 'saas' : row.credentialSubject?.metadata?.type}
@@ -65,7 +71,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     width: '120px'
   },
   {
-    name: 'Network',
+    get name() {
+      return i18n._('Network')
+    },
     cell: (row) => (
       <NetworkName
         networkId={row.credentialSubject?.chainId}
@@ -75,7 +83,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     maxWidth: '9rem'
   },
   {
-    name: 'Sales',
+    get name() {
+      return i18n._('Sales')
+    },
     selector: (row) => {
       const orders = row.indexedMetadata?.stats?.[0]?.orders
       return <span>{orders == null || orders < 0 ? '—' : orders}</span>
@@ -83,7 +93,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     maxWidth: '6rem'
   },
   {
-    name: 'Published',
+    get name() {
+      return i18n._('Published')
+    },
     selector: (row) => <Time date={row.indexedMetadata?.nft?.created} />,
     maxWidth: '8rem'
   }
@@ -118,6 +130,8 @@ export default function AssetList({
   defaultAssetView,
   skeletonCount = 21
 }: AssetListProps): ReactElement {
+  useLingui()
+
   const activeAssetView = defaultAssetView || AssetViewOptions.Grid
 
   // This changes the page field inside the query
@@ -140,7 +154,11 @@ export default function AssetList({
   }
 
   if (!assets?.length || assets[0] === undefined) {
-    return <Alert warning>No results found</Alert>
+    return (
+      <Alert warning>
+        <Trans id="No results found" />
+      </Alert>
+    )
   }
 
   return (

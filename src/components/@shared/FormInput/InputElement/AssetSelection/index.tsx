@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactNode, useEffect, useState } from 'react'
 import cs from 'classnames'
 import slugify from 'slugify'
@@ -42,6 +43,8 @@ export interface PublisherTrustedAlgorithmService {
 }
 
 function Empty({ message }: { message: string }) {
+  useLingui()
+
   return <div className={styles.empty}>{message}</div>
 }
 
@@ -63,6 +66,8 @@ export default function AssetSelection({
   priceOnRight?: boolean
   assetSelectionFooterAction?: ReactNode
 }): JSX.Element {
+  useLingui()
+
   const [searchValue, setSearchValue] = useState('')
   const [filteredAssets, setFilteredAssets] = useState<AssetSelectionAsset[]>(
     []

@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react'
 import { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
@@ -33,6 +34,8 @@ export default function Actions({
   scrollToRef: RefObject<any>
   did: string
 }): ReactElement {
+  const { i18n } = useLingui()
+
   const router = useRouter()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
@@ -251,7 +254,7 @@ export default function Actions({
           success="Successfully published!"
           action={
             <Button style="accent" to={`/asset/${did}`}>
-              View Asset
+              <Trans id="View Asset" />{' '}
             </Button>
           }
         />
@@ -259,7 +262,7 @@ export default function Actions({
         <>
           {values.user.stepCurrent > 1 && (
             <Button onClick={handlePrevious} disabled={isSubmitting}>
-              Back
+              <Trans id="Back" />{' '}
             </Button>
           )}
 
@@ -269,7 +272,7 @@ export default function Actions({
               onClick={handleNext}
               disabled={isContinueDisabled}
             >
-              Continue
+              <Trans id="Continue" />{' '}
             </Button>
           ) : // !address ? (
           // <Button type="submit" style="primary" onClick={handleActivation}>
@@ -284,7 +287,8 @@ export default function Actions({
                 disabled
                 className={styles.infoButton}
               >
-                Unsupported Network <Info className={styles.infoIcon} />
+                <Trans id="Unsupported Network" />{' '}
+                <Info className={styles.infoIcon} />
               </Button>
             </Tooltip>
           ) : (
@@ -296,9 +300,9 @@ export default function Actions({
               {isSubmitting ? (
                 <Loader variant="primary" />
               ) : hasSubmitError ? (
-                'Retry'
+                i18n._('Retry')
               ) : (
-                'Submit'
+                i18n._('Submit')
               )}
             </Button>
           )}

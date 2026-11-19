@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import { accountTruncate } from '@utils/wallet'
 import { Badge } from '@components/@shared/VerifiedBadge'
 import classNames from 'classnames/bind'
@@ -14,6 +16,8 @@ export default function WhitelistIndicator({
   isAccountIdWhitelisted: boolean
   minimal?: boolean
 }) {
+  useLingui()
+
   const styleClasses = cx({
     container: true,
     minimal
@@ -25,16 +29,17 @@ export default function WhitelistIndicator({
         isValid={isAccountIdWhitelisted}
         verifiedService={
           isAccountIdWhitelisted
-            ? 'Web3 address verification passed'
-            : 'Access denied for web3 address'
+            ? i18n._('Web3 address verification passed')
+            : i18n._('Access denied for web3 address')
         }
         className={styles.whitelistBadge}
       />
       {!isAccountIdWhitelisted && (
         <p className={styles.invalidAddressMessage}>
-          {`The address ${accountTruncate(
-            accountId
-          )} is not allowed to access this asset. Please, connect with a different account and try again.`}
+          {i18n._(
+            'The address {value0} is not allowed to access this asset. Please, connect with a different account and try again.',
+            { value0: accountTruncate(accountId) }
+          )}
         </p>
       )}
     </div>

@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import ReactPaginate from 'react-paginate'
 import styles from './index.module.css'
@@ -11,6 +13,8 @@ export default function Pagination({
   rowCount,
   onChangePage
 }: PaginationProps): ReactElement {
+  useLingui()
+
   const {
     changePage,
     displayedPageCount,
@@ -34,7 +38,7 @@ export default function Pagination({
         className={styles.control}
         onClick={() => changePage(0)}
         disabled={isFirstPage}
-        aria-label="First page"
+        aria-label={i18n._('First page')}
       >
         {'<<'}
       </button>
@@ -44,7 +48,7 @@ export default function Pagination({
         className={styles.control}
         onClick={() => changePage(selectedPage - 1)}
         disabled={isFirstPage}
-        aria-label="Previous page"
+        aria-label={i18n._('Previous page')}
       >
         {'<'}
       </button>
@@ -72,7 +76,7 @@ export default function Pagination({
         className={styles.control}
         onClick={() => changePage(selectedPage + 1)}
         disabled={isLastPage}
-        aria-label="Next page"
+        aria-label={i18n._('Next page')}
       >
         {'>'}
       </button>
@@ -82,7 +86,7 @@ export default function Pagination({
         className={styles.control}
         onClick={() => changePage(displayedPageCount - 1)}
         disabled={isLastPage}
-        aria-label="Last page"
+        aria-label={i18n._('Last page')}
       >
         {'>>'}
       </button>

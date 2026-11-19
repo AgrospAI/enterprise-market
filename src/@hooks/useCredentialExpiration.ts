@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import { useState, useEffect, useCallback } from 'react'
 import {
   CredentialStatus,
@@ -91,7 +92,7 @@ export function useCredentialExpiration(
 
   const timeRemainingText = credentialStatus.timeRemaining
     ? getTimeRemainingText(credentialStatus.timeRemaining)
-    : 'Credentials not verified'
+    : i18n._('Credentials not verified')
 
   const showExpirationWarning = credentialStatus.timeRemaining
     ? shouldShowExpirationWarning(credentialStatus.timeRemaining)

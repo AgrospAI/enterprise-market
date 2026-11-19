@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../../i18n/index'
 import { Fragment, ReactElement, useEffect, useState } from 'react'
 import { Field, useField } from 'formik'
 import Input, { InputProps } from '../..'
@@ -28,6 +30,8 @@ const paramTypes: FormConsumerParameter['type'][] = [
 ]
 
 export function ConsumerParametersBuilder(props: InputProps): ReactElement {
+  useLingui()
+
   const [field, , helpers] = useField<FormConsumerParameter[]>(props.name)
   const [expandedIndex, setExpandedIndex] = useState(0)
 
@@ -64,7 +68,11 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
   }
 
   if (!parameters.length) {
-    return <div>Loading...</div>
+    return (
+      <div>
+        <Trans id="Loading..." />
+      </div>
+    )
   }
 
   return (
@@ -87,7 +95,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                       setExpandedIndex(index)
                     }}
                   >
-                    PARAM {index + 1}
+                    <Trans id="PARAM" /> {index + 1}
                     {parameters.length > 1 && isExpanded && (
                       <button
                         type="button"
@@ -97,7 +105,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                           deleteParameter(index)
                         }}
                       >
-                        <BinIcon /> Delete
+                        <BinIcon /> <Trans id="Delete" />{' '}
                       </button>
                     )}
                   </div>
@@ -108,7 +116,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <Field
                             name={`${field.name}[${index}].name`}
-                            label="Parameter Name"
+                            label={i18n._('Parameter Name')}
                             required
                             component={Input}
                             className={styles.fullWidthInput}
@@ -117,7 +125,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <Field
                             name={`${field.name}[${index}].label`}
-                            label="Parameter Label"
+                            label={i18n._('Parameter Label')}
                             required
                             component={Input}
                             className={styles.fullWidthInput}
@@ -129,7 +137,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <Field
                             name={`${field.name}[${index}].description`}
-                            label="Description"
+                            label={i18n._('Description')}
                             required
                             component={Input}
                             className={styles.fullWidthInput}
@@ -138,7 +146,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <TypeInput
                             name={`${field.name}[${index}].type`}
-                            label="Parameter Type"
+                            label={i18n._('Parameter Type')}
                             required
                             type="select"
                             options={paramTypes}
@@ -153,7 +161,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <Field
                             name={`${field.name}[${index}].required`}
-                            label="Required"
+                            label={i18n._('Required')}
                             required
                             type="select"
                             options={['optional', 'required']}
@@ -164,7 +172,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                         <div className={styles.formColumn}>
                           <DefaultInput
                             name={`${field.name}[${index}].default`}
-                            label="Default Value"
+                            label={i18n._('Default Value')}
                             required
                             index={index}
                             inputName={props.name}
@@ -178,7 +186,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
                           <div className={styles.formColumnFull}>
                             <OptionsInput
                               name={`${field.name}[${index}].options`}
-                              label="Options"
+                              label={i18n._('Options')}
                               value={paramData.options}
                             />
                           </div>
@@ -198,7 +206,7 @@ export function ConsumerParametersBuilder(props: InputProps): ReactElement {
       </div>
       <div className={styles.addButtonContainer}>
         <Button type="button" style="gradient" onClick={addParameter}>
-          <AddParam /> Add parameter
+          <AddParam /> <Trans id="Add parameter" />{' '}
         </Button>
       </div>
     </>

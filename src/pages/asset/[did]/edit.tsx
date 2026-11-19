@@ -1,9 +1,12 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import EditPage from '../../../components/Asset/Edit'
 import AssetProvider from '@context/Asset'
 
 export default function PageEditAsset(): ReactElement {
+  useLingui()
+
   const router = useRouter()
   const { did } = router.query
   return (

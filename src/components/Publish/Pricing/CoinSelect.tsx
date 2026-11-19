@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import InputElement from '@shared/FormInput/InputElement'
 import { useFormikContext } from 'formik'
 import { ChangeEvent, ReactElement } from 'react'
@@ -9,6 +10,8 @@ export default function CoinSelect({
 }: {
   approvedBaseTokens: TokenInfo[]
 }): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
   const handleBaseTokenSelection = (e: ChangeEvent<HTMLSelectElement>) => {

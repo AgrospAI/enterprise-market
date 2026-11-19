@@ -1,3 +1,5 @@
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import {
   ReactElement,
   useCallback,
@@ -17,7 +19,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { SortTermOptions } from '../../../@types/aquarius/SearchQuery'
 import { transformAssetToAssetSelectionEdit } from '@utils/assetConverter'
 import { ServiceEditForm } from './_types'
-import content from '../../../../content/pages/editComputeDataset.json'
+import { contentPagesEditComputeDataset as content } from '../../../i18n/content'
 import { getFieldContent } from '@utils/form'
 import { useAccount } from 'wagmi'
 import { Compute, PublisherTrustedAlgorithms } from 'src/@types/ddo/Service'
@@ -56,6 +58,8 @@ export default function FormEditComputeService({
   serviceEndpoint: string
   serviceCompute: Compute
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
   const { values, setFieldValue, setFieldTouched } =
@@ -108,17 +112,21 @@ export default function FormEditComputeService({
         trustedAlgorithms
       )
       toast.success(
-        `Image checksums refreshed for ${
-          trustedAlgorithms.length
-        } selected algorithm${
-          trustedAlgorithms.length === 1 ? '' : 's'
-        }. Submit to save the dataset service.`
+        i18n._(
+          'Image checksums refreshed for {value0} selected algorithm{value1}. Submit to save the dataset service.',
+          {
+            value0: trustedAlgorithms.length,
+            value1: trustedAlgorithms.length === 1 ? '' : 's'
+          }
+        )
       )
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Could not refresh the selected algorithm checksums.'
+        i18n._(
+          error instanceof Error
+            ? error.message
+            : i18n._('Could not refresh the selected algorithm checksums.')
+        )
       )
     } finally {
       setIsRefreshingChecksums(false)
@@ -201,19 +209,19 @@ export default function FormEditComputeService({
     setAddressError('')
 
     if (!addressInputValue.trim()) {
-      setAddressError('Please enter an address')
+      setAddressError(i18n._('Please enter an address'))
       return
     }
 
     const newAddress = addressInputValue.trim()
 
     if (!(newAddress === '*' || isAddress(newAddress))) {
-      setAddressError('Wallet address is invalid')
+      setAddressError(i18n._('Wallet address is invalid'))
       return
     }
 
     if (addressList.includes(newAddress.toLowerCase())) {
-      setAddressError('Wallet address already added to the list')
+      setAddressError(i18n._('Wallet address already added to the list'))
       return
     }
 
@@ -299,8 +307,10 @@ export default function FormEditComputeService({
 
   return (
     <SectionContainer
-      title="Set Allowed Algorithms"
-      help="Only the algorithms selected here will be allowed to run on your dataset. Uncheck all to remove any access to your dataset."
+      title={i18n._('Set Allowed Algorithms')}
+      help={i18n._(
+        'Only the algorithms selected here will be allowed to run on your dataset. Uncheck all to remove any access to your dataset.'
+      )}
     >
       <SectionContainer border>
         <Field
@@ -331,8 +341,8 @@ export default function FormEditComputeService({
                   onClick={handleRefreshChecksums}
                 >
                   {isRefreshingChecksums
-                    ? 'Refreshing image checksums...'
-                    : 'Refresh image checksum for selected algorithms'}
+                    ? i18n._('Refreshing image checksums...')
+                    : i18n._('Refresh image checksum for selected algorithms')}
                 </Button>
               </div>
             ) : undefined
@@ -367,7 +377,9 @@ export default function FormEditComputeService({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <input
                   type="text"
-                  placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+                  placeholder={i18n._(
+                    'e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa'
+                  )}
                   value={addressInputValue}
                   onChange={(e) => {
                     setAddressInputValue(e.target.value)
@@ -388,7 +400,7 @@ export default function FormEditComputeService({
                 )}
                 className={styles.addAddressButton}
               >
-                <AddAddress /> Add
+                <AddAddress /> <Trans id="Add" />{' '}
               </Button>
             </div>
             {addressError && (

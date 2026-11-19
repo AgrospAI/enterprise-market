@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import PricingRow from './PricingRow'
 import styles from './index.module.css'
@@ -21,6 +22,8 @@ export default function RowItem({
   symbol,
   isValueLoading
 }: RowItemProps): ReactElement {
+  useLingui()
+
   return (
     <PricingRow
       itemName={itemName}

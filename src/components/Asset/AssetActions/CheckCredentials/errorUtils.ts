@@ -1,3 +1,4 @@
+import { i18n } from '../../../../i18n/index'
 import {
   checkVerifierSessionId,
   extractFailedPolicyDetails
@@ -43,9 +44,14 @@ function formatExpectation(expectation?: string): string | undefined {
   if (!expectation) return undefined
   const [rawKey, ...rest] = expectation.split('=')
   const value = rest.join('=')
-  if (!rawKey || !value) return `Required value: ${expectation}`
-  if (/^param\d*$/i.test(rawKey)) return `Required value: ${value}`
-  return `Required ${humanizeIdentifier(rawKey)}: ${value}`
+  if (!rawKey || !value)
+    return i18n._('Required value: {expectation}', { expectation })
+  if (/^param\d*$/i.test(rawKey))
+    return i18n._('Required value: {value}', { value })
+  return i18n._('Required {value0}: {value}', {
+    value0: humanizeIdentifier(rawKey),
+    value
+  })
 }
 
 interface SsiErrorObject {
@@ -168,9 +174,12 @@ export function extractSsiErrorDetails(error: unknown): string {
 
   const status = getErrorStatus(error)
   if (typeof status === 'number' && typeof errorObject?.statusText === 'string')
-    return `HTTP ${status}: ${errorObject.statusText}`
-  if (typeof status === 'number') return `HTTP ${status}`
-  return 'Unknown error'
+    return i18n._('HTTP {status}: {value1}', {
+      status,
+      value1: errorObject.statusText
+    })
+  if (typeof status === 'number') return i18n._('HTTP {status}', { status })
+  return i18n._('Unknown error')
 }
 
 export async function getSsiVerificationFailureDetails(

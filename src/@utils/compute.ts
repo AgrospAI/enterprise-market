@@ -1,3 +1,4 @@
+import { i18n } from '../i18n/index'
 import {
   LoggerInstance,
   ProviderInstance,
@@ -95,7 +96,9 @@ export async function isOrderable(
       if (algoService && algoService.type === 'compute') {
         if (algoService.serviceEndpoint !== datasetService.serviceEndpoint) {
           this.logger.error(
-            'ERROR: Both assets with compute service are not served by the same provider'
+            i18n._(
+              'ERROR: Both assets with compute service are not served by the same provider'
+            )
           )
           return false
         }
@@ -289,7 +292,7 @@ async function getJobs(
         ? error.message
         : typeof error === 'string'
         ? error
-        : 'Failed to fetch compute jobs.'
+        : i18n._('Failed to fetch compute jobs.')
 
     try {
       return getErrorMessage(rawMessage)
@@ -400,7 +403,7 @@ async function getJobs(
             ...job,
             assetName:
               asset?.credentialSubject?.metadata?.name ||
-              (did ? 'name' : 'Algorithm Only Job'),
+              (did ? 'name' : i18n._('Algorithm Only Job')),
             assetDtSymbol: asset?.indexedMetadata?.stats[0].symbol || 'symbol',
             networkId
           }
@@ -411,7 +414,7 @@ async function getJobs(
   } catch (err: unknown) {
     const message = formatProviderError(err)
     LoggerInstance.error('[Compute to Data] Error:', message)
-    toast.error(message)
+    toast.error(i18n._(message))
   }
   return computeJobs
 }
@@ -515,11 +518,20 @@ async function loadSelectedAlgorithmServices(
   return parsed.map(({ algoDid, serviceId }) => {
     const asset = selectedAssets.find((a) => a.id === algoDid)
     if (!asset) {
-      throw new Error(`Could not load selected algorithm ${algoDid}.`)
+      throw new Error(
+        i18n._('Could not load selected algorithm {algoDid}.', {
+          algoDid
+        })
+      )
     }
     const svc = asset.credentialSubject.services.find((s) => s.id === serviceId)
     if (!svc) {
-      throw new Error(`Could not find service ${serviceId} on ${algoDid}.`)
+      throw new Error(
+        i18n._('Could not find service {serviceId} on {algoDid}.', {
+          serviceId,
+          algoDid
+        })
+      )
     }
     return { asset, service: svc }
   })
@@ -528,7 +540,11 @@ async function loadSelectedAlgorithmServices(
 function getContainerSectionChecksum(asset: Asset): string {
   const container = asset.credentialSubject?.metadata.algorithm.container
   if (!container?.entrypoint || !container?.checksum) {
-    throw new Error(`Algorithm ${asset.id} has incomplete container metadata.`)
+    throw new Error(
+      i18n._('Algorithm {value0} has incomplete container metadata.', {
+        value0: asset.id
+      })
+    )
   }
   return getHash(container.entrypoint + container.checksum)
 }
@@ -554,7 +570,9 @@ export async function createTrustedAlgorithmList(
       )
       if (!filesChecksum?.[0]?.checksum) {
         throw new Error(
-          `Could not calculate the file checksum for ${asset.id}.`
+          i18n._('Could not calculate the file checksum for {value0}.', {
+            value0: asset.id
+          })
         )
       }
 
@@ -600,7 +618,9 @@ export async function refreshTrustedAlgorithmContainerChecksums(
       }
       if (!filesChecksum) {
         throw new Error(
-          `Could not calculate the file checksum for ${asset.id}.`
+          i18n._('Could not calculate the file checksum for {value0}.', {
+            value0: asset.id
+          })
         )
       }
 

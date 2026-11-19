@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import ExplorerLink from '@shared/ExplorerLink'
@@ -18,6 +19,8 @@ export default function Account({
 }: {
   accountId: string
 }): ReactElement {
+  useLingui()
+
   const { debug } = useUserPreferences()
   const displayedSupportedChainIds = useConnectorSupportedChains()
   const { verifiedWallets } = useAddressConfig()

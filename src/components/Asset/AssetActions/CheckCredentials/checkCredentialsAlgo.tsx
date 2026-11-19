@@ -1,3 +1,6 @@
+import { translate } from '../../../../i18n/translate'
+import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import React, { useEffect, useState } from 'react'
 import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
@@ -56,6 +59,8 @@ export function AssetActionCheckCredentialsAlgo({
   onVerified?: () => void
   onError?: () => void
 }) {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const signer = useEthersSigner()
   const {
@@ -150,8 +155,12 @@ export function AssetActionCheckCredentialsAlgo({
             }
             if (typeof openid4vcMessage.redirectUri !== 'string') {
               toast.error(
-                openid4vcMessage.errorMessage ||
-                  'Invalid presentation request response from policy server'
+                i18n._(
+                  openid4vcMessage.errorMessage ||
+                    i18n._(
+                      'Invalid presentation request response from policy server'
+                    )
+                )
               )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
@@ -233,7 +242,9 @@ export function AssetActionCheckCredentialsAlgo({
             }
             if (!selectedCredentials || selectedCredentials.length === 0) {
               toast.error(
-                'You must select at least one credential to present, check if you have any required credential in your wallet'
+                i18n._(
+                  'You must select at least one credential to present, check if you have any required credential in your wallet'
+                )
               )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
@@ -299,7 +310,7 @@ export function AssetActionCheckCredentialsAlgo({
                 setError(errorMessage)
                 setCredentialError(errorMessage)
                 handleResetWalletCache()
-                toast.error(errorMessage)
+                toast.error(translate(errorMessage))
                 onError?.()
               } else {
                 cacheVerifierSessionId(
@@ -319,7 +330,7 @@ export function AssetActionCheckCredentialsAlgo({
               console.error('Algorithm credential verification error:', error)
               setError(errorMessage)
               setCredentialError(errorMessage)
-              toast.error(errorMessage)
+              toast.error(translate(errorMessage))
               handleResetWalletCache()
               onError?.()
             }
@@ -373,25 +384,40 @@ export function AssetActionCheckCredentialsAlgo({
   function getLoaderMessage() {
     const assetName = asset.credentialSubject?.metadata?.name || 'asset'
     const serviceName = service.name || 'service'
-    const assetType = type === 'dataset' ? 'Dataset' : 'Algorithm'
+    const assetType =
+      type === 'dataset' ? i18n._('Dataset') : i18n._('Algorithm')
 
     if (error) {
       return error
     }
 
     if (isRetrying) {
-      return `Retrying ${assetType.toLowerCase()} credential check for ${assetName}...`
+      return i18n._('Retrying {value0} credential check for {assetName}...', {
+        value0: assetType.toLowerCase(),
+        assetName
+      })
     }
 
     switch (checkCredentialState) {
       case CheckCredentialState.StartCredentialExchange:
-        return `Connecting to policy server for ${assetType} ${assetName}...`
+        return i18n._(
+          'Connecting to policy server for {assetType} {assetName}...',
+          { assetType, assetName }
+        )
       case CheckCredentialState.ReadDids:
-        return `Selecting credentials for ${serviceName}...`
+        return i18n._('Selecting credentials for {serviceName}...', {
+          serviceName
+        })
       case CheckCredentialState.ResolveCredentials:
-        return `Verifying access to ${assetType} ${assetName}...`
+        return i18n._('Verifying access to {assetType} {assetName}...', {
+          assetType,
+          assetName
+        })
       default:
-        return `Checking ${assetType.toLowerCase()} credentials for ${assetName}...`
+        return i18n._('Checking {value0} credentials for {assetName}...', {
+          value0: assetType.toLowerCase(),
+          assetName
+        })
     }
   }
 
@@ -441,7 +467,7 @@ export function AssetActionCheckCredentialsAlgo({
                   style="accent"
                   className={styles.retryButton}
                 >
-                  Retry
+                  <Trans id="Retry" />{' '}
                 </Button>
               )}
             </div>
@@ -457,8 +483,10 @@ export function AssetActionCheckCredentialsAlgo({
               disabled={!selectedWallet?.id}
             >
               {type === 'dataset'
-                ? `Check Dataset Credentials for ${service.name}`
-                : 'Check Algorithm Credentials'}
+                ? i18n._('Check Dataset Credentials for {value0}', {
+                    value0: service.name
+                  })
+                : i18n._('Check Algorithm Credentials')}
             </Button>
           )}
         </div>

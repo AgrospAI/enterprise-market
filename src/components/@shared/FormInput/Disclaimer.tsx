@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import styles from './Disclaimer.module.css'
 import classNames from 'classnames/bind'
@@ -14,6 +15,8 @@ const FormDisclaimer = ({
   className?: string
   visible?: boolean
 }): ReactElement => {
+  useLingui()
+
   const styleClasses = cx({
     disclaimer: true,
     hidden: !visible,

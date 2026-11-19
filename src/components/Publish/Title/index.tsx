@@ -1,8 +1,9 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import NetworkName from '@shared/NetworkName'
 import Tooltip from '@shared/atoms/Tooltip'
 import styles from './index.module.css'
-import content from '../../../../content/publish/index.json'
+import { contentPublishIndex as content } from '../../../i18n/content'
 import Info from '@images/info.svg'
 import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
@@ -13,6 +14,8 @@ export default function Title({
 }: {
   networkId: number
 }): ReactElement {
+  useLingui()
+
   const { address: accountId } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
 
@@ -21,7 +24,9 @@ export default function Title({
       <span className={styles.titleText}>{content.title}</span>
       {networkId && (
         <>
-          <span className={styles.intoText}>into</span>
+          <span className={styles.intoText}>
+            <Trans id="into" />
+          </span>
           <div className={styles.networkContainer}>
             <NetworkName
               networkId={networkId}

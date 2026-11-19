@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
 import Markdown from '@shared/Markdown'
 import { useFormikContext } from 'formik'
 import { ReactElement, ReactNode, useState, useEffect } from 'react'
@@ -44,6 +46,16 @@ interface TabsProps {
   showExistingFileNotice?: boolean
 }
 
+const storageTitles: Record<string, string> = {
+  url: 'URL',
+  s3: 'S3',
+  ipfs: 'IPFS',
+  arweave: 'Arweave',
+  ftp: 'FTP/FTPS',
+  edc: 'EDC',
+  rea: 'REA'
+}
+
 const iconMap = {
   URL: IconUrl,
   IPFS: IconIpfs,
@@ -61,6 +73,8 @@ export default function TabsFile({
   existingFilePlaceholder,
   showExistingFileNotice
 }: TabsProps): ReactElement {
+  useLingui()
+
   const { values, setFieldValue } = useFormikContext<
     FormPublishData | ServiceEditForm
   >()
@@ -150,7 +164,8 @@ export default function TabsFile({
       <div className={styles.tabListContainer}>
         <TabList className={styles.tabList}>
           {items.map((item, index) => {
-            const IconComponent = iconMap[item.title.toUpperCase()]
+            const title = storageTitles[item.field.value] || item.title
+            const IconComponent = iconMap[title.toUpperCase()]
             return (
               <Tab
                 className={styles.tab}
@@ -162,7 +177,7 @@ export default function TabsFile({
                   {IconComponent && (
                     <IconComponent className={styles.tabIcon} />
                   )}
-                  <span>{item.title}</span>
+                  <span>{title}</span>
                 </div>
               </Tab>
             )
@@ -187,7 +202,7 @@ export default function TabsFile({
               <label className={styles.tabLabel}>
                 {item.field.label}
                 {item.field.required && (
-                  <span title="Required" className={styles.required}>
+                  <span title={i18n._('Required')} className={styles.required}>
                     *
                   </span>
                 )}

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import PublishButton from '@shared/PublishButton'
@@ -60,6 +61,8 @@ export default function URLInput({
   inputType = 'url',
   ...props
 }: URLInputProps): ReactElement {
+  useLingui()
+
   const [field, meta] = useField(name)
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const inputValues = (props as any)?.value

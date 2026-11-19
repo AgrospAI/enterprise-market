@@ -1,9 +1,10 @@
+import { Trans, useLingui } from '@lingui/react'
 import { ReactElement } from 'react'
 import { Field } from 'formik'
 import Input from '../../FormInput'
 import { getFieldContent } from '@utils/form'
 import styles from './Card.module.css'
-import fields from '../editor.json'
+import { contentSrcComponentsSharedPolicyEditorEditor as fields } from '../../../../i18n/content'
 import DeleteButton from '../../DeleteButton/DeleteButton'
 
 interface CredentialCardProps {
@@ -19,10 +20,17 @@ export default function CredentialCard({
   onDelete,
   children
 }: CredentialCardProps): ReactElement {
+  useLingui()
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Credential request #{index + 1}</h3>
+        <h3 className={styles.title}>
+          <Trans
+            id="Credential request #{number}"
+            values={{ number: index + 1 }}
+          />
+        </h3>
       </div>
 
       <div className={styles.typeFormatRow}>

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
@@ -21,6 +22,8 @@ export default function ContainerForm({
   border = false,
   gap
 }: ContainerFormProps): ReactElement {
+  useLingui()
+
   const styleClasses = cx({
     container: true,
     large: style === 'large',

@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react'
 import {
   useCallback,
   createContext,
@@ -73,6 +74,8 @@ export function SsiWalletProvider({
 }: {
   children: ReactNode
 }): ReactElement {
+  useLingui()
+
   const { address, isConnected, status: walletStatus } = useAccount()
   const { setShowSsiWalletModule } = useUserPreferences()
   const { chainId, isSsiChainAllowed, isSsiChainReady } = useSsiAllowedChain()

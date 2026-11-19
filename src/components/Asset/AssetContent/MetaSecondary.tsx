@@ -1,3 +1,5 @@
+import { useLingui } from '@lingui/react'
+import { i18n } from '../../../i18n/index'
 import { ReactElement } from 'react'
 import MetaItem from './MetaItem'
 import styles from './MetaSecondary.module.css'
@@ -6,6 +8,8 @@ import { Asset } from 'src/@types/Asset'
 import SampleFilesDropdown from './SampleFilesDropdown'
 
 export default function MetaSecondary({ ddo }: { ddo: Asset }): ReactElement {
+  useLingui()
+
   // Sample data files live on the individual services (`service.links`)
   const hasServiceLinks = ddo?.credentialSubject?.services?.some(
     (service) => service.links && Object.keys(service.links).length > 0
@@ -16,7 +20,7 @@ export default function MetaSecondary({ ddo }: { ddo: Asset }): ReactElement {
       {hasServiceLinks && (
         <div className={styles.samples}>
           <MetaItem
-            title="Sample Data"
+            title={i18n._('Sample Data')}
             content={
               <SampleFilesDropdown
                 services={ddo?.credentialSubject?.services}
