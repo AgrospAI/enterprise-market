@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import {
+  adoptAnonymousChat,
   clearChatHistory,
   isChatStale,
   readSavedChat,
@@ -8,32 +9,64 @@ import {
 } from '@utils/chatHistory'
 import { readChatStream } from '@utils/chatStream'
 import {
+  CHAT_MAX_CONTEXT_CHARS,
   CHAT_MAX_CONTEXT_MESSAGES,
   CHAT_MAX_MESSAGE_CHARS,
   ChatMessage,
   ChatStep,
-  JobResultAttachment
+  ChatUsage,
+  JobResultAttachment,
+  contextChars
 } from 'src/@types/Chat'
 import type { ChatIntent } from 'src/@types/ChatIntent'
 
 /** What the user asks when they send a job's results from its card. */
 export const RESULTS_QUESTION = 'What do the results of this job show?'
 
+export interface ChatContext {
+  /** What is sent to the server with the next request. */
+  messages: ChatMessage[]
+  /** Characters of them counted against CHAT_MAX_CONTEXT_CHARS. */
+  chars: number
+  /** Index in the history of the oldest message sent, or 0 when all are. */
+  firstSent: number
+}
+
 /**
- * The messages sent to the server. Only the latest job results go with them:
- * older ones would fill the model's context, and the server takes one.
+ * The newest messages that fit in the context budget, with only the latest job
+ * results: older ones would fill the model's context, and the server takes one.
+ * The latest message always goes.
  */
+export function planContext(history: ChatMessage[]): ChatContext {
+  const latestResults = history.map((m) => !!m.attachment).lastIndexOf(true)
+  const messages: ChatMessage[] = []
+  let chars = 0
+  let firstSent = history.length
+  for (let index = history.length - 1; index >= 0; index--) {
+    const { role, content: full, attachment } = history[index]
+    if (!full.trim()) continue
+    const content = full.slice(0, CHAT_MAX_MESSAGE_CHARS)
+    const sendsResults = !!attachment && index === latestResults
+    const size = contextChars({ content, attachment }, sendsResults)
+    if (
+      messages.length &&
+      (chars + size > CHAT_MAX_CONTEXT_CHARS ||
+        messages.length >= CHAT_MAX_CONTEXT_MESSAGES)
+    ) {
+      break
+    }
+    messages.unshift({ role, content, ...(sendsResults ? { attachment } : {}) })
+    chars += size
+    firstSent = index
+  }
+  // Empty messages before the oldest one sent are not left out: they never go.
+  while (firstSent > 0 && !history[firstSent - 1].content.trim()) firstSent--
+  return { messages, chars, firstSent: messages.length ? firstSent : 0 }
+}
+
+/** The messages sent to the server. */
 export function toRequestMessages(history: ChatMessage[]) {
-  const recent = history
-    .filter((message) => message.content.trim())
-    .slice(-CHAT_MAX_CONTEXT_MESSAGES)
-  const withResults = recent.map((message) => !!message.attachment)
-  const latest = withResults.lastIndexOf(true)
-  return recent.map(({ role, content, attachment }, index) => ({
-    role,
-    content: content.slice(0, CHAT_MAX_MESSAGE_CHARS),
-    ...(attachment && index === latest ? { attachment } : {})
-  }))
+  return planContext(history).messages
 }
 
 function requestErrorMessage(status: number): string {
@@ -52,6 +85,10 @@ export interface PreviousChat {
   updatedAt?: number
 }
 
+/**
+ * The conversation of a wallet's session, or of a visitor without one when
+ * `address` is ANONYMOUS_CHAT: the server then only lets it search.
+ */
 export function useChat(
   address: string | undefined,
   onSessionLost: () => void
@@ -61,6 +98,8 @@ export function useChat(
   const [activeTool, setActiveTool] = useState<string>()
   const [error, setError] = useState<string>()
   const [previous, setPrevious] = useState<PreviousChat>()
+  // Tokens of the last answer, as the model server counted them. Not saved.
+  const [usage, setUsage] = useState<ChatUsage>()
   const abortRef = useRef<AbortController>()
   // Intents received in this page. Saved ones are shown, but cannot run again.
   const liveIntents = useRef(new WeakSet<ChatIntent>())
@@ -73,6 +112,8 @@ export function useChat(
   useEffect(() => {
     cancelRequest()
     setError(undefined)
+    setUsage(undefined)
+    if (address) adoptAnonymousChat(address)
     const saved = address ? readSavedChat(address) : { messages: [] }
     // It stays saved until a new message replaces it, so it can be continued.
     if (saved.messages.length && isChatStale(saved)) {
@@ -164,6 +205,7 @@ export function useChat(
             intents.push(event.intent)
             setMessages(withAnswer())
           }
+          if (event.type === 'usage') setUsage(event.usage)
           if (event.type === 'error') setError(event.message)
         })
       } catch (err) {
@@ -201,6 +243,7 @@ export function useChat(
     setPrevious(messages.length ? { reason: 'deleted', messages } : undefined)
     setMessages([])
     setError(undefined)
+    setUsage(undefined)
     if (address) clearChatHistory(address)
   }, [address, cancelRequest, messages])
 
@@ -209,6 +252,7 @@ export function useChat(
     setMessages(previous.messages)
     setPrevious(undefined)
     setError(undefined)
+    setUsage(undefined)
     writeChatHistory(address, previous.messages)
   }, [address, previous])
 
@@ -217,8 +261,12 @@ export function useChat(
     []
   )
 
+  const context = useMemo(() => planContext(messages), [messages])
+
   return {
     messages,
+    context,
+    usage,
     isStreaming,
     activeTool,
     error,

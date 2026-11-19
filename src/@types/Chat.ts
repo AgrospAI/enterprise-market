@@ -57,6 +57,11 @@ export type ChatStreamEvent =
   | { type: 'tool'; name: string; status: ChatToolStatus }
   /** A prepared action, validated by the server, for a confirmation card. */
   | { type: 'intent'; intent: ChatIntent }
+  /**
+   * Tokens of the model's context in the largest call of the request, as the
+   * model server counted them, and its window when it is configured.
+   */
+  | { type: 'usage'; usage: ChatUsage }
   | { type: 'error'; message: string }
   | { type: 'done' }
 
@@ -65,10 +70,27 @@ export interface SiweSessionResponse {
   address: string | null
   /** The chain the SIWE message must be signed for. */
   chainId: number
+  /** Whether visitors without a session may chat, only to search the catalogue. */
+  anonymousSearch?: boolean
 }
 
-/** Messages of a conversation sent to the server with each request. */
-export const CHAT_MAX_CONTEXT_MESSAGES = 20
+export interface ChatUsage {
+  /** System prompt, tool definitions, conversation and tool results. */
+  promptTokens: number
+  completionTokens: number
+  /** The model's window (vLLM's --max-model-len), when it is configured. */
+  contextTokens?: number
+}
+
+/**
+ * Characters of conversation sent with each request: the newest messages that
+ * fit, and the latest job results. About 14k tokens of Qwen, so the system
+ * prompt, the tool definitions and the tool results of the request still fit
+ * in a 32k window (docs/market-chat-status.md, "Context budget").
+ */
+export const CHAT_MAX_CONTEXT_CHARS = 48_000
+/** Only a guard against abuse: the budget above is the real limit. */
+export const CHAT_MAX_CONTEXT_MESSAGES = 200
 export const CHAT_MAX_MESSAGE_CHARS = 8000
 /** Text of all the files of a job's results sent to the model. */
 export const CHAT_MAX_ATTACHMENT_CHARS = 20_000
@@ -122,4 +144,19 @@ export function parseJobResultAttachment(
   if (chars > CHAT_MAX_ATTACHMENT_CHARS) return undefined
   const { jobId, dataset, algorithm, succeeded } = attachment
   return { kind: 'jobResult', jobId, dataset, algorithm, succeeded, files }
+}
+
+/**
+ * Characters of a message counted against CHAT_MAX_CONTEXT_CHARS. Job results
+ * count only when they are sent: only the latest ones are.
+ */
+export function contextChars(
+  message: Pick<ChatMessage, 'content' | 'attachment'>,
+  withAttachment = !!message.attachment
+): number {
+  const files = withAttachment ? message.attachment?.files ?? [] : []
+  return files.reduce(
+    (chars, file) => chars + file.name.length + (file.text?.length ?? 0),
+    message.content.length
+  )
 }

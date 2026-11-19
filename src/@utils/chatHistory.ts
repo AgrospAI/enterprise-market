@@ -20,8 +20,21 @@ export interface SavedChat {
   updatedAt?: number
 }
 
+/**
+ * Whose conversation it is, in place of an address, for a visitor who has not
+ * signed in. Theirs is kept only in this tab (sessionStorage): on a shared
+ * computer it must not stay for the next person.
+ */
+export const ANONYMOUS_CHAT = 'anonymous'
+
 function storageKey(address: string): string {
   return `${STORAGE_PREFIX}${address.toLowerCase()}`
+}
+
+function storageFor(address: string): Storage {
+  return address === ANONYMOUS_CHAT
+    ? window.sessionStorage
+    : window.localStorage
 }
 
 function isChatMessage(value: unknown): value is ChatMessage {
@@ -71,7 +84,7 @@ function readMessages(value: unknown): ChatMessage[] {
 export function readSavedChat(address: string): SavedChat {
   try {
     const parsed = JSON.parse(
-      window.localStorage.getItem(storageKey(address)) ?? '[]'
+      storageFor(address).getItem(storageKey(address)) ?? '[]'
     )
     // Saved before the time was kept: a plain list of messages.
     if (Array.isArray(parsed)) return { messages: readMessages(parsed) }
@@ -102,7 +115,7 @@ export function writeChatHistory(
   now = Date.now()
 ): void {
   try {
-    window.localStorage.setItem(
+    storageFor(address).setItem(
       storageKey(address),
       JSON.stringify({
         updatedAt: now,
@@ -114,6 +127,21 @@ export function writeChatHistory(
 
 export function clearChatHistory(address: string): void {
   try {
-    window.localStorage.removeItem(storageKey(address))
+    storageFor(address).removeItem(storageKey(address))
   } catch {}
+}
+
+/**
+ * After signing in, the conversation the visitor had before goes on as the
+ * wallet's: they were likely sent to sign in by it. It is added after the
+ * wallet's own conversation, or replaces it if that one was put aside.
+ */
+export function adoptAnonymousChat(address: string, now = Date.now()): void {
+  if (address === ANONYMOUS_CHAT) return
+  const anonymous = readSavedChat(ANONYMOUS_CHAT)
+  if (!anonymous.messages.length) return
+  const own = readSavedChat(address)
+  const kept = isChatStale(own, now) ? [] : own.messages
+  writeChatHistory(address, [...kept, ...anonymous.messages], now)
+  clearChatHistory(ANONYMOUS_CHAT)
 }

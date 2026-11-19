@@ -10,18 +10,27 @@ import {
   createReplyAssembler,
   LlmMessage,
   LlmReply,
+  LlmTool,
+  LlmToolCall,
   readStreamLine
 } from '../../pages/api/chat/_llm'
 import {
+  FINAL_ROUND_NOTE,
   MAX_ROUNDS,
   MAX_TOOL_RESULT_CHARS,
+  OUT_OF_ROUNDS,
   describeJobResults,
   runChatLoop,
+  ANONYMOUS_SYSTEM_PROMPT,
   SYSTEM_PROMPT
 } from '../../pages/api/chat/_loop'
 import { connectMcp } from '../../pages/api/chat/_mcp'
 import { createRateLimiter } from '../../pages/api/chat/_rateLimit'
-import { ALLOWED_TOOLS, isAllowedTool } from '../../pages/api/chat/_tools'
+import {
+  ALLOWED_TOOLS,
+  ANONYMOUS_TOOLS,
+  isAllowedTool
+} from '../../pages/api/chat/_tools'
 import {
   buildSessionCookie,
   getSiweConfig
@@ -66,7 +75,11 @@ function toolCall(name: string, args: unknown = {}, id = 'call_1') {
 describe('runChatLoop', () => {
   function setup(
     replies: LlmReply[],
-    messages: ChatMessage[] = [{ role: 'user', content: 'hello' }]
+    messages: ChatMessage[] = [{ role: 'user', content: 'hello' }],
+    contextTokens?: number,
+    /** null: a visitor without a session. */
+    address: string | null = USER,
+    tools: LlmTool[] = []
   ) {
     const events: ChatStreamEvent[] = []
     const seen: { messages: LlmMessage[]; tools: unknown }[] = []
@@ -80,9 +93,10 @@ describe('runChatLoop', () => {
     const run = () =>
       runChatLoop({
         messages,
-        address: USER,
-        mcp: { callTool, tools: [] },
+        address: address ?? undefined,
+        mcp: { callTool, tools },
         emit: (event) => events.push(event),
+        contextTokens,
         callLlm: async (messages, tools, onText) => {
           seen.push({ messages: [...messages], tools })
           const reply = replies.shift() ?? { content: 'end', toolCalls: [] }
@@ -102,6 +116,47 @@ describe('runChatLoop', () => {
       content: SYSTEM_PROMPT
     })
     expect(events).toEqual([{ type: 'text', delta: 'hi' }])
+  })
+
+  it('only lets a visitor without a session search', async () => {
+    const tools = ['search_assets', 'get_asset', 'prepare_download'].map(
+      (name): LlmTool => ({
+        type: 'function',
+        function: { name, parameters: {} }
+      })
+    )
+    const { events, seen, callTool, run } = setup(
+      [
+        {
+          content: '',
+          toolCalls: [
+            toolCall('get_asset', { did: 'did:op:1' }, 'a'),
+            toolCall('search_assets', { query: 'wine' }, 'b')
+          ]
+        },
+        { content: 'Found', toolCalls: [] }
+      ],
+      undefined,
+      undefined,
+      null,
+      tools
+    )
+    await run()
+
+    expect(seen[0].messages[0]).toEqual({
+      role: 'system',
+      content: ANONYMOUS_SYSTEM_PROMPT
+    })
+    expect(seen[0].tools).toEqual([tools[0]])
+    expect(callTool).toHaveBeenCalledTimes(1)
+    expect(callTool).toHaveBeenCalledWith('search_assets', { query: 'wine' })
+    expect(events[0]).toEqual({
+      type: 'tool',
+      name: 'unavailable',
+      status: 'error'
+    })
+    expect(ANONYMOUS_SYSTEM_PROMPT).toContain('sign in')
+    expect(ANONYMOUS_SYSTEM_PROMPT).not.toContain('job_results')
   })
 
   it('gives the model the results of a job inside their own tag', async () => {
@@ -448,11 +503,134 @@ describe('runChatLoop', () => {
 
     expect(seen).toHaveLength(MAX_ROUNDS)
     expect(seen.at(-1).tools).toBeUndefined()
-    expect(callTool).toHaveBeenCalledTimes(MAX_ROUNDS - 1)
-    expect(events).toContainEqual({
-      type: 'error',
-      message: 'The model returned no answer.'
+    expect(seen.at(-1).messages.at(-1)).toEqual({
+      role: 'user',
+      content: FINAL_ROUND_NOTE
     })
+    expect(seen.at(-2).messages).not.toContainEqual({
+      role: 'user',
+      content: FINAL_ROUND_NOTE
+    })
+    expect(callTool).toHaveBeenCalledTimes(MAX_ROUNDS - 1)
+    expect(events).toContainEqual({ type: 'error', message: OUT_OF_ROUNDS })
+  })
+
+  it('reports the tokens of the largest call', async () => {
+    const usage = (promptTokens: number) => ({
+      promptTokens,
+      completionTokens: 50
+    })
+    const { events, run } = setup(
+      [
+        {
+          content: '',
+          toolCalls: [toolCall('search_assets')],
+          usage: usage(4000)
+        },
+        { content: 'done', toolCalls: [], usage: usage(6000) }
+      ],
+      undefined,
+      32_768
+    )
+    await run()
+
+    expect(events.at(-1)).toEqual({
+      type: 'usage',
+      usage: { promptTokens: 6000, completionTokens: 50, contextTokens: 32_768 }
+    })
+  })
+
+  it('reports no usage when the model server gives none', async () => {
+    const { events, run } = setup([{ content: 'hi', toolCalls: [] }])
+    await run()
+    expect(events.some((event) => event.type === 'usage')).toBe(false)
+  })
+
+  it('answers without tools before tool results overflow the window', async () => {
+    const { seen, callTool, run } = setup(
+      [
+        {
+          content: '',
+          toolCalls: [toolCall('search_assets')],
+          usage: { promptTokens: 26_000, completionTokens: 20 }
+        },
+        { content: 'what I found', toolCalls: [] }
+      ],
+      undefined,
+      32_768
+    )
+    // About 5,300 tokens of results: past the reserve for the answer.
+    callTool.mockResolvedValueOnce({ text: 'x'.repeat(16_000), isError: false })
+    await run()
+
+    expect(callTool).toHaveBeenCalledTimes(1)
+    expect(seen).toHaveLength(2)
+    expect(seen[1].tools).toBeUndefined()
+    expect(seen[1].messages.at(-1)).toEqual({
+      role: 'user',
+      content: FINAL_ROUND_NOTE
+    })
+  })
+
+  it('keeps offering tools while the window has room', async () => {
+    const { seen, run } = setup(
+      [
+        {
+          content: '',
+          toolCalls: [toolCall('search_assets')],
+          usage: { promptTokens: 6000, completionTokens: 20 }
+        },
+        { content: 'done', toolCalls: [] }
+      ],
+      undefined,
+      32_768
+    )
+    await run()
+    expect(seen[1].tools).toEqual([])
+  })
+
+  it('answers in the last round with what it found', async () => {
+    const replies = [
+      ...Array.from({ length: MAX_ROUNDS - 1 }, () => ({
+        content: '',
+        toolCalls: [toolCall('search_assets')]
+      })),
+      { content: 'I found two datasets.', toolCalls: [] }
+    ]
+    const { events, run } = setup(replies)
+    await run()
+
+    expect(events.at(-1)).toEqual({
+      type: 'text',
+      delta: 'I found two datasets.'
+    })
+    expect(events.map((event) => event.type)).not.toContain('error')
+  })
+
+  it('tells the model how to turn a wanted result into a job', () => {
+    expect(SYSTEM_PROMPT).toContain('type "algorithm"')
+    expect(SYSTEM_PROMPT).toContain('get_compatible_datasets')
+  })
+
+  it('does not send back arguments the model wrote badly', async () => {
+    const { seen, callTool, run } = setup([
+      {
+        content: '',
+        toolCalls: [toolCall('search_assets', '{"text": "wine"')]
+      },
+      { content: 'Sorry.', toolCalls: [] }
+    ])
+    await run()
+
+    expect(callTool).not.toHaveBeenCalled()
+    const [, assistant, result] = seen[1].messages.slice(-3)
+    expect(
+      (assistant as { tool_calls: LlmToolCall[] }).tool_calls[0].function
+        .arguments
+    ).toBe('{}')
+    expect((result as { content: string }).content).toBe(
+      'Error: the tool search_assets failed'
+    )
   })
 
   it('limits the tool calls of a round', async () => {
@@ -480,6 +658,12 @@ describe('allowed tools', () => {
     expect(isAllowedTool('search_assets')).toBe(true)
     expect(isAllowedTool('constructor')).toBe(false)
   })
+
+  it('only allows searching without a session', () => {
+    expect(ANONYMOUS_TOOLS).toEqual(['search_assets'])
+    expect(isAllowedTool('get_asset', ANONYMOUS_TOOLS)).toBe(false)
+    expect(isAllowedTool('prepare_download', ANONYMOUS_TOOLS)).toBe(false)
+  })
 })
 
 describe('parseMessages', () => {
@@ -499,7 +683,11 @@ describe('parseMessages', () => {
     ['a system message', [{ role: 'system', content: 'x' }, user]],
     ['a tool message', [{ role: 'tool', content: 'x' }, user]],
     ['no messages', []],
-    ['too many messages', Array(21).fill(user)],
+    ['too many messages', Array(201).fill(user)],
+    [
+      'more text than the context budget',
+      Array(7).fill({ role: 'user', content: 'x'.repeat(8000) })
+    ],
     ['a final assistant message', [{ role: 'assistant', content: 'x' }]],
     ['an empty message', [{ role: 'user', content: '  ' }]],
     ['a long message', [{ role: 'user', content: 'x'.repeat(8001) }]],
@@ -511,6 +699,11 @@ describe('parseMessages', () => {
 
   it('refuses a body without messages', () => {
     expect(parseMessages(undefined)).toBeUndefined()
+  })
+
+  it('accepts as many short messages as fit in the budget', () => {
+    const messages = Array(60).fill(user)
+    expect(parseMessages({ messages })).toHaveLength(60)
   })
 
   it('accepts the results of a job on a user message, and nothing else in them', () => {
@@ -647,6 +840,29 @@ describe('reading the model stream', () => {
     expect(assembler.reply().toolCalls[0].id).toBe('call_0')
   })
 
+  it('reads the usage of the last chunk', () => {
+    const assembler = createReplyAssembler(jest.fn())
+    readStreamLine(line({ content: 'hi' }), assembler)
+    readStreamLine(
+      'data: {"choices":[],"usage":{"prompt_tokens":5120,"completion_tokens":42}}',
+      assembler
+    )
+    expect(assembler.reply().usage).toEqual({
+      promptTokens: 5120,
+      completionTokens: 42
+    })
+  })
+
+  it('leaves out a usage that is null or not a count', () => {
+    const assembler = createReplyAssembler(jest.fn())
+    readStreamLine('data: {"choices":[],"usage":null}', assembler)
+    readStreamLine(
+      'data: {"choices":[],"usage":{"prompt_tokens":"x"}}',
+      assembler
+    )
+    expect(assembler.reply()).not.toHaveProperty('usage')
+  })
+
   it('throws on an error chunk without repeating its details', () => {
     const assembler = createReplyAssembler(jest.fn())
     expect(() =>
@@ -690,9 +906,34 @@ describe('createLlmCaller', () => {
     expect(JSON.parse(init.body as string)).toMatchObject({
       model: 'model',
       stream: true,
+      stream_options: { include_usage: true },
       temperature: 0,
-      seed: 42
+      seed: 42,
+      chat_template_kwargs: { enable_thinking: false }
     })
+  })
+
+  it('leaves the thinking to the server when it is turned on', async () => {
+    const { createLlmCaller } = jest.requireActual(
+      '../../pages/api/chat/_llm'
+    ) as typeof import('../../pages/api/chat/_llm')
+    const fetchMock = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response('data: [DONE]\n\n'))
+    const call = createLlmCaller(
+      {
+        llmBaseUrl: 'http://llm.test/api',
+        llmApiKey: 'key',
+        llmModel: 'model',
+        llmThinking: true
+      },
+      new AbortController().signal
+    )
+
+    await call([{ role: 'user', content: 'x' }], undefined, () => undefined)
+
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string)
+    expect(body).not.toHaveProperty('chat_template_kwargs')
   })
 })
 
@@ -727,8 +968,19 @@ describe('POST /api/chat', () => {
       CHAT_LLM_BASE_URL: 'http://llm.test/api/',
       CHAT_LLM_API_KEY: 'llm-key',
       CHAT_LLM_MODEL: 'model',
-      CHAT_RATE_LIMIT_PER_MINUTE: '3'
+      CHAT_RATE_LIMIT_PER_MINUTE: '3',
+      CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE: '2'
     })
+  }
+
+  /** A visitor without a session, from a network address of its own. */
+  let visitor = 0
+  function fromNewVisitor() {
+    visitor++
+    return {
+      origin: ORIGIN,
+      'x-forwarded-for': `203.0.113.${visitor}, 10.0.0.1`
+    }
   }
 
   /** A session for a new wallet, so the per-address state never leaks across tests. */
@@ -802,11 +1054,54 @@ describe('POST /api/chat', () => {
 
   afterEach(() => jest.restoreAllMocks())
 
-  it('refuses a request without a session', async () => {
-    const { done, out } = call()
+  it('refuses a request without a session when searching needs one', async () => {
+    process.env.CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE = '0'
+    const { done, out } = call({ headers: fromNewVisitor() })
     await done
     expect(out.status).toBe(401)
     expect(connectMcp).not.toHaveBeenCalled()
+  })
+
+  it('lets a visitor without a session search, with no address', async () => {
+    llmReplies.push({ content: 'Found', toolCalls: [] })
+    const { done, out, events } = call({ headers: fromNewVisitor() })
+    await done
+
+    expect(out.status).toBe(200)
+    expect(jest.mocked(connectMcp).mock.calls[0][1]).toBeUndefined()
+    expect(events()).toContainEqual({ type: 'text', delta: 'Found' })
+  })
+
+  it('refuses job results from a visitor without a session', async () => {
+    const { done, out } = call({
+      headers: fromNewVisitor(),
+      body: {
+        messages: [
+          {
+            role: 'user',
+            content: 'What do they show?',
+            attachment: jobResultAttachment()
+          }
+        ]
+      }
+    })
+    await done
+    expect(out.status).toBe(400)
+  })
+
+  it('limits visitors without a session per network address', async () => {
+    const headers = fromNewVisitor()
+    const statuses: number[] = []
+    for (let i = 0; i < 3; i++) {
+      const { done, out } = call({ headers })
+      await done
+      statuses.push(out.status)
+    }
+    expect(statuses).toEqual([200, 200, 429])
+
+    const { done, out } = call({ headers: fromNewVisitor() })
+    await done
+    expect(out.status).toBe(200)
   })
 
   it('refuses a foreign origin even with a session', async () => {
@@ -960,10 +1255,29 @@ describe('getChatConfig', () => {
       CHAT_LLM_MODEL: 'model',
       CHAT_RATE_LIMIT_PER_MINUTE: 'nonsense'
     })
+    delete process.env.CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE
     expect(getChatConfig()).toMatchObject({
       llmBaseUrl: 'http://llm.test/api',
-      rateLimitPerMinute: 10
+      llmThinking: false,
+      rateLimitPerMinute: 10,
+      anonymousRateLimitPerMinute: 5
     })
+    process.env.CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE = '0'
+    expect(getChatConfig().anonymousRateLimitPerMinute).toBe(0)
+    process.env.CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE = 'many'
+    expect(getChatConfig().anonymousRateLimitPerMinute).toBe(5)
+    delete process.env.CHAT_ANONYMOUS_RATE_LIMIT_PER_MINUTE
+
+    process.env.CHAT_LLM_THINKING = 'on'
+    expect(getChatConfig().llmThinking).toBe(true)
+    delete process.env.CHAT_LLM_THINKING
+
+    expect(getChatConfig()).not.toHaveProperty('llmContextTokens')
+    process.env.CHAT_LLM_CONTEXT_TOKENS = '32768'
+    expect(getChatConfig().llmContextTokens).toBe(32_768)
+    process.env.CHAT_LLM_CONTEXT_TOKENS = 'lots'
+    expect(getChatConfig()).not.toHaveProperty('llmContextTokens')
+    delete process.env.CHAT_LLM_CONTEXT_TOKENS
 
     delete process.env.CHAT_LLM_MODEL
     expect(getChatConfig()).toBeUndefined()

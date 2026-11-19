@@ -1,228 +1,144 @@
-import {
-  useState,
-  useEffect,
-  ChangeEvent,
-  FormEvent,
-  KeyboardEvent,
-  ReactElement,
-  CSSProperties,
-  useRef
-} from 'react'
-import type { MouseEvent } from 'react'
-import styles from './index.module.css'
-import InputElement from '@shared/FormInput/InputElement'
-
-import Features from './Features/Features'
-import EcosystemStats from './Sections/EcosystemStats'
-import Products from './Sections/Products'
-import Upload from '@images/publish.svg'
-import SearchLogo from '@images/search.svg'
-import { addExistingParamsToUrl } from '../Search/utils'
+import { ReactElement, RefObject, useCallback, useRef } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useSearchBarStatus } from '@context/SearchBarStatus'
+import { useAccount } from 'wagmi'
+import { useChatPanel } from '@context/ChatPanel'
+import Composer, {
+  ASSISTANT_PLACEHOLDER,
+  AssistantMark,
+  ComposerGate
+} from '@components/Chat/Composer'
+import { openWalletMenu } from '@components/Chat/openWalletMenu'
+import { searchSuggestions, suggestionsFor } from '@components/Chat/suggestions'
+import { SparkleIcon } from '@components/Chat/icons'
+import styles from './index.module.css'
 import content from '../../../content/pages/home/content.json'
 
-async function emptySearch() {
-  const searchParams = new URLSearchParams(window?.location.href)
-  const text = searchParams.get('text')
+const CATALOGUE_URL = '/search?sort=indexedMetadata.event.block&sortOrder=desc'
 
-  if (text !== '' && text !== undefined && text !== null) {
-    await addExistingParamsToUrl(location, ['text', 'owner', 'tags'])
-  }
-}
-
-// filled wave twice the viewBox width with a 720-unit period, so a
-// 1440-unit shift loops seamlessly
-function heroWaveLayer(y: number, amplitude: number): string {
-  let d = `M0 ${y} Q180 ${y - amplitude} 360 ${y}`
-  for (let x = 720; x <= 2880; x += 360) d += ` T${x} ${y}`
-  return `${d} L2880 141 L0 141 Z`
-}
-
-// back to front: every layer sits lower and is brighter than the one behind
-const heroWaveLayers = [
-  { y: 44, amplitude: 30 },
-  { y: 62, amplitude: 26 },
-  { y: 82, amplitude: 22 }
-]
-
-const heroWaveGradients = [
-  ['stopNavy', 'stopBlue'],
-  ['stopBlue', 'stopHighlight'],
-  ['stopHighlight', 'stopCyan'],
-  ['stopMist', 'stopWhite']
-]
-
-function HeroSection({
-  placeholder,
-  initialValue
+/**
+ * The message box shown while the assistant itself cannot be: before a wallet
+ * is connected, it keeps the message and asks for one; with a wallet but the
+ * assistant turned off, it searches the catalogue instead.
+ */
+function StandInComposer({
+  inputRef
 }: {
-  placeholder?: string
-  initialValue?: string
+  inputRef: RefObject<HTMLTextAreaElement>
 }): ReactElement {
   const router = useRouter()
-  const [value, setValue] = useState(initialValue || '')
-  const parsed = router.query
-  const searchBarRef = useRef<HTMLInputElement>(null)
-  const {
-    isSearchBarVisible,
-    setSearchBarVisible,
-    homeSearchBarFocus,
-    setHomeSearchBarFocus
-  } = useSearchBarStatus()
+  const { isConnected } = useAccount()
+  const { draft, setDraft, isSendPending, setSendPending } = useChatPanel()
 
-  useEffect(() => {
-    if (parsed?.text || parsed?.owner)
-      setValue((parsed?.text || parsed?.owner) as string)
-  }, [parsed?.text, parsed?.owner])
-
-  useEffect(() => {
-    setSearchBarVisible(false)
-    setHomeSearchBarFocus(false)
-  }, [setSearchBarVisible, setHomeSearchBarFocus])
-
-  useEffect(() => {
-    if (!isSearchBarVisible && !homeSearchBarFocus) return
-    if (searchBarRef?.current) {
-      searchBarRef.current.focus()
+  function handleSubmit() {
+    if (!isConnected) {
+      setSendPending(true)
+      return
     }
-  }, [isSearchBarVisible, homeSearchBarFocus])
-
-  async function startSearch() {
-    if (value === '') setValue(' ')
-
-    const urlEncodedValue = encodeURIComponent(value)
-    const url = await addExistingParamsToUrl(location, [
-      'text',
-      'owner',
-      'tags'
-    ])
-    router.push(`${url}&text=${urlEncodedValue}`)
-  }
-
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value)
-    e.target.value === '' && emptySearch()
-  }
-
-  async function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      await startSearch()
-    }
-  }
-
-  async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault()
-    await startSearch()
-  }
-  const handlePublishClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    router.push('/publish/1')
-  }
-  const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    router.push('/search?sort=indexedMetadata.event.block&sortOrder=desc')
+    router.push(`${CATALOGUE_URL}&text=${encodeURIComponent(draft.trim())}`)
   }
 
   return (
-    <section className={styles.hero}>
-      <div className={styles.contentContainer}>
-        <div className={styles.textContent}>
-          <h1 className={styles.title}>{content.hero.title}</h1>
-          <p className={styles.subtitle}>{content.hero.subtitle}</p>
-
-          <form
-            className={styles.searchBlock}
-            autoComplete={!value ? 'off' : 'on'}
-            role="search"
+    <Composer
+      value={draft}
+      onChange={setDraft}
+      onSubmit={handleSubmit}
+      inputRef={inputRef}
+      isLarge
+      leading={isConnected ? undefined : <AssistantMark />}
+      placeholder={
+        isConnected ? content.hero.searchPlaceholder : ASSISTANT_PLACEHOLDER
+      }
+    >
+      {!isConnected && isSendPending && (
+        <ComposerGate text="Connect your wallet to send. Your message stays here.">
+          <button
+            type="button"
+            className={styles.gateButton}
+            onClick={openWalletMenu}
           >
-            <div className={styles.searchContainer}>
-              <InputElement
-                ref={searchBarRef}
-                type="search"
-                name="search"
-                aria-label="Search for data"
-                placeholder={placeholder || content.hero.searchPlaceholder}
-                value={value}
-                onChange={handleChange}
-                required
-                size="large"
-                className={styles.searchInput}
-                onKeyPress={handleKeyPress}
-              />
-              <button
-                onClick={handleButtonClick}
-                className={styles.searchButton}
-              >
-                <SearchLogo className={styles.searchIcon} />
-                <span>Search</span>
-              </button>
-            </div>
-          </form>
+            Connect wallet
+          </button>
+        </ComposerGate>
+      )}
+    </Composer>
+  )
+}
 
-          <div className={styles.ctaRow}>
-            <button className={styles.ctaGhost} onClick={handlePublishClick}>
-              <Upload className={styles.uploadIcon} />
-              Publish an asset
-            </button>
-            <button className={styles.ctaPrimary} onClick={handleCatalogClick}>
-              Browse the catalogue
-              <span className={styles.ctaArrow} aria-hidden="true">
-                →
-              </span>
-            </button>
+function HeroSection(): ReactElement {
+  const { isAvailable, isChatting, isSearchOnly, setDraft, setInlineHost } =
+    useChatPanel()
+  // Without a session it only searches: the examples are searches too.
+  const suggestions = isSearchOnly ? searchSuggestions() : suggestionsFor('/')
+  const assistantRef = useRef<HTMLDivElement>(null)
+  const standInRef = useRef<HTMLTextAreaElement>(null)
+  // The assistant (Chat/index.tsx) draws itself here while this page is shown.
+  const hostRef = useCallback(
+    (node: HTMLDivElement | null) => setInlineHost(node),
+    [setInlineHost]
+  )
+
+  function fill(prompt: string) {
+    setDraft(prompt)
+    assistantRef.current?.querySelector('textarea')?.focus()
+  }
+
+  return (
+    <section
+      className={isChatting ? `${styles.hero} ${styles.chatting}` : styles.hero}
+    >
+      <div className={styles.content}>
+        <h1 className={styles.title}>{content.hero.title}</h1>
+
+        {!isChatting && (
+          <div className={styles.intro}>
+            <p className={styles.badge}>
+              <SparkleIcon className={styles.badgeIcon} />
+              AI Assistant
+            </p>
+            <p className={styles.lead}>
+              Ask in your own words, in any language. The assistant finds
+              datasets and algorithms for you, and prepares downloads and
+              Compute-to-Data jobs for you to confirm.
+            </p>
           </div>
+        )}
+
+        <div className={styles.assistant} ref={assistantRef}>
+          <div ref={hostRef} />
+          {!isAvailable && <StandInComposer inputRef={standInRef} />}
         </div>
+
+        {!isChatting && (
+          <>
+            <ul className={styles.suggestions} aria-label="Try asking">
+              {suggestions.map((suggestion) => (
+                <li key={suggestion.label}>
+                  <button
+                    type="button"
+                    className={styles.suggestion}
+                    onClick={() => fill(suggestion.prompt)}
+                  >
+                    {suggestion.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <nav className={styles.links} aria-label="Without the assistant">
+              <Link href={CATALOGUE_URL}>Browse the catalogue</Link>
+              <Link href="/publish/1">Publish an asset</Link>
+            </nav>
+          </>
+        )}
+
+        <p className={styles.fine}>
+          AI answers can be wrong. Nothing is paid without your confirmation.
+        </p>
       </div>
-
-      <EcosystemStats />
-
-      {/* wave transition into the light section below */}
-      <svg
-        className={styles.heroWave}
-        viewBox="0 0 1440 140"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <defs>
-          {heroWaveGradients.map((stops, index) => (
-            <linearGradient
-              key={index}
-              id={`hero-wave-${index}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop offset="0" className={styles[stops[0]]} />
-              <stop offset="1" className={styles[stops[1]]} />
-            </linearGradient>
-          ))}
-        </defs>
-        {heroWaveLayers.map((layer, index) => (
-          <path
-            key={index}
-            className={styles.heroWaveLayer}
-            d={heroWaveLayer(layer.y, layer.amplitude)}
-            fill={`url(#hero-wave-${index})`}
-            style={{ '--i': index } as CSSProperties}
-          />
-        ))}
-        <path
-          d="M0 108 C240 78 480 134 720 110 C960 86 1200 128 1440 100 L1440 141 L0 141 Z"
-          fill={`url(#hero-wave-${heroWaveLayers.length})`}
-        />
-      </svg>
     </section>
   )
 }
 
 export default function HomePage(): ReactElement {
-  return (
-    <>
-      <HeroSection />
-      <Features />
-      <Products />
-    </>
-  )
+  return <HeroSection />
 }

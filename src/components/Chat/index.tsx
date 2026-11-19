@@ -1,43 +1,53 @@
 import {
-  FormEvent,
   Fragment,
   KeyboardEvent,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState
 } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/router'
 import { useAccount, useSwitchChain } from 'wagmi'
 import Alert from '@shared/atoms/Alert'
 import Button from '@shared/atoms/Button'
 import Loader from '@shared/atoms/Loader'
-import { PreviousChat, useChat } from '@hooks/useChat'
+import { ChatContext, PreviousChat, useChat } from '@hooks/useChat'
 import { useChatPanel } from '@context/ChatPanel'
 import { useSiweSession } from '@hooks/useSiweSession'
 import { markdownToChatHtml } from '@utils/markdown'
 import type { JobReport } from '@utils/chat/jobResults'
-import type {
+import {
+  CHAT_MAX_CONTEXT_CHARS,
   ChatMessage,
   ChatStep,
+  ChatUsage,
   JobResultAttachment
 } from 'src/@types/Chat'
 import type { ChatIntent } from 'src/@types/ChatIntent'
 import IntentCard from './IntentCard'
+import { Suggestion, searchSuggestions, suggestionsFor } from './suggestions'
+import Composer, {
+  ASSISTANT_PLACEHOLDER,
+  AssistantMark,
+  ComposerGate
+} from './Composer'
+import { ANONYMOUS_CHAT } from '@utils/chatHistory'
 import {
   ArrowDownIcon,
+  CheckIcon,
   CloseIcon,
   CollapseIcon,
   ExpandIcon,
   MoreIcon,
   NewChatIcon,
-  SendIcon,
-  SparkleIcon,
-  StopIcon
+  SparkleIcon
 } from './icons'
 import { isToggleShortcut } from './shortcut'
+import { openWalletMenu } from './openWalletMenu'
 import styles from './index.module.css'
 
 const TOOL_LABELS: Record<string, string> = {
@@ -50,11 +60,23 @@ const TOOL_LABELS: Record<string, string> = {
   prepare_download: 'Prepared a download'
 }
 
-function Steps({ steps }: { steps: ChatStep[] }): ReactElement {
+function Steps({
+  steps,
+  isRunning
+}: {
+  steps: ChatStep[]
+  /** The answer they belong to is still being written. */
+  isRunning: boolean
+}): ReactElement {
   const toolCount = steps.filter((step) => step.type === 'tool').length
   return (
     <details className={styles.steps}>
       <summary>
+        {isRunning ? (
+          <span className={styles.stepsSpinner} aria-hidden="true" />
+        ) : (
+          <CheckIcon className={styles.stepsDone} />
+        )}
         {toolCount === 1
           ? 'Checked the market'
           : `Checked the market (${toolCount})`}
@@ -74,6 +96,7 @@ function Steps({ steps }: { steps: ChatStep[] }): ReactElement {
 
 function Message({
   message,
+  isRunning,
   isLiveIntent,
   onRunningChange,
   onAskAboutResults,
@@ -81,6 +104,8 @@ function Message({
   reportsOf
 }: {
   message: ChatMessage
+  /** The answer is still being written. */
+  isRunning: boolean
   isLiveIntent: (intent: ChatIntent) => boolean
   onRunningChange: (running: boolean) => void
   onAskAboutResults: (
@@ -115,7 +140,9 @@ function Message({
   }
   return (
     <div>
-      {message.steps?.length > 0 && <Steps steps={message.steps} />}
+      {message.steps?.length > 0 && (
+        <Steps steps={message.steps} isRunning={isRunning} />
+      )}
       <div
         className={styles.assistantMessage}
         // markdownToChatHtml drops embedded HTML and images, and only keeps https
@@ -138,51 +165,7 @@ function Message({
   )
 }
 
-interface Suggestion {
-  label: string
-  prompt: string
-}
-
-const DOWNLOAD_PROMPT =
-  'Find a free dataset I can download, and prepare the download for me.'
-const COMPUTE_PROMPT =
-  'Help me run a Compute-to-Data job: suggest a dataset and a compatible algorithm, then prepare the job.'
-
-/**
- * What to start with, for the page the user is on. They mix searching with
- * doing, because the examples are how users learn what the assistant can do.
- */
-export function suggestionsFor(pathname: string, did?: string): Suggestion[] {
-  const ask = (label: string, prompt = label): Suggestion => ({ label, prompt })
-  if (pathname === '/asset/[did]' && did) {
-    return [
-      ask(
-        'What is this asset and what does it cost?',
-        `What is the asset ${did} and what does it cost?`
-      ),
-      ask(
-        'Get this asset for me',
-        `Prepare what I need to use the asset ${did}: a download if it can be downloaded, otherwise a Compute-to-Data job with a compatible algorithm or dataset.`
-      ),
-      ask(
-        'What can I run with this asset?',
-        `What can I run with the asset ${did}? Show what it is compatible with.`
-      )
-    ]
-  }
-  if (pathname === '/search') {
-    return [
-      ask('Find algorithms for satellite images'),
-      ask('Download a free dataset', DOWNLOAD_PROMPT),
-      ask('Run an algorithm without downloading the data', COMPUTE_PROMPT)
-    ]
-  }
-  return [
-    ask('Find datasets about soil or crops'),
-    ask('Download a free dataset', DOWNLOAD_PROMPT),
-    ask('Run an algorithm on a dataset', COMPUTE_PROMPT)
-  ]
-}
+export { suggestionsFor }
 
 // What gets the focus when the panel opens: the message box, or the sign-in.
 const AUTOFOCUS = '[data-autofocus], [data-autofocus-within] button'
@@ -221,8 +204,9 @@ function PanelHeader({
   children
 }: {
   isExpanded: boolean
-  onToggleExpanded: () => void
-  onClose: () => void
+  /** Neither on the home page, where the assistant is part of the page. */
+  onToggleExpanded?: () => void
+  onClose?: () => void
   children?: ReactNode
 }): ReactElement {
   return (
@@ -237,22 +221,29 @@ function PanelHeader({
       </h2>
       <div className={styles.headerActions}>
         {children}
-        <IconButton
-          label={isExpanded ? 'Make narrower' : 'Make wider'}
-          className={styles.expandButton}
-          onClick={onToggleExpanded}
-        >
-          {isExpanded ? <CollapseIcon /> : <ExpandIcon />}
-        </IconButton>
-        <IconButton label="Close" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
+        {onToggleExpanded && (
+          <IconButton
+            label={isExpanded ? 'Make narrower' : 'Make wider'}
+            className={styles.expandButton}
+            onClick={onToggleExpanded}
+          >
+            {isExpanded ? <CollapseIcon /> : <ExpandIcon />}
+          </IconButton>
+        )}
+        {onClose && (
+          <IconButton label="Close" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        )}
       </div>
     </header>
   )
 }
 
 const BUSY_REASON = 'Wait until the action in progress finishes'
+/** Under the home page's box, while the assistant can only search. */
+export const SIGN_IN_FOR_MORE =
+  'Searching is open to everyone. Sign in with your wallet to download data or run jobs.'
 // How far from the end still counts as reading the latest message.
 const BOTTOM_SLACK_PX = 32
 
@@ -285,6 +276,69 @@ function PreviousNotice({
         {previous.reason === 'deleted' ? 'Undo' : 'Continue it'}
       </button>
     </p>
+  )
+}
+
+const formatTokens = (tokens: number) =>
+  tokens >= 1000 ? `${Math.round(tokens / 100) / 10}k` : String(tokens)
+
+/** At this share of the budget, the meter warns that the chat will forget. */
+const CONTEXT_WARNING = 0.8
+
+/**
+ * How much of the conversation the assistant still reads: the share of the
+ * context budget the next message takes, full once older messages are left
+ * out. The tokens of the last answer, when the model server gives them, are in
+ * its description.
+ */
+export function ContextMeter({
+  context,
+  usage
+}: {
+  context: ChatContext
+  usage?: ChatUsage
+}): ReactElement {
+  const forgets = context.firstSent > 0
+  const share = forgets
+    ? 1
+    : Math.min(1, context.chars / CHAT_MAX_CONTEXT_CHARS)
+  const percent = Math.round(share * 100)
+  const memory = forgets
+    ? `Memory full: the assistant reads only the last ${context.messages.length} messages. Start a new chat to begin fresh.`
+    : `Memory ${percent}% used. Past 100%, the assistant stops reading the oldest messages.`
+  const tokens = usage
+    ? ` Last answer: ${formatTokens(
+        usage.promptTokens + usage.completionTokens
+      )}${
+        usage.contextTokens ? ` of ${formatTokens(usage.contextTokens)}` : ''
+      } tokens.`
+    : ''
+  const label = `${memory}${tokens}`
+  // A circle of circumference 100, so the dash is the percentage.
+  const radius = 100 / (2 * Math.PI)
+  return (
+    <span
+      className={`${styles.contextMeter} ${
+        share >= CONTEXT_WARNING ? styles.contextMeterFull : ''
+      }`}
+      role="img"
+      aria-label={label}
+      title={label}
+      tabIndex={0}
+      data-testid="context-meter"
+    >
+      <svg viewBox="0 0 36 36" width="18" height="18" aria-hidden="true">
+        <circle cx="18" cy="18" r={radius} className={styles.contextTrack} />
+        <circle
+          cx="18"
+          cy="18"
+          r={radius}
+          className={styles.contextFill}
+          strokeDasharray={`${percent} 100`}
+          transform="rotate(-90 18 18)"
+        />
+      </svg>
+    </span>
   )
 }
 
@@ -355,17 +409,27 @@ function Conversation({
   address,
   suggestions,
   header,
+  isInline,
   onSessionLost,
-  onSignOut
+  onSignOut,
+  signInGate
 }: {
+  /** The session's wallet, or ANONYMOUS_CHAT for a visitor without one. */
   address: string
   suggestions: Suggestion[]
   header: (actions: ReactNode) => ReactElement
+  /** On the home page, which shows its own suggestions around it. */
+  isInline: boolean
   onSessionLost: () => void
   onSignOut: () => void
+  /** Without a session: how to sign in for more than searching. */
+  signInGate?: ReactNode
 }): ReactElement {
+  const isSearchOnly = address === ANONYMOUS_CHAT
   const {
     messages,
+    context,
+    usage,
     isStreaming,
     activeTool,
     error,
@@ -377,7 +441,8 @@ function Conversation({
     restorePrevious,
     isLiveIntent
   } = useChat(address, onSessionLost)
-  const [draft, setDraft] = useState('')
+  const { draft, setDraft, isSendPending, setSendPending, setChatting } =
+    useChatPanel()
   // Cards sending orders, payments or a job: the conversation must stay.
   const [runningCards, setRunningCards] = useState(0)
   const isBusy = runningCards > 0
@@ -441,19 +506,25 @@ function Conversation({
     [askAboutResults]
   )
 
-  // The message box grows with the text, up to a few lines.
-  useEffect(() => {
-    const input = inputRef.current
-    if (!input) return
-    input.style.height = 'auto'
-    if (input.scrollHeight) {
-      input.style.height = `${Math.min(input.scrollHeight, 160)}px`
-    }
-  }, [draft])
+  const hasConversation = messages.length > 0 || isStreaming
+  useEffect(() => setChatting(hasConversation), [hasConversation, setChatting])
+  useEffect(() => () => setChatting(false), [setChatting])
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    if (!draft.trim() || isStreaming) return
+  // A message sent before signing in goes now. Not in the first render: the
+  // saved conversation it continues is only loaded by then.
+  const [isLoaded, setLoaded] = useState(false)
+  useEffect(() => setLoaded(true), [])
+  useEffect(() => {
+    if (!isLoaded || !isSendPending) return
+    setSendPending(false)
+    if (!draft.trim()) return
+    sendAndFollow(draft)
+    setDraft('')
+    // Only when it is asked for: the draft changes with every key.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, isSendPending])
+
+  function handleSubmit() {
     sendAndFollow(draft)
     setDraft('')
   }
@@ -471,50 +542,73 @@ function Conversation({
     onSignOut()
   }
 
+  // On the home page, an empty conversation is only its message box.
+  const showsLog = !isInline || hasConversation || !!previous || !!error
+
   return (
     <>
-      {header(
-        <>
-          <button
-            type="button"
-            className={styles.newChat}
-            aria-label="New chat"
-            title={isBusy ? BUSY_REASON : 'Start a new conversation'}
-            disabled={isBusy || (messages.length === 0 && !isStreaming)}
-            onClick={startOver}
-          >
-            <NewChatIcon />
-            <span className={styles.newChatLabel}>New chat</span>
-          </button>
-          <MoreMenu onSignOut={signOutAndDelete} isBusy={isBusy} />
-        </>
-      )}
+      {showsLog &&
+        header(
+          <>
+            {messages.length > 0 && (
+              <ContextMeter context={context} usage={usage} />
+            )}
+            <button
+              type="button"
+              className={styles.newChat}
+              aria-label="New chat"
+              title={isBusy ? BUSY_REASON : 'Start a new conversation'}
+              disabled={isBusy || (messages.length === 0 && !isStreaming)}
+              onClick={startOver}
+            >
+              <NewChatIcon />
+              <span className={styles.newChatLabel}>New chat</span>
+            </button>
+            {!isSearchOnly && (
+              <MoreMenu onSignOut={signOutAndDelete} isBusy={isBusy} />
+            )}
+          </>
+        )}
 
       <div
         ref={listRef}
         className={styles.messages}
         role="log"
         aria-live="polite"
+        hidden={!showsLog}
         onScroll={handleScroll}
       >
         {messages.length === 0 && previous && (
           <PreviousNotice previous={previous} onRestore={restorePrevious} />
         )}
-        {messages.length === 0 && (
+        {messages.length === 0 && !isInline && (
           <div className={styles.welcome}>
-            <p className={styles.welcomeTitle}>
-              Find, buy and use data by chat
-            </p>
-            <p className={styles.hint}>
-              Search the catalogue, download datasets or run Compute-to-Data
-              jobs: just say what you need. I prepare each action, and you check
-              it and sign it in your wallet.
-            </p>
-            <ul className={styles.capabilities} aria-label="What I can do">
-              <li>Search the catalogue</li>
-              <li>Buy and download</li>
-              <li>Run Compute-to-Data jobs</li>
-            </ul>
+            {isSearchOnly ? (
+              <>
+                <p className={styles.welcomeTitle}>Find data by chat</p>
+                <p className={styles.hint}>
+                  Say what you are looking for, in your own words, and I search
+                  the catalogue. Sign in with your wallet to also download
+                  datasets or run Compute-to-Data jobs.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={styles.welcomeTitle}>
+                  Find, buy and use data by chat
+                </p>
+                <p className={styles.hint}>
+                  Search the catalogue, download datasets or run Compute-to-Data
+                  jobs: just say what you need. I prepare each action, and you
+                  check it and sign it in your wallet.
+                </p>
+                <ul className={styles.capabilities} aria-label="What I can do">
+                  <li>Search the catalogue</li>
+                  <li>Buy and download</li>
+                  <li>Run Compute-to-Data jobs</li>
+                </ul>
+              </>
+            )}
             <ul className={styles.suggestions}>
               {suggestions.map((suggestion) => (
                 <li key={suggestion.label}>
@@ -531,15 +625,22 @@ function Conversation({
           </div>
         )}
         {messages.map((message, index) => (
-          <Message
-            key={index}
-            message={message}
-            isLiveIntent={isLiveIntent}
-            onRunningChange={onRunningChange}
-            onAskAboutResults={askAndFollow}
-            canAsk={!isStreaming}
-            reportsOf={reportsOf}
-          />
+          <Fragment key={index}>
+            {index > 0 && index === context.firstSent && (
+              <p className={styles.contextCut} role="note">
+                The assistant no longer reads the messages above.
+              </p>
+            )}
+            <Message
+              message={message}
+              isRunning={isStreaming && index === messages.length - 1}
+              isLiveIntent={isLiveIntent}
+              onRunningChange={onRunningChange}
+              onAskAboutResults={askAndFollow}
+              canAsk={!isStreaming}
+              reportsOf={reportsOf}
+            />
+          </Fragment>
         ))}
         {isStreaming && (
           <div className={styles.status}>
@@ -561,48 +662,51 @@ function Conversation({
         <div ref={endRef} />
       </div>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.composer}>
-          <textarea
-            ref={inputRef}
-            className={styles.input}
-            aria-label="Message"
-            placeholder="Search, download or run a job…"
-            rows={1}
-            value={draft}
-            data-autofocus
-            onChange={(event) => setDraft(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.shiftKey) handleSubmit(event)
-            }}
-          />
-          {isStreaming ? (
-            <button
-              type="button"
-              className={styles.sendButton}
-              aria-label="Stop"
-              title="Stop"
-              onClick={stop}
-            >
-              <StopIcon />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className={styles.sendButton}
-              aria-label="Send"
-              title="Send"
-              disabled={!draft.trim()}
-            >
-              <SendIcon />
-            </button>
-          )}
-        </div>
+      <div className={styles.form}>
+        <Composer
+          value={draft}
+          onChange={setDraft}
+          onSubmit={handleSubmit}
+          inputRef={inputRef}
+          isStreaming={isStreaming}
+          onStop={stop}
+          isLarge={isInline}
+          leading={isInline ? <AssistantMark /> : undefined}
+          placeholder={isInline ? ASSISTANT_PLACEHOLDER : undefined}
+        >
+          {signInGate}
+        </Composer>
         <p className={styles.disclaimer}>
           AI answers can be wrong. Nothing is paid without your confirmation.
         </p>
-      </form>
+      </div>
     </>
+  )
+}
+
+/** Sign in first: on the home page, under the message the user is writing. */
+function InlineSignIn({
+  gate
+}: {
+  gate: (text: string) => ReactElement
+}): ReactElement {
+  const { draft, setDraft, isSendPending, setSendPending } = useChatPanel()
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  return (
+    <div className={styles.form}>
+      <Composer
+        value={draft}
+        onChange={setDraft}
+        onSubmit={() => setSendPending(true)}
+        inputRef={inputRef}
+        isLarge
+        leading={<AssistantMark />}
+        placeholder={ASSISTANT_PLACEHOLDER}
+      >
+        {isSendPending &&
+          gate('Sign a message with your wallet to send. It costs no gas.')}
+      </Composer>
+    </div>
   )
 }
 
@@ -614,6 +718,7 @@ export default function Chat(): ReactElement | null {
     status,
     sessionAddress,
     requiredChainId,
+    anonymousSearch,
     isOnRequiredChain,
     canSign,
     error,
@@ -625,19 +730,33 @@ export default function Chat(): ReactElement | null {
     isAvailable,
     isOpen,
     isExpanded,
+    inlineHost,
+    isChatting,
     setAvailable,
     setOpen,
     toggle,
-    setExpanded
+    setExpanded,
+    setSearchOnly
   } = useChatPanel()
   const panelRef = useRef<HTMLElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
   const wasOpen = useRef(false)
   const usedPointer = useRef(false)
   const openedWithPointer = useRef(false)
+  // The assistant is drawn in a node of its own, which is moved between the
+  // side panel's place and the home page's: React keeps it mounted, so an
+  // answer in progress goes on when the user leaves the home page.
+  const [portalNode] = useState(() => document.createElement('div'))
+  const anchorRef = useRef<HTMLDivElement>(null)
+  const isInline = isAvailable && Boolean(inlineHost)
+  const wasInline = useRef(false)
 
   const pathname = router?.pathname ?? ''
-  const isUsable = isConnected && status !== 'loading' && status !== 'disabled'
+  const isConfigured = status !== 'loading' && status !== 'disabled'
+  // A visitor without a session can already search by chat: anything more
+  // needs signing in.
+  const isSearchOnly = isConfigured && status !== 'signedIn' && anonymousSearch
+  const isUsable = isConfigured && (isConnected || isSearchOnly)
   // Publishing has its own steps and signatures: the assistant stays out of it.
   const isAllowedHere = !pathname.startsWith('/publish')
 
@@ -645,7 +764,30 @@ export default function Chat(): ReactElement | null {
     setAvailable(isUsable && isAllowedHere)
   }, [isUsable, isAllowedHere, setAvailable])
 
-  useEffect(() => () => setAvailable(false), [setAvailable])
+  useEffect(() => setSearchOnly(isSearchOnly), [isSearchOnly, setSearchOnly])
+
+  useEffect(
+    () => () => {
+      setAvailable(false)
+      setSearchOnly(false)
+    },
+    [setAvailable, setSearchOnly]
+  )
+
+  useLayoutEffect(() => {
+    const parent = isInline ? inlineHost : anchorRef.current
+    if (parent && portalNode.parentNode !== parent) {
+      parent.appendChild(portalNode)
+    }
+  }, [isInline, inlineHost, portalNode])
+
+  useEffect(() => () => portalNode.remove(), [portalNode])
+
+  // Leaving the home page in the middle of a conversation: it goes on in the panel.
+  useEffect(() => {
+    if (wasInline.current && !isInline && isChatting) setOpen(true)
+    wasInline.current = isInline
+  }, [isInline, isChatting, setOpen])
 
   useEffect(() => {
     if (!isAvailable) return
@@ -685,7 +827,7 @@ export default function Chat(): ReactElement | null {
       ;(panel?.querySelector<HTMLElement>(AUTOFOCUS) ?? panel)?.focus()
     } else if (!isOpen && wasOpen.current) {
       const focused = document.activeElement as HTMLElement
-      if (panelRef.current?.contains(focused)) {
+      if (!isInline && panelRef.current?.contains(focused)) {
         const previous = returnFocus.current
         const target =
           previous && previous !== document.body && previous.isConnected
@@ -698,39 +840,105 @@ export default function Chat(): ReactElement | null {
       }
     }
     wasOpen.current = isOpen
-  }, [isOpen])
-
-  if (!isUsable) return null
+  }, [isOpen, isInline])
 
   const did = typeof router?.query?.did === 'string' ? router.query.did : null
   const close = () => setOpen(false)
-  const header = (actions?: ReactNode) => (
-    <PanelHeader
-      isExpanded={isExpanded}
-      onToggleExpanded={() => setExpanded(!isExpanded)}
-      onClose={close}
-    >
-      {actions}
-    </PanelHeader>
-  )
+  const header = (actions?: ReactNode) =>
+    isInline ? (
+      <PanelHeader isExpanded={false}>{actions}</PanelHeader>
+    ) : (
+      <PanelHeader
+        isExpanded={isExpanded}
+        onToggleExpanded={() => setExpanded(!isExpanded)}
+        onClose={close}
+      >
+        {actions}
+      </PanelHeader>
+    )
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape') close()
+    if (event.key === 'Escape' && !isInline) close()
   }
 
-  return (
+  const signInButton = (isSmall: boolean) =>
+    !isConnected ? (
+      <Button
+        type="button"
+        style="primary"
+        size={isSmall ? 'small' : undefined}
+        onClick={openWalletMenu}
+      >
+        Connect wallet
+      </Button>
+    ) : isOnRequiredChain ? (
+      <Button
+        type="button"
+        style="primary"
+        size={isSmall ? 'small' : undefined}
+        disabled={!canSign || status === 'signingIn'}
+        onClick={signIn}
+      >
+        {status === 'signingIn' ? 'Waiting for signature…' : 'Sign in'}
+      </Button>
+    ) : (
+      <Button
+        type="button"
+        style="primary"
+        size={isSmall ? 'small' : undefined}
+        disabled={isSwitching}
+        onClick={() => switchChain({ chainId: requiredChainId })}
+      >
+        Switch network
+      </Button>
+    )
+  const signInAction = signInButton(isInline)
+
+  function signedOut(): ReactNode {
+    if (isInline) {
+      return (
+        <>
+          <InlineSignIn
+            gate={(text) => (
+              <ComposerGate text={text}>{signInAction}</ComposerGate>
+            )}
+          />
+          {error && <Alert state="error" text={error} />}
+        </>
+      )
+    }
+    return (
+      <>
+        {header()}
+        <div className={styles.signIn} data-autofocus-within>
+          <p>
+            Sign a message with your wallet to use the assistant. It costs no
+            gas and authorizes no transaction.
+          </p>
+          {error && <Alert state="error" text={error} />}
+          {signInAction}
+        </div>
+      </>
+    )
+  }
+
+  const section = (
     // Only hidden when closed, so an answer in progress is not interrupted.
     <section
       id="market-assistant"
       ref={panelRef}
       tabIndex={-1}
-      className={[
-        styles.panel,
-        isOpen ? styles.open : '',
-        isExpanded ? styles.expanded : ''
-      ].join(' ')}
+      className={
+        isInline
+          ? `${styles.inline} ${isChatting ? styles.chatting : ''}`
+          : [
+              styles.panel,
+              isOpen ? styles.open : '',
+              isExpanded ? styles.expanded : ''
+            ].join(' ')
+      }
       aria-label="AgrospAI Assistant"
-      aria-hidden={!isOpen}
+      aria-hidden={!isInline && !isOpen}
       onKeyDown={handleKeyDown}
     >
       {status === 'signedIn' && sessionAddress ? (
@@ -738,40 +946,37 @@ export default function Chat(): ReactElement | null {
           address={sessionAddress}
           suggestions={suggestionsFor(pathname, did)}
           header={header}
+          isInline={isInline}
           onSessionLost={markSignedOut}
           onSignOut={signOut}
         />
-      ) : (
+      ) : isSearchOnly ? (
         <>
-          {header()}
-          <div className={styles.signIn} data-autofocus-within>
-            <p>
-              Sign a message with your wallet to use the assistant. It costs no
-              gas and authorizes no transaction.
-            </p>
-            {error && <Alert state="error" text={error} />}
-            {isOnRequiredChain ? (
-              <Button
-                type="button"
-                style="primary"
-                disabled={!canSign || status === 'signingIn'}
-                onClick={signIn}
-              >
-                {status === 'signingIn' ? 'Waiting for signature…' : 'Sign in'}
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                style="primary"
-                disabled={isSwitching}
-                onClick={() => switchChain({ chainId: requiredChainId })}
-              >
-                Switch network
-              </Button>
-            )}
-          </div>
+          <Conversation
+            address={ANONYMOUS_CHAT}
+            suggestions={searchSuggestions()}
+            header={header}
+            isInline={isInline}
+            onSessionLost={markSignedOut}
+            onSignOut={markSignedOut}
+            signInGate={
+              <ComposerGate text={SIGN_IN_FOR_MORE}>
+                {signInButton(true)}
+              </ComposerGate>
+            }
+          />
+          {error && <Alert state="error" text={error} />}
         </>
+      ) : (
+        signedOut()
       )}
     </section>
+  )
+
+  return (
+    <>
+      <div ref={anchorRef} className={styles.anchor} />
+      {isUsable && createPortal(section, portalNode)}
+    </>
   )
 }

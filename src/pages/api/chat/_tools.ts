@@ -21,8 +21,22 @@ export const ALLOWED_TOOLS: readonly string[] = [
 /** Arguments the model may not set: a raw DDO would flood its context. */
 const BLOCKED_ARGUMENTS = ['includeRawDdo']
 
-export function isAllowedTool(name: string): boolean {
-  return ALLOWED_TOOLS.includes(name)
+/**
+ * What a visitor without a wallet session may use: searching the catalogue,
+ * and nothing else. Anything more needs signing in with a wallet.
+ */
+export const ANONYMOUS_TOOLS: readonly string[] = ['search_assets']
+
+/** The tools of a request: all of them, or only searching without a session. */
+export function toolsFor(isAnonymous: boolean): readonly string[] {
+  return isAnonymous ? ANONYMOUS_TOOLS : ALLOWED_TOOLS
+}
+
+export function isAllowedTool(
+  name: string,
+  allowed: readonly string[] = ALLOWED_TOOLS
+): boolean {
+  return allowed.includes(name)
 }
 
 export function isIntentTool(name: string): boolean {

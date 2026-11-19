@@ -326,7 +326,8 @@ describe('SIWE routes', () => {
     )
     expect(signedIn.result.body).toEqual({
       address: account.address,
-      chainId: CHAIN_ID
+      chainId: CHAIN_ID,
+      anonymousSearch: true
     })
 
     const signedOut = response()

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import { useRouter } from 'next/router'
 import styles from './Footer.module.css'
 import Links from './Links'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -6,11 +7,24 @@ import Logo from '@images/agrospai_logo_horizontal.svg'
 
 export default function Footer(): ReactElement {
   const { siteContent } = useMarketMetadata()
+  const router = useRouter()
   const { footer } = siteContent
   const copyright = footer.copyright.replace(
     /\b\d{4}\b/g,
     String(new Date().getFullYear())
   )
+
+  // The home page fits in one screen: its footer is a single line.
+  if (router?.pathname === '/') {
+    return (
+      <footer className={`${styles.footer} ${styles.oneLine}`}>
+        <div className={styles.container}>
+          <span>{copyright} · Powered by Ocean Enterprise</span>
+          <Links isInline />
+        </div>
+      </footer>
+    )
+  }
 
   return (
     <footer className={styles.footer}>

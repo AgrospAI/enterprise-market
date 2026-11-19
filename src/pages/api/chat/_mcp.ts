@@ -2,7 +2,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
 import { getAddress } from 'viem'
 import type { ChatConfig } from './_config'
-import { isAllowedTool } from './_tools'
+import { isAllowedTool, toolsFor } from './_tools'
 import type { LlmTool } from './_llm'
 
 const CLIENT_INFO = { name: 'agrospai-market-chat', version: '1.0.0' }
@@ -22,18 +22,20 @@ export interface McpSession {
 /**
  * Opens a session with the MCP server for one chat request. The bearer token and
  * the verified address are set here, on the server, and neither reaches the
- * browser or the model.
+ * browser or the model. Without an address (a visitor who has not signed in)
+ * no address is sent, and only the given tools are offered.
  */
 export async function connectMcp(
   config: Pick<ChatConfig, 'mcpUrl' | 'mcpAuthToken'>,
-  address: string,
-  signal: AbortSignal
+  address: string | undefined,
+  signal: AbortSignal,
+  allowed: readonly string[] = toolsFor(!address)
 ): Promise<McpSession> {
   const transport = new StreamableHTTPClientTransport(new URL(config.mcpUrl), {
     requestInit: {
       headers: {
         Authorization: `Bearer ${config.mcpAuthToken}`,
-        [USER_ADDRESS_HEADER]: getAddress(address)
+        ...(address ? { [USER_ADDRESS_HEADER]: getAddress(address) } : {})
       }
     }
   })
@@ -46,7 +48,7 @@ export async function connectMcp(
 
     return {
       tools: tools
-        .filter((tool) => isAllowedTool(tool.name))
+        .filter((tool) => isAllowedTool(tool.name, allowed))
         .map((tool) => ({
           type: 'function' as const,
           function: {

@@ -243,3 +243,24 @@ body .websiteLink:hover {
     animation: none;
   }
 }
+
+/* The home page's single line: no logo, no columns, no wave. */
+.footer.oneLine {
+  --footer-content-width: 1460px;
+  --footer-gutter: 32px;
+  padding: 14px 0;
+  background-color: var(--deck-navy-2);
+  font-size: 13px;
+}
+
+.footer.oneLine::after {
+  display: none;
+}
+
+.footer.oneLine .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}

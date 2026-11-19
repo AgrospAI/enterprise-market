@@ -32,10 +32,10 @@ function setWallet(
   jest.mocked(useAccount).mockReturnValue({ address, status, chainId } as any)
 }
 
-function sessionResponse(address: string | null) {
+function sessionResponse(address: string | null, anonymousSearch = true) {
   fetchMock.mockImplementation(async (path: string) => {
     if (path === '/api/siwe/session') {
-      return json({ address, chainId: CHAIN_ID })
+      return json({ address, chainId: CHAIN_ID, anonymousSearch })
     }
     if (path === '/api/siwe/nonce') return json({ nonce: 'abcd1234efgh' })
     if (path === '/api/siwe/verify') {
@@ -63,8 +63,26 @@ describe('useSiweSession', () => {
     await waitFor(() => expect(result.current.status).toBe('disabled'))
   })
 
-  it('does not ask for the session without a connected wallet', async () => {
+  it('without a wallet, says whether the chat searches without signing in', async () => {
     setWallet(undefined, 'disconnected')
+    sessionResponse(WALLET_A)
+    const { result } = renderHook(() => useSiweSession())
+    await waitFor(() => expect(result.current.status).toBe('signedOut'))
+    expect(result.current.anonymousSearch).toBe(true)
+    // A session cookie is not taken without the wallet it belongs to.
+    expect(result.current.sessionAddress).toBeUndefined()
+  })
+
+  it('knows when the chat needs signing in', async () => {
+    setWallet(undefined, 'disconnected')
+    sessionResponse(null, false)
+    const { result } = renderHook(() => useSiweSession())
+    await waitFor(() => expect(result.current.status).toBe('signedOut'))
+    expect(result.current.anonymousSearch).toBe(false)
+  })
+
+  it('waits for the wallet to reconnect before reading the session', async () => {
+    setWallet(undefined, 'reconnecting')
     sessionResponse(null)
     renderHook(() => useSiweSession())
     await new Promise((resolve) => setTimeout(resolve, 10))

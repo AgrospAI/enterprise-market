@@ -34,12 +34,20 @@ export function useSiweSession() {
   const [status, setStatus] = useState<SiweStatus>('loading')
   const [sessionAddress, setSessionAddress] = useState<string>()
   const [requiredChainId, setRequiredChainId] = useState<number>()
+  const [anonymousSearch, setAnonymousSearch] = useState(false)
   const [error, setError] = useState<string>()
 
   const isWalletConnected = accountStatus === 'connected'
 
+  // Read without a wallet too, to know whether the chat can search without one.
+  // A session is only taken once the wallet it belongs to is connected.
+  // Not while the wallet is still (re)connecting: a returning user would see
+  // the chat without their session for a moment.
+  const isWalletSettled =
+    accountStatus === 'connected' || accountStatus === 'disconnected'
+
   useEffect(() => {
-    if (!isWalletConnected) return
+    if (!isWalletSettled) return
     let cancelled = false
 
     async function loadSession() {
@@ -53,8 +61,10 @@ export function useSiweSession() {
         const session: SiweSessionResponse = await response.json()
         if (cancelled) return
         setRequiredChainId(session.chainId)
-        setSessionAddress(session.address ?? undefined)
-        setStatus(session.address ? 'signedIn' : 'signedOut')
+        setAnonymousSearch(session.anonymousSearch === true)
+        const address = isWalletConnected ? session.address : null
+        setSessionAddress(address ?? undefined)
+        setStatus(address ? 'signedIn' : 'signedOut')
       } catch (err) {
         LoggerInstance.error('[siwe] Could not read the session', err)
         if (!cancelled) setStatus('disabled')
@@ -65,7 +75,7 @@ export function useSiweSession() {
     return () => {
       cancelled = true
     }
-  }, [isWalletConnected])
+  }, [isWalletConnected, isWalletSettled])
 
   const signOut = useCallback(async () => {
     setSessionAddress(undefined)
@@ -139,6 +149,8 @@ export function useSiweSession() {
     status,
     sessionAddress,
     requiredChainId,
+    /** Visitors without a session may chat, only to search the catalogue. */
+    anonymousSearch,
     isOnRequiredChain: walletChainId === requiredChainId,
     canSign: Boolean(signer),
     error,

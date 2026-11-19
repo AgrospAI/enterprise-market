@@ -21,13 +21,15 @@ export default async function handler(
   res.setHeader('Cache-Control', 'no-store')
 
   const config = getSiweConfig()
-  if (!config || !getChatConfig()) {
+  const chat = getChatConfig()
+  if (!config || !chat) {
     return res.status(404).json({ error: 'Not found' })
   }
 
   const address = await getVerifiedSiweAddress(req, config)
   return res.status(200).json({
     address: address ?? null,
-    chainId: config.chainId
+    chainId: config.chainId,
+    anonymousSearch: chat.anonymousRateLimitPerMinute > 0
   })
 }

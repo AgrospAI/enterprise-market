@@ -1,11 +1,12 @@
+import { useState } from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { useSiweSession } from '@hooks/useSiweSession'
-import { ChatPanelProvider } from '@context/ChatPanel'
-import Chat, { suggestionsFor } from '.'
+import { ChatPanelProvider, useChatPanel } from '@context/ChatPanel'
+import Chat, { ContextMeter, suggestionsFor } from '.'
 import AssistantButton, { INTRO_SEEN_KEY } from './AssistantButton'
-import { CHAT_HISTORY_TTL_MS } from '@utils/chatHistory'
+import { ANONYMOUS_CHAT, CHAT_HISTORY_TTL_MS } from '@utils/chatHistory'
 import {
   computeIntent,
   jobResultAttachment
@@ -75,6 +76,7 @@ function setSession(overrides = {}) {
     status: 'signedOut',
     sessionAddress: undefined,
     requiredChainId: 11155420,
+    anonymousSearch: false,
     isOnRequiredChain: true,
     canSign: true,
     error: undefined,
@@ -196,13 +198,19 @@ describe('Chat', () => {
   it('renders nothing without a connected wallet', () => {
     jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
     const { container } = renderChat()
-    expect(container).toBeEmptyDOMElement()
+    expect(container).toHaveTextContent('')
+    expect(
+      screen.queryByLabelText('AgrospAI Assistant')
+    ).not.toBeInTheDocument()
   })
 
   it.each(['loading', 'disabled'])('renders nothing when %s', (status) => {
     setSession({ status })
     const { container } = renderChat()
-    expect(container).toBeEmptyDOMElement()
+    expect(container).toHaveTextContent('')
+    expect(
+      screen.queryByLabelText('AgrospAI Assistant')
+    ).not.toBeInTheDocument()
   })
 
   it('asks to sign in before offering the conversation', () => {
@@ -333,6 +341,46 @@ describe('Chat', () => {
           { role: 'user', content: 'second' }
         ]
       })
+    })
+
+    it('marks the messages the assistant no longer reads', async () => {
+      window.localStorage.setItem(
+        `chat:${ADDRESS.toLowerCase()}`,
+        JSON.stringify(
+          Array.from({ length: 8 }, (_, i) => ({
+            role: i % 2 ? 'assistant' : 'user',
+            content: `message ${i} `.padEnd(8000, '.')
+          }))
+        )
+      )
+      fetchMock.mockResolvedValue(
+        streamResponse([
+          { type: 'text', delta: 'ok' },
+          {
+            type: 'usage',
+            usage: { promptTokens: 18_000, completionTokens: 10 }
+          },
+          { type: 'done' }
+        ])
+      )
+      renderChat()
+      openPanel()
+
+      expect(
+        screen.getByText('The assistant no longer reads the messages above.')
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('context-meter')).toHaveAccessibleName(
+        expect.stringContaining('Memory full')
+      )
+
+      sendMessage('and now?')
+      await screen.findByText('ok')
+      const { messages } = JSON.parse(fetchMock.mock.calls[0][1].body)
+      expect(messages.at(-1).content).toBe('and now?')
+      expect(messages[0].content).toMatch(/^message 3 /)
+      expect(screen.getByTestId('context-meter')).toHaveAccessibleName(
+        expect.stringContaining('Last answer: 18k tokens.')
+      )
     })
 
     it('saves the conversation per wallet and restores it', async () => {
@@ -693,6 +741,247 @@ describe('Chat', () => {
   })
 })
 
+/** The home page's place for the assistant, as Home/index.tsx renders it. */
+function HomeSlot({ shown }: { shown: boolean }) {
+  const { setInlineHost, setDraft, setSendPending, isChatting } = useChatPanel()
+  return (
+    <>
+      {shown && <div data-testid="home" ref={setInlineHost} />}
+      <span data-testid="chatting">{String(isChatting)}</span>
+      <button type="button" onClick={() => setDraft('Find soil data')}>
+        Fill
+      </button>
+      <button type="button" onClick={() => setSendPending(true)}>
+        Send early
+      </button>
+    </>
+  )
+}
+
+function renderOnHome() {
+  function Page() {
+    const [shown, setShown] = useState(true)
+    return (
+      <>
+        <button type="button" onClick={() => setShown(false)}>
+          Leave
+        </button>
+        <HomeSlot shown={shown} />
+      </>
+    )
+  }
+  return render(
+    <ChatPanelProvider>
+      <AssistantButton />
+      <Page />
+      <Chat />
+    </ChatPanelProvider>
+  )
+}
+
+describe('Chat on the home page', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    window.localStorage.clear()
+    global.fetch = fetchMock
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
+    jest.mocked(useAccount).mockReturnValue({ isConnected: true } as any)
+    jest
+      .mocked(useSwitchChain)
+      .mockReturnValue({ switchChain, isPending: false } as any)
+    setSession()
+    setPath('/')
+  })
+
+  it('is drawn in the page, without the panel controls', () => {
+    setSession({ status: 'signedIn', sessionAddress: ADDRESS })
+    renderOnHome()
+    const home = screen.getByTestId('home')
+    expect(home).toContainElement(screen.getByLabelText('Message'))
+    expect(
+      screen.queryByRole('button', { name: 'Close' })
+    ).not.toBeInTheDocument()
+    // Empty, the conversation is only its message box.
+    expect(
+      screen.queryByRole('button', { name: 'New chat' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('keeps what was written and asks to sign in when sending', () => {
+    renderOnHome()
+    fireEvent.click(screen.getByRole('button', { name: 'Fill' }))
+    expect(screen.getByLabelText('Message')).toHaveValue('Find soil data')
+    expect(
+      screen.queryByRole('button', { name: 'Sign in' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+    expect(signIn).toHaveBeenCalled()
+    expect(screen.getByLabelText('Message')).toHaveValue('Find soil data')
+  })
+
+  it('sends the message written before signing in once signed in', async () => {
+    fetchMock.mockResolvedValue(
+      streamResponse([{ type: 'text', delta: 'Here' }, { type: 'done' }])
+    )
+    setSession({ status: 'signedIn', sessionAddress: ADDRESS })
+    renderOnHome()
+    fireEvent.click(screen.getByRole('button', { name: 'Fill' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Send early' }))
+    await screen.findByText('Here')
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+      messages: [{ role: 'user', content: 'Find soil data' }]
+    })
+    expect(screen.getByLabelText('Message')).toHaveValue('')
+    expect(screen.getByTestId('chatting')).toHaveTextContent('true')
+    expect(screen.getByRole('button', { name: 'New chat' })).toBeEnabled()
+  })
+
+  it('goes on in the side panel when the user leaves the page', async () => {
+    fetchMock.mockResolvedValue(
+      streamResponse([{ type: 'text', delta: 'Here' }, { type: 'done' }])
+    )
+    setSession({ status: 'signedIn', sessionAddress: ADDRESS })
+    renderOnHome()
+    sendMessage('hello')
+    await screen.findByText('Here')
+    fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+    expect(screen.getByText('Here')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'AI Assistant' })
+    ).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument()
+  })
+
+  it('has no header button: the assistant is the page', () => {
+    setSession({ status: 'signedIn', sessionAddress: ADDRESS })
+    renderOnHome()
+    expect(
+      screen.queryByRole('button', { name: 'AI Assistant' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+    expect(
+      screen.getByRole('button', { name: 'AI Assistant' })
+    ).toBeInTheDocument()
+  })
+
+  it('takes the shortcut to the message box', () => {
+    setSession({ status: 'signedIn', sessionAddress: ADDRESS })
+    renderOnHome()
+    fireEvent.keyDown(window, { key: '/', ctrlKey: true, metaKey: true })
+    expect(screen.getByLabelText('Message')).toHaveFocus()
+  })
+
+  describe('without a session', () => {
+    const ANONYMOUS_KEY = `chat:${ANONYMOUS_CHAT}`
+
+    beforeEach(() => {
+      window.sessionStorage.clear()
+      setSession({ anonymousSearch: true })
+    })
+
+    it('searches by chat without a wallet, and offers to connect one', async () => {
+      jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
+      fetchMock.mockResolvedValue(
+        streamResponse([{ type: 'text', delta: 'Found 3' }, { type: 'done' }])
+      )
+      renderOnHome()
+      expect(
+        screen.getByText(/Searching is open to everyone/)
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Connect wallet' })
+      ).toBeInTheDocument()
+
+      sendMessage('wine datasets')
+      await screen.findByText('Found 3')
+      expect(fetchMock.mock.calls[0][0]).toBe('/api/chat')
+      // Kept in this tab only, and nothing to sign out of.
+      expect(window.sessionStorage.getItem(ANONYMOUS_KEY)).toContain(
+        'wine datasets'
+      )
+      expect(window.localStorage.length).toBe(0)
+      expect(
+        screen.queryByRole('button', { name: 'More options' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('offers to sign in once the wallet is connected', () => {
+      renderOnHome()
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+      expect(signIn).toHaveBeenCalled()
+      expect(screen.getByLabelText('Message')).toBeInTheDocument()
+    })
+
+    it('goes on in the side panel when the user leaves the page', async () => {
+      jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
+      fetchMock.mockResolvedValue(
+        streamResponse([{ type: 'text', delta: 'Found 3' }, { type: 'done' }])
+      )
+      renderOnHome()
+      sendMessage('wine datasets')
+      await screen.findByText('Found 3')
+      fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+      expect(screen.getByText('Found 3')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'AI Assistant' })
+      ).toHaveAttribute('aria-expanded', 'true')
+    })
+
+    it('searches from the side panel on other pages', () => {
+      jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
+      setPath('/search')
+      renderChat()
+      openPanel()
+      expect(screen.getByText('Find data by chat')).toBeInTheDocument()
+      expect(screen.getByLabelText('Message')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Connect wallet' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Download a free dataset' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {
+          name: 'Find datasets about soil or crops'
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('goes on as the wallet conversation after signing in', async () => {
+      window.sessionStorage.setItem(
+        ANONYMOUS_KEY,
+        JSON.stringify({
+          updatedAt: Date.now(),
+          messages: [
+            { role: 'user', content: 'wine datasets' },
+            { role: 'assistant', content: 'Found 3' }
+          ]
+        })
+      )
+      setSession({
+        status: 'signedIn',
+        sessionAddress: ADDRESS,
+        anonymousSearch: true
+      })
+      renderOnHome()
+      expect(await screen.findByText('Found 3')).toBeInTheDocument()
+      expect(window.localStorage.getItem(STORAGE_KEY)).toContain('Found 3')
+      expect(window.sessionStorage.getItem(ANONYMOUS_KEY)).toBeNull()
+    })
+
+    it('needs signing in when the server does not allow it', () => {
+      jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
+      setSession({ anonymousSearch: false })
+      renderOnHome()
+      expect(screen.queryByLabelText('Message')).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('AgrospAI Assistant')
+      ).not.toBeInTheDocument()
+    })
+  })
+})
+
 describe('suggestionsFor', () => {
   const DID = 'did:ope:abc'
 
@@ -720,5 +1009,38 @@ describe('suggestionsFor', () => {
       const prompts = suggestionsFor(pathname, did).map((s) => s.prompt)
       expect(prompts.some((p) => /prepare/i.test(p))).toBe(true)
     }
+  })
+})
+
+describe('ContextMeter', () => {
+  const user = { role: 'user' as const, content: 'hi' }
+
+  it('shows the share of the budget and the tokens of the last answer', () => {
+    render(
+      <ContextMeter
+        context={{ messages: [user], chars: 12_000, firstSent: 0 }}
+        usage={{
+          promptTokens: 9800,
+          completionTokens: 200,
+          contextTokens: 32_768
+        }}
+      />
+    )
+    expect(
+      screen.getByRole('img', {
+        name: 'Memory 25% used. Past 100%, the assistant stops reading the oldest messages. Last answer: 10k of 32.8k tokens.'
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('says when older messages are left out', () => {
+    render(
+      <ContextMeter
+        context={{ messages: [user, user], chars: 47_000, firstSent: 3 }}
+      />
+    )
+    expect(screen.getByTestId('context-meter')).toHaveAccessibleName(
+      'Memory full: the assistant reads only the last 2 messages. Start a new chat to begin fresh.'
+    )
   })
 })

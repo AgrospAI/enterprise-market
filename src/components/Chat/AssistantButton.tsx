@@ -22,15 +22,18 @@ function markIntroSeen(): void {
   } catch {}
 }
 
-/** The header's way into the market assistant, shown while it can be used. */
+/**
+ * The header's way into the market assistant, shown while it can be used. Not
+ * on the home page, where the assistant is the page itself.
+ */
 export default function AssistantButton(): ReactElement | null {
-  const { isAvailable, isOpen, toggle } = useChatPanel()
+  const { isAvailable, isOpen, inlineHost, toggle } = useChatPanel()
   // Read after mounting, so the server and the first render agree.
   const [showIntro, setShowIntro] = useState(false)
 
   useEffect(() => {
-    if (isAvailable && !isOpen) setShowIntro(!readIntroSeen())
-  }, [isAvailable, isOpen])
+    if (isAvailable && !isOpen && !inlineHost) setShowIntro(!readIntroSeen())
+  }, [isAvailable, isOpen, inlineHost])
 
   useEffect(() => {
     if (!isOpen) return
@@ -38,7 +41,7 @@ export default function AssistantButton(): ReactElement | null {
     markIntroSeen()
   }, [isOpen])
 
-  if (!isAvailable) return null
+  if (!isAvailable || inlineHost) return null
 
   function dismissIntro() {
     setShowIntro(false)

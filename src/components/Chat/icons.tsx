@@ -95,3 +95,9 @@ export const EditIcon = (props: IconProps): ReactElement => (
     <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
   </Icon>
 )
+
+export const CheckIcon = (props: IconProps): ReactElement => (
+  <Icon {...props}>
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </Icon>
+)
