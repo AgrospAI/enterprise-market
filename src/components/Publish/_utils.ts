@@ -47,7 +47,6 @@ import { Service } from 'src/@types/ddo/Service'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Option } from 'src/@types/ddo/Option'
 import { createHash } from 'crypto'
-import { uploadToIPFS } from '@utils/ipfs'
 import { DDOVersion } from 'src/@types/DdoVersion'
 import {
   Credential,
@@ -478,7 +477,8 @@ export function generateCredentials(
     }
   }
 
-  if (updatedCredentials?.allow?.length > 0) {
+  // Keep an explicit empty address rule: allow: [] means unrestricted to the node.
+  if (Array.isArray(updatedCredentials?.allow)) {
     const newList = updatedCredentials?.allow?.map((address: string) => {
       return {
         address
@@ -864,7 +864,9 @@ export async function transformPublishFormToDdo(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
     '@context': ['https://www.w3.org/ns/credentials/v2'],
-    id: 'Generated when published',
+    id: isPreview
+      ? 'Generated when published'
+      : makeDid(nftAddress, String(chainId)),
     version: DDOVersion.V5_0_0,
     credentialSubject: {
       chainId,
@@ -921,27 +923,6 @@ export interface IpfsUpload {
   metadataIPFSHash: string
 }
 
-export async function buildDdoIpfsUploadPayload(
-  asset: Asset,
-  metadata: string,
-  owner: Signer,
-  encryptAsset: boolean,
-  providerUrl: string
-): Promise<{ encryptedData: string }> {
-  const data = { encryptedData: metadata }
-
-  if (!encryptAsset) return data
-
-  const encryptedData = await encryptProviderData(
-    data,
-    asset.credentialSubject?.chainId,
-    providerUrl,
-    owner
-  )
-
-  return { encryptedData }
-}
-
 /**
  * Deviates from JOSE by using the alg: ETH-EIP191 field.
  * Accordingly, a web3 wallet signature is to be used for verification.
@@ -968,6 +949,8 @@ async function createJwtVerifiableCredential(
   return `${headerBase64}.${payloadBase64}.${signatureBase64}`
 }
 
+// Legacy API name and result fields retained for existing callers. The payload
+// now holds the signed DDO itself, as required by Ocean Node decryptDDO.
 export async function signAssetAndUploadToIpfs(
   asset: Asset,
   owner: Signer,
@@ -975,6 +958,7 @@ export async function signAssetAndUploadToIpfs(
   providerUrl: string,
   ssiWalletContext: SsiWalletContext
 ): Promise<IpfsUpload> {
+  asset = JSON.parse(JSON.stringify(asset))
   asset.id = makeDid(
     asset.credentialSubject.nftAddress,
     asset.credentialSubject.chainId.toString()
@@ -990,7 +974,10 @@ export async function signAssetAndUploadToIpfs(
   // these properties are mutable due blockchain interaction
   delete credential.credentialSubject.datatokens
   delete credential.credentialSubject.event
-  delete asset.indexedMetadata.event
+  delete (credential as any).indexedMetadata
+  delete (credential as any).accessDetails
+  delete (credential as any).views
+  delete (credential as any).offchain
 
   let jwtVerifiableCredential
   if (appConfig.ssiEnabled) {
@@ -1018,47 +1005,27 @@ export async function signAssetAndUploadToIpfs(
       owner
     )
   }
-  const stringAsset = JSON.stringify(jwtVerifiableCredential)
-  const bytes = Buffer.from(stringAsset)
-  const metadata = hexlify(bytes)
-  const data = await buildDdoIpfsUploadPayload(
-    asset,
-    metadata,
-    owner,
-    encryptAsset,
-    providerUrl
-  )
-  const ipfsHash = await uploadToIPFS(data)
-  const remoteAsset = {
-    remote: {
-      type: 'ipfs',
-      hash: ipfsHash
-    }
+  // Ocean Node's decryptDDO expects the signed credential itself. Encrypting
+  // an IPFS pointer here produces a successful transaction that cannot be indexed.
+  const [header, payload, signature] = jwtVerifiableCredential.split('.')
+  const signedCredential = JSON.parse(base64url.decode(payload))
+  signedCredential.proof = {
+    header: JSON.parse(base64url.decode(header)),
+    signature: base64url.toBuffer(signature).toString('base64')
   }
-
-  let flags: number = 0
-  let metadataIPFS: string
-  if (encryptAsset) {
-    metadataIPFS = await encryptProviderData(
-      remoteAsset,
-      asset.credentialSubject?.chainId,
-      providerUrl,
-      owner
-    )
-    flags = 2
-  } else {
-    const stringDDO: string = JSON.stringify(remoteAsset)
-    const bytes: Buffer = Buffer.from(stringDDO)
-    metadataIPFS = hexlify(bytes)
-    flags = 0
-  }
-
-  if (!metadataIPFS)
-    throw new Error('No encrypted IPFS metadata received. Please try again.')
-
-  const stringDDO = JSON.stringify(data)
+  const serialized = JSON.stringify(signedCredential)
+  const metadataIPFS = encryptAsset
+    ? await encryptProviderData(
+        signedCredential,
+        asset.credentialSubject.chainId,
+        providerUrl,
+        owner
+      )
+    : hexlify(Buffer.from(serialized))
+  if (!metadataIPFS) throw new Error('No encrypted metadata received.')
+  const flags = encryptAsset ? 2 : 0
   const metadataIPFSHash =
-    '0x' + createHash('sha256').update(stringDDO).digest('hex')
+    '0x' + createHash('sha256').update(serialized).digest('hex')
 
   return { metadataIPFS, flags, metadataIPFSHash }
 }

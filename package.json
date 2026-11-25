@@ -24,7 +24,10 @@
     "knip": "knip",
     "lingui:extract": "node scripts/i18n/content.mjs && node scripts/i18n/legal.mjs && node scripts/i18n/source-messages.mjs && lingui extract",
     "lingui:compile": "lingui compile --strict --typescript",
-    "lingui:check": "node scripts/i18n/audit.mjs && npm run lingui:extract -- --clean && npm run lingui:compile"
+    "lingui:check": "node scripts/i18n/audit.mjs && npm run lingui:extract -- --clean && npm run lingui:compile",
+    "pinata:cleanup": "node --env-file=.env --experimental-strip-types scripts/cleanup-pinata.ts",
+    "deploy:access-requests": "node scripts/deploy-access-requests.mjs",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1035.0",
@@ -134,11 +137,13 @@
     "jest-environment-jsdom": "^29.3.1",
     "knip": "^5.82.1",
     "next-transpile-modules": "^10.0.1",
+    "playwright": "^1.65.1",
     "prettier": "^2.8.8",
     "pretty-quick": "^3.3.1",
     "serve": "^14.1.2",
     "stream-http": "^3.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
   },
   "overrides": {
     "form-data": "^4.0.6",

@@ -305,8 +305,7 @@ export function parseConsumerParameters(
 
 function findCredential(
   credentials: (CredentialAddressBased | CredentialPolicyBased)[],
-  consumerCredentials: CredentialAddressBased,
-  type?: string
+  consumerCredentials: CredentialAddressBased
 ) {
   const hasAddressType = credentials.some((credential) => {
     const type = String(credential.type ?? '').toLowerCase()
@@ -331,7 +330,6 @@ function findCredential(
           credentialValues.includes(consumerCredentials.values[0].address))
       return result
     }
-    if (type === 'service') return true
     return false
   })
 }
@@ -341,11 +339,7 @@ function findCredential(
  * @param credentials credentials
  * @param consumerAddress consumer address
  */
-function checkCredentials(
-  credentials: Credential,
-  consumerAddress: string,
-  type?: string
-) {
+function checkCredentials(credentials: Credential, consumerAddress: string) {
   const consumerCredentials: CredentialAddressBased = {
     type: 'address',
     values: [{ address: String(consumerAddress)?.toLowerCase() }]
@@ -359,11 +353,7 @@ function checkCredentials(
   }
   // check allow access
   if (Array.isArray(credentials?.allow) && credentials.allow.length > 0) {
-    const accessAllow = findCredential(
-      credentials.allow,
-      consumerCredentials,
-      type
-    )
+    const accessAllow = findCredential(credentials.allow, consumerCredentials)
     if (!accessAllow) {
       return false
     }
@@ -378,14 +368,10 @@ export function isAddressWhitelisted(
 ): boolean {
   if (!ddo || !accountId) return false
 
-  const assetAccessGranted = checkCredentials(
-    ddo.credentialSubject?.credentials,
-    accountId
-  )
-  const serviceAccessGranted = checkCredentials(
-    service?.credentials,
-    accountId,
-    'service'
-  )
+  const assetAccessGranted =
+    !ddo.credentialSubject?.credentials ||
+    checkCredentials(ddo.credentialSubject.credentials, accountId)
+  const serviceAccessGranted =
+    !service?.credentials || checkCredentials(service.credentials, accountId)
   return assetAccessGranted && serviceAccessGranted
 }

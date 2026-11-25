@@ -16,16 +16,18 @@ export default function PageProfile(): ReactElement {
   const { address: accountId, isConnecting, isReconnecting } = useAccount()
   const [finalAccountId, setFinalAccountId] = useState<string>()
   const [ownAccount, setOwnAccount] = useState(false)
+  const pathAccount = router.query.account as string | undefined
+  const hasProfileAddress = Boolean(pathAccount && isAddress(pathAccount))
 
   useEffect(() => {
     if (!router.isReady) return
     if (isConnecting || isReconnecting) return
-    if (accountId) return
+    if (accountId || hasProfileAddress) return
 
     router.replace(
       `/auth/login?callbackUrl=${encodeURIComponent(router.asPath)}`
     )
-  }, [accountId, isConnecting, isReconnecting, router])
+  }, [accountId, hasProfileAddress, isConnecting, isReconnecting, router])
 
   // Have accountId in path take over, if not present fall back to web3
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function PageProfile(): ReactElement {
     init()
   }, [router, accountId])
 
-  if (!accountId || !finalAccountId) {
+  if (!finalAccountId) {
     return null
   }
 

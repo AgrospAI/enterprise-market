@@ -1,3 +1,4 @@
+import NotificationBadge from '@components/AccessRequests/NotificationBadge'
 import { Trans } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
 import { forwardRef, useEffect } from 'react'
@@ -44,6 +45,7 @@ const Account = forwardRef<HTMLButtonElement, AccountProps>(
               <Trans id="Account" />
             </span>
           )}
+          {accountId && <NotificationBadge />}
           <Caret aria-hidden="true" className={styles.caret} />
         </button>
       </div>

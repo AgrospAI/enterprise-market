@@ -573,3 +573,15 @@ export const newServiceValidationSchema = serviceValidationSchema.shape({
       }
     )
 })
+
+// Existing assets may identify their provider by name. Preserve that value
+// during unrelated edits, while validating a replacement as a URL.
+export function getMetadataValidationSchema(providedBy?: string) {
+  return metadataValidationSchema.shape({
+    providedBy: Yup.lazy((value) =>
+      value === providedBy
+        ? Yup.string().nullable()
+        : testOptionalUrl(() => i18n._('Provided By must be a valid URL.'))
+    )
+  })
+}

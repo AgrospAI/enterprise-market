@@ -1,5 +1,8 @@
+import NotificationBadge from '@components/AccessRequests/NotificationBadge'
+import { useRouter } from 'next/router'
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
+import AccessRequests from '@components/AccessRequests'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Tabs from '@shared/atoms/Tabs'
 import PublishedList from './PublishedList'
@@ -17,6 +20,7 @@ import HistoryData from './HistoryData'
 interface HistoryTab {
   title: string
   content: JSX.Element
+  badge?: JSX.Element
 }
 
 function getTabs(
@@ -47,7 +51,7 @@ function getTabs(
       />
     )
   }
-  if (accountId === userAccountId) {
+  if (accountId?.toLowerCase() === userAccountId?.toLowerCase()) {
     defaultTabs.push(computeTab)
   }
 
@@ -55,8 +59,16 @@ function getTabs(
     title: i18n._('History'),
     content: <HistoryData accountId={accountId} />
   }
-  if (accountId === userAccountId) {
+  if (accountId?.toLowerCase() === userAccountId?.toLowerCase()) {
     defaultTabs.push(history)
+  }
+
+  if (accountId?.toLowerCase() === userAccountId?.toLowerCase()) {
+    defaultTabs.push({
+      title: i18n._('Access requests'),
+      badge: <NotificationBadge />,
+      content: <AccessRequests />
+    })
   }
 
   return defaultTabs
@@ -65,7 +77,9 @@ function getTabs(
 const tabsIndexList = {
   published: 0,
   downloads: 1,
-  computeJobs: 2
+  computeJobs: 2,
+  history: 3,
+  accessRequests: 4
 }
 
 const computeJobsTabIndex = tabsIndexList.computeJobs
@@ -77,6 +91,7 @@ export default function HistoryPage({
 }): ReactElement {
   useLingui()
 
+  const router = useRouter()
   const { address: accountId } = useAccount()
   const signer = useEthersSigner()
   const { chainIds } = useUserPreferences()
@@ -134,8 +149,8 @@ export default function HistoryPage({
 
     if (!defaultTabIndex) return 0
     if (
-      defaultTabIndex === tabsIndexList.computeJobs &&
-      accountId !== accountIdentifier
+      defaultTabIndex >= tabsIndexList.computeJobs &&
+      accountId?.toLowerCase() !== accountIdentifier?.toLowerCase()
     )
       return 0
 
@@ -144,7 +159,7 @@ export default function HistoryPage({
 
   useEffect(() => {
     setTabIndex(getDefaultIndex())
-  }, [getDefaultIndex])
+  }, [getDefaultIndex, router.asPath])
 
   const tabs = getTabs(
     accountIdentifier,

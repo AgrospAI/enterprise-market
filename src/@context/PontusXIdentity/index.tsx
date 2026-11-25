@@ -12,6 +12,12 @@ import { pontusXRegistryUrl } from '../../../app.config.cjs'
 
 type LegalNameResolver = (address: string) => string | undefined
 
+export interface PublisherIdentity {
+  address: string
+  name: string
+}
+const PublisherIdentitiesContext = createContext<PublisherIdentity[]>([])
+
 const PontusXIdentityContext = createContext<LegalNameResolver>(() => undefined)
 
 function PontusXIdentityResolver({
@@ -40,7 +46,11 @@ function PontusXIdentityResolver({
 
   return (
     <PontusXIdentityContext.Provider value={getLegalName}>
-      {children}
+      <PublisherIdentitiesContext.Provider
+        value={Array.from(byAddress, ([address, name]) => ({ address, name }))}
+      >
+        {children}
+      </PublisherIdentitiesContext.Provider>
     </PontusXIdentityContext.Provider>
   )
 }
@@ -64,4 +74,8 @@ export function PontusXIdentityProvider({
 export function usePontusXLegalName(address?: string): string | undefined {
   const getLegalName = useContext(PontusXIdentityContext)
   return address ? getLegalName(address) : undefined
+}
+
+export function usePublisherIdentities(): PublisherIdentity[] {
+  return useContext(PublisherIdentitiesContext)
 }

@@ -29,7 +29,7 @@ export default function WhitelistIndicator({
         isValid={isAccountIdWhitelisted}
         verifiedService={
           isAccountIdWhitelisted
-            ? i18n._('Web3 address verification passed')
+            ? i18n._('Wallet address meets access rules')
             : i18n._('Access denied for web3 address')
         }
         className={styles.whitelistBadge}

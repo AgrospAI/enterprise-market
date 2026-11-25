@@ -1,6 +1,6 @@
 import { Trans, useLingui } from '@lingui/react'
 import { i18n } from '../../../../i18n/index'
-import { useFormikContext } from 'formik'
+import { getIn, useFormikContext } from 'formik'
 import { ReactElement, useState, useEffect } from 'react'
 import Input from '@components/@shared/FormInput'
 import SectionContainer from '../../../@shared/SectionContainer/SectionContainer'
@@ -28,10 +28,10 @@ export default function AccessRulesSection({
 
   const { values, setFieldValue } = useFormikContext<any>()
   const [allowInputValue, setAllowInputValue] = useState(
-    values.credentials?.allowInputValue || ''
+    getIn(values, `${fieldPrefix}.allowInputValue`) || ''
   )
   const [denyInputValue, setDenyInputValue] = useState(
-    values.credentials?.denyInputValue || ''
+    getIn(values, `${fieldPrefix}.denyInputValue`) || ''
   )
   const [allowDropdownValue, setAllowDropdownValue] = useState(
     'Please select an option'
@@ -41,12 +41,7 @@ export default function AccessRulesSection({
   )
 
   const getFieldValue = (field: string) => {
-    if (fieldPrefix === 'credentials') {
-      return values.credentials?.[field] || []
-    } else if (fieldPrefix === 'services[0].credentials') {
-      return values.services?.[0]?.credentials?.[field] || []
-    }
-    return []
+    return getIn(values, `${fieldPrefix}.${field}`) || []
   }
 
   const allowList = getFieldValue('allow')
@@ -54,27 +49,6 @@ export default function AccessRulesSection({
 
   const hasAllowAll = allowList.includes('*')
   const hasDenyAll = denyList.includes('*')
-
-  useEffect(() => {
-    if (allowDropdownValue === 'Allow all addresses') {
-      if (!allowList.includes('*')) {
-        setFieldValue(`${fieldPrefix}.allow`, ['*'])
-      }
-      setAllowInputValue('')
-    }
-  }, [allowDropdownValue, allowList, setFieldValue])
-
-  useEffect(() => {
-    if (denyDropdownValue === 'Deny all addresses') {
-      if (!denyList.includes('*')) {
-        setFieldValue(`${fieldPrefix}.deny`, ['*'])
-      }
-      setDenyInputValue('')
-      if (fieldPrefix === 'credentials') {
-        setFieldValue('credentials.denyInputValue', '')
-      }
-    }
-  }, [denyDropdownValue, denyList, setFieldValue])
 
   useEffect(() => {
     if (hasAllowAll && allowDropdownValue !== 'Allow all addresses') {
@@ -126,9 +100,7 @@ export default function AccessRulesSection({
     const newAllowList = [...allowList, allowInputValue.toLowerCase()]
     setFieldValue(`${fieldPrefix}.allow`, newAllowList)
     setAllowInputValue('')
-    if (fieldPrefix === 'credentials') {
-      setFieldValue('credentials.allowInputValue', '')
-    }
+    setFieldValue(`${fieldPrefix}.allowInputValue`, '')
   }
 
   const handleDeleteAllowAddress = (addressToDelete: string) => {
@@ -168,9 +140,7 @@ export default function AccessRulesSection({
     const newDenyList = [...denyList, denyInputValue.toLowerCase()]
     setFieldValue(`${fieldPrefix}.deny`, newDenyList)
     setDenyInputValue('')
-    if (fieldPrefix === 'credentials') {
-      setFieldValue('credentials.denyInputValue', '')
-    }
+    setFieldValue(`${fieldPrefix}.denyInputValue`, '')
   }
 
   const handleDeleteDenyAddress = (addressToDelete: string) => {
@@ -189,6 +159,11 @@ export default function AccessRulesSection({
   ) => {
     const { value } = e.target
     setAllowDropdownValue(value)
+    if (value === 'Allow all addresses') {
+      setFieldValue(`${fieldPrefix}.allow`, ['*'])
+      setAllowInputValue('')
+      setFieldValue(`${fieldPrefix}.allowInputValue`, '')
+    }
   }
 
   const handleDenyDropdownChange = (
@@ -196,6 +171,11 @@ export default function AccessRulesSection({
   ) => {
     const { value } = e.target
     setDenyDropdownValue(value)
+    if (value === 'Deny all addresses') {
+      setFieldValue(`${fieldPrefix}.deny`, ['*'])
+      setDenyInputValue('')
+      setFieldValue(`${fieldPrefix}.denyInputValue`, '')
+    }
   }
 
   return (
@@ -233,6 +213,11 @@ export default function AccessRulesSection({
             onChange={handleAllowDropdownChange}
             disabled={hasAllowAll}
           />
+          {allowList.length === 0 && (
+            <p>
+              <Trans id="No wallet addresses are allowed. Select Allow all addresses to make access public." />
+            </p>
+          )}
           {hasAllowAll && (
             <div
               style={{
@@ -255,9 +240,7 @@ export default function AccessRulesSection({
               value={allowInputValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setAllowInputValue(e.target.value)
-                if (fieldPrefix === 'credentials') {
-                  setFieldValue('credentials.allowInputValue', e.target.value)
-                }
+                setFieldValue(`${fieldPrefix}.allowInputValue`, e.target.value)
               }}
             />
             <Button
@@ -344,9 +327,7 @@ export default function AccessRulesSection({
               value={denyInputValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setDenyInputValue(e.target.value)
-                if (fieldPrefix === 'credentials') {
-                  setFieldValue('credentials.denyInputValue', e.target.value)
-                }
+                setFieldValue(`${fieldPrefix}.denyInputValue`, e.target.value)
               }}
             />
             <Button

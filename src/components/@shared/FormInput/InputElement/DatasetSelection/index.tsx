@@ -13,10 +13,24 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import Link from 'next/link'
 import Tooltip from '@shared/atoms/Tooltip'
 import InfoIcon from '@images/info.svg'
+import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 
-interface DatasetSelectionDataset extends AssetSelectionAsset {
+interface DatasetSelectionDataset
+  extends Omit<AssetSelectionAsset, 'description' | 'serviceDescription'> {
+  description?: string | LanguageValueObject
+  serviceDescription?: string | LanguageValueObject
   checked: boolean
   value?: string
+}
+
+function descriptionValue(value: unknown): string | undefined {
+  const text =
+    typeof value === 'string'
+      ? value
+      : value && typeof value === 'object' && '@value' in value
+      ? value['@value']
+      : undefined
+  return typeof text === 'string' && text.trim() ? text.trim() : undefined
 }
 
 function Empty({ message }: { message: string }) {
@@ -27,20 +41,33 @@ function Empty({ message }: { message: string }) {
 
 export default function DatasetSelection({
   asset,
+  networkId,
   datasets,
   selected = [],
   disabled,
-  onChange
+  onChange,
+  searchValue: externalSearch,
+  onSearchChange,
+  onSearch,
+  loading = false,
+  assetType = 'dataset'
 }: {
   asset?: AssetExtended
+  networkId?: number
   datasets?: DatasetSelectionDataset[]
   selected?: string[]
   disabled?: boolean
   onChange?: (value: string) => void
+  searchValue?: string
+  onSearchChange?: (value: string) => void
+  onSearch?: () => void
+  loading?: boolean
+  assetType?: 'dataset' | 'algorithm'
 }): JSX.Element {
   useLingui()
 
-  const [searchValue, setSearchValue] = useState('')
+  const [localSearch, setSearchValue] = useState('')
+  const searchValue = externalSearch ?? localSearch
   const [filteredDatasets, setfilteredDatasets] = useState<
     DatasetSelectionDataset[]
   >([])
@@ -49,7 +76,7 @@ export default function DatasetSelection({
     const realDatasets = datasets && Array.isArray(datasets) ? datasets : []
     const result = realDatasets.filter((dataset) => {
       const searchLower = searchValue.toLowerCase()
-      return searchValue !== ''
+      return externalSearch === undefined && searchValue !== ''
         ? dataset.did.toLowerCase().includes(searchLower) ||
             dataset.name.toLowerCase().includes(searchLower) ||
             dataset.serviceName?.toLowerCase().includes(searchLower)
@@ -57,7 +84,7 @@ export default function DatasetSelection({
     })
 
     setfilteredDatasets(result)
-  }, [datasets, searchValue])
+  }, [datasets, searchValue, externalSearch])
 
   const handleDatasetSelect = (envId: string) => {
     if (typeof onChange === 'function') {
@@ -68,24 +95,46 @@ export default function DatasetSelection({
   return (
     <div className={styles.root}>
       <SearchSection
-        placeholder={i18n._('Search for Datasets')}
+        placeholder={
+          assetType === 'algorithm'
+            ? i18n._('Search algorithms by name')
+            : i18n._('Search datasets by name')
+        }
+        label={
+          assetType === 'algorithm'
+            ? i18n._('Search algorithms')
+            : i18n._('Search datasets')
+        }
+        onSearch={onSearch}
         value={searchValue}
-        onChange={setSearchValue}
+        onChange={onSearchChange || setSearchValue}
         disabled={disabled}
       />
       <div className={styles.scroll}>
-        {!filteredDatasets ? (
-          <Loader />
+        {loading ? (
+          <Loader
+            message={
+              assetType === 'algorithm'
+                ? i18n._('Loading algorithms…')
+                : i18n._('Loading datasets…')
+            }
+          />
         ) : filteredDatasets.length === 0 ? (
-          <Empty message="No datasets found." />
+          <Empty
+            message={
+              assetType === 'algorithm'
+                ? i18n._('No algorithms found. Try another search.')
+                : i18n._('No datasets found. Try another search.')
+            }
+          />
         ) : (
           <>
             {filteredDatasets.map((dataset) => {
               const selectionValue = dataset.value || dataset.did
               const isSelected = selected.includes(selectionValue)
               const descriptionText =
-                dataset.description ||
-                dataset.serviceDescription ||
+                descriptionValue(dataset.description) ||
+                descriptionValue(dataset.serviceDescription) ||
                 i18n._('No description available.')
               return (
                 <div
@@ -102,6 +151,11 @@ export default function DatasetSelection({
                   <div className={styles.cardHeader}>
                     <div className={styles.titleSection}>
                       <h3 className={styles.title}>{dataset.name}</h3>
+                      {dataset.serviceName && (
+                        <span className={styles.serviceName}>
+                          {dataset.serviceName}
+                        </span>
+                      )}
                       <div className={styles.envId}>
                         {truncateDid(dataset.did)}
                         {dataset.did && (
@@ -122,17 +176,19 @@ export default function DatasetSelection({
                         </div>
                       )}
                     </div>
-                    <div>
+                    {(networkId || asset?.credentialSubject?.chainId) && (
                       <NetworkName
-                        networkId={asset?.credentialSubject?.chainId}
+                        networkId={
+                          networkId || asset?.credentialSubject?.chainId
+                        }
                         className={styles.network}
                       />
-                    </div>
+                    )}
                   </div>
                   <div className={styles.cardContent}>
                     <p className={styles.description}>
-                      {descriptionText.slice(0, 30)}
-                      {descriptionText.length > 30 ? '...' : ''}
+                      {descriptionText.slice(0, 160)}
+                      {descriptionText.length > 160 ? '...' : ''}
                     </p>
 
                     <div className={styles.cardActions}>
@@ -144,9 +200,11 @@ export default function DatasetSelection({
                           <button
                             type="button"
                             className={styles.updateInfoButton}
-                            aria-label={i18n._(
-                              'Why is this dataset unavailable?'
-                            )}
+                            aria-label={
+                              assetType === 'algorithm'
+                                ? i18n._('Why is this algorithm unavailable?')
+                                : i18n._('Why is this dataset unavailable?')
+                            }
                             onClick={(event) => event.stopPropagation()}
                           >
                             <InfoIcon className={styles.updateInfoIcon} />
@@ -155,6 +213,20 @@ export default function DatasetSelection({
                       )}
                       <Button
                         type="button"
+                        aria-pressed={isSelected}
+                        aria-label={
+                          isSelected
+                            ? i18n._('Selected {name}, {service}', {
+                                name: dataset.name,
+                                service:
+                                  dataset.serviceName || dataset.serviceId
+                              })
+                            : i18n._('Select {name}, {service}', {
+                                name: dataset.name,
+                                service:
+                                  dataset.serviceName || dataset.serviceId
+                              })
+                        }
                         style="slim"
                         disabled={disabled || dataset.selectionDisabled}
                         onClick={(event) => {

@@ -8,7 +8,7 @@ import { InputProps } from '../..'
 import { getTagsList } from '@utils/aquarius'
 import { getAllowedErc20ChainIds } from '@utils/runtimeConfig'
 import { useCancelToken } from '@hooks/useCancelToken'
-import styles from './index.module.css'
+import styles from '@shared/MultiSelect/index.module.css'
 import { matchSorter } from 'match-sorter'
 
 interface AutoCompleteOption {

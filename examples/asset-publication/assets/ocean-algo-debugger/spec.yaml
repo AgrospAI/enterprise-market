@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/AgrospAI/pontus-x_cli/refs/heads/main/src/types/schema.json
+metadata:
+  type: algorithm
+  author: Universitat de Lleida (UdL)
+  name: Ocean Algo Debugger
+  network: OP_SEPOLIA
+  owner: '0x7774693eBe0352092cF1C81368AfB034E4D042D1'
+  description: description.md
+  tags:
+    - agrospai
+    - udl
+  license: MIT
+  algorithm:
+    container:
+      checksum: 'sha256:acd934ca483256b0a256ffdba2f99e7f7efa625f11da6d7eb6319e3957f61cd5'
+      entrypoint: python /algorithm/src/main.py
+      image: registry.agrospai.udl.cat/library/ocean-algo-debugger
+      tag: '0.2.0-enterprise-v5'
+    language: python
+    version: '0.2.0'
+nftData:
+  name: UdL Ocean Algo Debugger
+  symbol: UDL-OAD
+  templateIndex: 1
+  tokenURI: >-
+    https://docs.profiling.ydata.ai/latest/_static/img/multivariate_profiling.png
+  transferable: false
+service:
+  serviceType: compute
+  fileType: url
+  serviceEndpoint: 'http://localhost:8000'
+  timeout: 0
+  files:
+    - method: GET
+      type: url
+      url: 'https://raw.githubusercontent.com/plotly/datasets/master/winequality-red.csv'
+  pricing:
+    type: free
+  datatoken:
+    name: UdL Ocean Algo Debugger
+    symbol: UDL-OAD
+credentials:
+  allow:
+    - '*'

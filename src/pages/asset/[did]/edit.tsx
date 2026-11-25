@@ -10,7 +10,7 @@ export default function PageEditAsset(): ReactElement {
   const router = useRouter()
   const { did } = router.query
   return (
-    <AssetProvider did={did as string}>
+    <AssetProvider did={did as string} allowInactiveForOwner>
       <EditPage uri={router.pathname} />
     </AssetProvider>
   )

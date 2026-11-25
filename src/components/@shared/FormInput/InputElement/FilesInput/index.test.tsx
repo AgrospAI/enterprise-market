@@ -1,234 +1,97 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { Formik } from 'formik'
 import FilesInput from './index'
-import { useField } from 'formik'
 import { getFileInfo, checkValidProvider } from '@utils/provider'
 
-jest.mock('formik')
-jest.mock('@utils/provider')
+jest.mock('@utils/provider', () => ({
+  getFileInfo: jest.fn(),
+  checkValidProvider: jest.fn()
+}))
 
-const props = {
-  name: 'File'
-}
+const fileUrl = 'https://example.com/data.csv'
+const providerUrl = 'https://provider.example.com'
 
-const mockMeta = {
-  touched: false,
-  error: '',
-  initialError: '',
-  initialTouched: false,
-  initialValue: '',
-  value: ''
-}
-
-const mockFieldUrl = {
-  value: 'https://hello.com',
-  checked: false,
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
-  name: 'url'
-}
-
-const mockFieldIpfs = {
-  value: 'bafkreicxccbk4blsx5qtovqfgsuutxjxom47dvyzyz3asi2ggjg5ipwlc4',
-  checked: false,
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
-  name: 'ipfs'
-}
-
-const mockFieldArwave = {
-  value: 'T6NL8Zc0LCbT3bF9HacAGQC4W0_hW7b3tXbm8OtWtlA',
-  checked: false,
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
-  name: 'arweave'
-}
-
-const mockFieldSM = {
-  value: '0x564955E9d25B49afE5Abd66966Ab4Bc9Ad55Fedb',
-  checked: false,
-  onChange: jest.fn(),
-  onBlur: jest.fn(),
-  name: 'smartcontract'
-}
-
-const mockHelpers = {
-  setValue: jest.fn(),
-  setTouched: jest.fn()
-}
-
-const mockForm = {
-  values: {
-    services: [
-      {
-        providerUrl: {
-          url: 'https://v4.provider.mainnet.oceanprotocol.com'
-        }
-      }
-    ]
-  },
-  errors: {},
-  touched: {},
-  isSubmitting: false,
-  isValidating: false,
-  submitCount: 0,
-  setFieldError: jest.fn()
+function renderFile(file: Record<string, unknown>) {
+  return render(
+    <Formik
+      initialValues={{
+        files: [file],
+        services: [{ providerUrl: { url: providerUrl } }]
+      }}
+      onSubmit={jest.fn()}
+    >
+      {(form) => <FilesInput name="files" form={form} />}
+    </Formik>
+  )
 }
 
 describe('@shared/FormInput/InputElement/FilesInput', () => {
-  it('renders URL without crashing', async () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      mockFieldUrl,
-      mockMeta,
-      mockHelpers
+  beforeEach(() => {
+    jest.clearAllMocks()
+    ;(checkValidProvider as jest.Mock).mockResolvedValue(true)
+    ;(getFileInfo as jest.Mock).mockResolvedValue([
+      { valid: true, contentType: 'text/csv', contentLength: 100 }
     ])
-    ;(checkValidProvider as jest.Mock).mockReturnValue(true)
-    ;(getFileInfo as jest.Mock).mockReturnValue([
-      {
-        valid: true,
-        url: 'https://hello.com',
-        type: 'url',
-        contentType: 'text/html',
-        contentLength: 100
-      }
-    ])
-
-    render(<FilesInput form={mockForm} field={mockFieldUrl} {...props} />)
-    expect(screen.getByText('Validate')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Validate'))
-
-    // can't really re-mock our helpers.setValue() behavior switching
-    // to Info component, so we just wait for Validate button to be back again.
-    await screen.findByText('Validate')
-    expect(mockHelpers.setValue).toHaveBeenCalled()
   })
 
-  it('renders fileinfo when file url is valid', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            valid: true,
-            url: 'https://hello.com',
-            type: 'url',
-            contentType: 'text/html',
-            contentLength: 100
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldUrl} />)
-    expect(screen.getByText('https://hello.com')).toBeInTheDocument()
+  it('validates a URL and persists the confirmed file in Formik', async () => {
+    renderFile({ url: fileUrl, type: 'url' })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    expect(await screen.findByText('File confirmed')).toBeInTheDocument()
+    expect(checkValidProvider).toHaveBeenCalledWith(providerUrl)
+    expect(getFileInfo).toHaveBeenCalledWith(
+      fileUrl,
+      providerUrl,
+      'url',
+      undefined,
+      undefined,
+      1,
+      'get'
+    )
+    expect(screen.getByDisplayValue(fileUrl)).toBeDisabled()
   })
 
-  it('renders fileinfo when ipfs is valid', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            valid: true,
-            hash: 'bafkreicxccbk4blsx5qtovqfgsuutxjxom47dvyzyz3asi2ggjg5ipwlc4',
-            type: 'ipfs',
-            contentLength: '40492',
-            contentType: 'text/csv',
-            index: 0
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldIpfs} />)
-    expect(screen.getByText('✓ File confirmed')).toBeInTheDocument()
+  it.each([
+    ['url', fileUrl],
+    ['ipfs', 'bafkreicxccbk4blsx5qtovqfgsuutxjxom47dvyzyz3asi2ggjg5ipwlc4'],
+    ['arweave', 'T6NL8Zc0LCbT3bF9HacAGQC4W0_hW7b3tXbm8OtWtlA']
+  ])('renders a confirmed %s file', (type, url) => {
+    renderFile({
+      valid: true,
+      type,
+      url,
+      contentType: 'text/csv',
+      contentLength: 100
+    })
+    expect(screen.getByText('File confirmed')).toBeInTheDocument()
+    expect(screen.getByDisplayValue(url)).toBeDisabled()
   })
 
-  it('renders fileinfo when arweave is valid', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            valid: true,
-            transactionId: 'T6NL8Zc0LCbT3bF9HacAGQC4W0_hW7b3tXbm8OtWtlA',
-            type: 'arweave',
-            contentLength: '57043',
-            contentType: 'image/jpeg',
-            index: 0
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldArwave} />)
-    expect(screen.getByText('✓ File confirmed')).toBeInTheDocument()
-  })
-
-  it('renders fileinfo placeholder when hideUrl is passed', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            valid: true,
-            url: 'https://hello.com',
-            type: 'hidden'
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldUrl} />)
+  it('identifies encrypted files without displaying a fake URL', () => {
+    renderFile({ valid: true, type: 'hidden', url: '[Encrypted file]' })
     expect(
-      screen.getByText('https://oceanprotocolenterprise/the-future-is-now')
+      screen.getByText('Encrypted file (URL not editable)')
     ).toBeInTheDocument()
+    expect(screen.queryByText('File confirmed')).not.toBeInTheDocument()
   })
 
-  it('renders an unsupported file type without crashing', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            type: 'unsupported',
-            url: 'https://hello.com'
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldUrl} />)
-    expect(screen.getByText('Validate')).toBeInTheDocument()
+  it('keeps invalid provider results unconfirmed', async () => {
+    ;(checkValidProvider as jest.Mock).mockResolvedValue(false)
+    renderFile({ url: fileUrl, type: 'url' })
+    fireEvent.click(screen.getByRole('button', { name: 'Validate' }))
+    await waitFor(() => expect(checkValidProvider).toHaveBeenCalled())
+    expect(getFileInfo).not.toHaveBeenCalled()
+    expect(screen.queryByText('File confirmed')).not.toBeInTheDocument()
+    expect(screen.getByDisplayValue(fileUrl)).toBeEnabled()
   })
 
-  it('renders fileinfo when smart contract is valid', () => {
-    ;(useField as jest.Mock).mockReturnValue([
-      {
-        value: [
-          {
-            chainId: 80001,
-            type: 'smartcontract',
-            address: '0x564955E9d25B49afE5Abd66966Ab4Bc9Ad55Fedb',
-            abi: {
-              inputs: [],
-              name: 'swapOceanFee',
-              outputs: [
-                {
-                  internalType: 'uint256',
-                  name: '',
-                  type: 'uint256'
-                }
-              ],
-              stateMutability: 'view',
-              type: 'function'
-            },
-            valid: true
-          }
-        ]
-      },
-      mockMeta,
-      mockHelpers
-    ])
-    render(<FilesInput {...props} field={mockFieldSM} />)
+  it('renders a confirmed smart contract file', () => {
+    renderFile({
+      valid: true,
+      type: 'smartcontract',
+      url: '0x564955E9d25B49afE5Abd66966Ab4Bc9Ad55Fedb',
+      abi: '[]'
+    })
+    expect(screen.getByText('File confirmed')).toBeInTheDocument()
   })
 })

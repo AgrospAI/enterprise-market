@@ -56,7 +56,7 @@ const chains = [
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.dev.pontus-x.eu',
     subgraphUri: 'https://subgraph.dev.pontus-x.eu',
-    explorerUri: 'https://explorer.pontus-x.eu/devnet/pontusx'
+    explorerUri: 'https://sepolia-optimism.etherscan.io'
   },
 
   // ───────────────────────────

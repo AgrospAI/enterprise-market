@@ -332,6 +332,7 @@ export async function getAccessDetails(
         ...accessDetails,
         type: 'fixed',
         addressOrId: exchangeId,
+        exchangeContract: freAddress,
         price: exchange.fixedRate,
         fixedRateExchangeAddress: freAddress,
         baseToken: {

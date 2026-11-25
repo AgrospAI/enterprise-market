@@ -23,7 +23,13 @@ describe('Asset/RelatedAssets', () => {
   it('renders with more than 4 queryMetadata() results', async () => {
     ;(queryMetadata as jest.Mock).mockReturnValue(queryMetadataBaseReturn)
     render(<RelatedAssets />)
-    await screen.findByText(assets[0].metadata.name)
+    expect(
+      (
+        await screen.findAllByRole('heading', {
+          name: assets[0].credentialSubject.metadata.name
+        })
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   it('renders with 4 queryMetadata() results', async () => {
@@ -33,7 +39,13 @@ describe('Asset/RelatedAssets', () => {
       totalResults: 4
     })
     render(<RelatedAssets />)
-    await screen.findByText(assets[0].metadata.name)
+    expect(
+      (
+        await screen.findAllByRole('heading', {
+          name: assets[0].credentialSubject.metadata.name
+        })
+      ).length
+    ).toBeGreaterThan(0)
   })
 
   // TODO: figure out how to overwrite already mocked module

@@ -1,6 +1,7 @@
 import { translate } from '../../i18n/translate'
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../i18n/index'
+import RequestButton from '@components/AccessRequests/RequestButton'
 import {
   ReactElement,
   useCallback,
@@ -1412,6 +1413,9 @@ export default function ComputeWizardController({
                 onLoad={() => setShouldLoadComputeEnvs(true)}
               />
               <Navigation flow={flow} />
+              {!isAlgorithmFlow && (
+                <RequestButton asset={asset} service={service} />
+              )}
               <SectionContainer className={styles.container}>
                 {showSuccess ? (
                   <SuccessState

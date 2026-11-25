@@ -42,6 +42,7 @@ declare global {
     price: string
     templateId: number
     addressOrId: string
+    exchangeContract?: string
     baseToken: TokenInfo
     datatoken: TokenInfo
     isPurchasable?: boolean

@@ -17,6 +17,13 @@ jest.mock('../../../@context/Asset', () => ({
 }))
 
 jest.mock('wagmi', () => ({
+  useChainId: () => network.chainId,
+  useSwitchChain: () => ({ switchChain: jest.fn() }),
+  useAccount: () => ({
+    address: network.account,
+    chainId: network.chainId,
+    isConnected: true
+  }),
   useNetwork: () => ({ network }),
   useSwitchNetwork: () => ({ switchNetwork: () => jest.fn() }),
   useProvider: () => jest.fn(),

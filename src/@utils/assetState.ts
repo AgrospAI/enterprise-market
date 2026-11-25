@@ -45,3 +45,7 @@ export function displayAssetState(state: string): string {
     ? i18n._('Ordering temporarily disabled')
     : i18n._(state)
 }
+
+export function isNftActive(state: unknown): boolean {
+  return state !== null && state !== undefined && Number(state) === 0
+}

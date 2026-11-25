@@ -87,7 +87,7 @@ export default function URLInput({
         (checkUrl && storageType === 'url' && !isUrl(field.value)) ||
         (checkUrl && storageType === 'ipfs' && !isCID(field.value)) ||
         field.value.includes('javascript:') ||
-        (storageType === 'smartcontract' && !inputValues[0]?.abi) ||
+        (storageType === 'smartcontract' && !inputValues?.[0]?.abi) ||
         meta?.error
     )
   }, [field?.value, meta?.error, inputValues])

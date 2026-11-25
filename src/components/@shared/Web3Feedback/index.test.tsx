@@ -13,9 +13,15 @@ describe('@shared/Web3Feedback', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders isGraphSynced === false', async () => {
-    render(<Web3Feedback accountId="0xxxx" isAssetNetwork={true} />)
-    expect(await screen.findByText('Data out of sync')).toBeInTheDocument()
+  it('clears network feedback after switching to the asset network', async () => {
+    const { rerender } = render(
+      <Web3Feedback accountId="0xxxx" isAssetNetwork={false} />
+    )
+    expect(
+      await screen.findByText('Not connected to asset network')
+    ).toBeInTheDocument()
+    rerender(<Web3Feedback accountId="0xxxx" isAssetNetwork={true} />)
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
 
   it('renders no account', async () => {

@@ -1,25 +1,20 @@
 const fs = require('fs')
 const path = require('path')
 
-const envPath = path.join(process.cwd(), '.env')
-if (fs.existsSync(envPath)) {
-  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/)
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eqIndex = trimmed.indexOf('=')
-    if (eqIndex === -1) continue
-    const key = trimmed.slice(0, eqIndex).trim()
-    let value = trimmed.slice(eqIndex + 1).trim()
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1)
-    }
-    if (typeof process.env[key] === 'undefined') {
-      process.env[key] = value
-    }
+// Match Next.js precedence, while preserving explicitly exported variables.
+const mode = process.env.NODE_ENV || 'development'
+const envFiles = [
+  `.env.${mode}.local`,
+  ...(mode === 'test' ? [] : ['.env.local']),
+  `.env.${mode}`,
+  '.env'
+]
+for (const envFile of envFiles) {
+  const envPath = path.join(process.cwd(), envFile)
+  if (!fs.existsSync(envPath)) continue
+  const parsed = require('node:util').parseEnv(fs.readFileSync(envPath, 'utf8'))
+  for (const [key, value] of Object.entries(parsed)) {
+    if (typeof process.env[key] === 'undefined') process.env[key] = value
   }
 }
 
@@ -60,6 +55,8 @@ const config = {
   NEXT_PUBLIC_NODE_URI_MAP: process.env.NEXT_PUBLIC_NODE_URI_MAP,
   NEXT_PUBLIC_TRANSACTION_RELAY_MAP:
     process.env.NEXT_PUBLIC_TRANSACTION_RELAY_MAP,
+  NEXT_PUBLIC_ACCESS_REQUESTS_CONTRACTS:
+    process.env.NEXT_PUBLIC_ACCESS_REQUESTS_CONTRACTS,
   NEXT_PUBLIC_MARKET_FEE_ADDRESS: process.env.NEXT_PUBLIC_MARKET_FEE_ADDRESS,
   NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES:
     process.env.NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES,

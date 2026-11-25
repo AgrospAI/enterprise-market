@@ -21,3 +21,9 @@ storybook-static
 .qodo
 next-env.d.ts
 public/runtime-config.js
+
+# Local credentials and publication wallets
+.env.*
+!.env.example
+examples/asset-publication/keys/
+examples/asset-publication/.env

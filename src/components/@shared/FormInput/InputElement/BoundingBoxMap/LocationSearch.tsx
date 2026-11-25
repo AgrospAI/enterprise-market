@@ -5,7 +5,7 @@ import AsyncSelect from 'react-select/async'
 import { SingleValue } from 'react-select'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { LatLngBoundsTuple } from '@utils/dcat'
-import selectStyles from '../TagsAutoComplete/index.module.css'
+import selectStyles from '@shared/MultiSelect/index.module.css'
 import styles from './index.module.css'
 
 // https://nominatim.org/release-docs/latest/api/Search/

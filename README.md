@@ -56,14 +56,12 @@ cd market
 # when using nvm to manage Node.js versions
 nvm use
 
-npm install
-# in case of dependency errors, rather use:
-# npm install --legacy-peer-deps
+npm ci --legacy-peer-deps
 npm start
 ```
 
 This will start the development server under
-`http://localhost:8000`.
+`http://localhost:8008`.
 
 ### Local components with Barge
 
@@ -462,3 +460,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+## Consents management
+
+Connected wallets can request access from an asset's service card and manage
+sent and received requests from their profile. Owners review, approve or reject
+requests; requesters can cancel pending requests. Requests propose a new
+download/compute service with consumer access, pricing and algorithm/publisher
+trust settings.
+The wallet menu displays unread request activity.
+
+Configure a version 6 registry on OP Sepolia using
+`NEXT_PUBLIC_ACCESS_REQUESTS_CONTRACTS`; the default empty map disables this
+feature. See [registry setup, deployment and tests](contracts/access-requests/README.md)
+and [sample publication assets](examples/asset-publication/README.md).
+
+Use Node 22 and `npm ci --legacy-peer-deps` for reproducible installation.
+Run `npm test` for lint, TypeScript and unit tests.
+Run `node scripts/test-access-requests-runtime.cjs` for runtime configuration checks.
+[Asset lifecycle E2E instructions](docs/testing/asset-lifecycle.md) describe the
+separate wallet-funded publication tests and their external service requirements.

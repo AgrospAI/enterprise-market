@@ -55,9 +55,7 @@ import {
 } from '@utils/credentials'
 import Alert from '@shared/atoms/Alert'
 
-function isNftActive(state: unknown): boolean {
-  return Number(state) === 0
-}
+import { isNftActive } from '@utils/assetState'
 
 export default function AssetActions({
   asset,
@@ -308,7 +306,7 @@ export default function AssetActions({
     if (!asset || !accountId) return
 
     setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId, service))
-  }, [accountId, asset])
+  }, [accountId, asset, service])
 
   const hasVerifiedCredentials =
     verifierSessionCache &&

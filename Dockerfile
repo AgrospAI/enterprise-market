@@ -8,9 +8,11 @@ FROM base AS deps
 RUN apk add --no-cache python3 make g++
 COPY package.json package-lock.json* ./
 
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps --no-audit --no-fund
 
 FROM base AS builder
+ARG SOURCE_COMMIT=unknown
+ENV COMMIT_REF=$SOURCE_COMMIT
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -21,6 +23,8 @@ RUN --mount=type=cache,target=/app/.next/cache \
     npm run build
 
 FROM base AS runner
+ARG SOURCE_COMMIT=unknown
+LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
 WORKDIR /app
 
 ENV NODE_ENV=production

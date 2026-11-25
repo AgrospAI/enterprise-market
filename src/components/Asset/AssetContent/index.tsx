@@ -37,6 +37,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify'
 import BoundingBoxPreview from '@shared/BoundingBoxPreview'
+import RequestButton from '@components/AccessRequests/RequestButton'
+import { isAddressWhitelisted } from '@utils/ddo'
 
 export default function AssetContent({
   asset
@@ -66,9 +68,16 @@ export default function AssetContent({
   )
   const [showDdo, setShowDdo] = useState(false)
   const availableServices =
-    asset.credentialSubject?.services?.filter(
-      (service) => service.state === 0
-    ) || []
+    asset.credentialSubject?.services
+      ?.map((service, index) => ({ service, index }))
+      .filter(
+        ({ service }) =>
+          service.state === 0 && isAddressWhitelisted(asset, accountId, service)
+      ) || []
+  const requestService = asset.credentialSubject?.services?.find(
+    (service) =>
+      service.state === 0 && ['access', 'compute'].includes(service.type)
+  )
 
   // Find compute service
   const computeServiceIndex = asset.credentialSubject?.services?.findIndex(
@@ -362,52 +371,45 @@ export default function AssetContent({
             <>
               {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
-                  <>
-                    {availableServices.length > 0 ? (
-                      <div className={styles.serviceDisplay}>
-                        <h4>
-                          <Trans id="Choose service to see Price:" />
-                        </h4>
-                        <div className={styles.servicesGrid}>
-                          {availableServices.map((service, index) => {
-                            const isPublished = Boolean(
-                              asset?.indexedMetadata?.nft?.created
-                            )
-                            const isClickable =
-                              isAssetNetwork && isConnected && isPublished
+                  <div className={styles.serviceDisplay}>
+                    <h4>
+                      <Trans id="Services" />
+                    </h4>
+                    <div className={styles.servicesGrid}>
+                      {availableServices.map(({ service, index }) => {
+                        const isPublished = Boolean(
+                          asset?.indexedMetadata?.nft?.created
+                        )
+                        const isClickable =
+                          isAssetNetwork && isConnected && isPublished
 
-                            return (
-                              <div
-                                key={service.id}
-                                onClick={() => {
-                                  if (!isClickable) return
-                                  setSelectedService(index)
-                                }}
-                                className={`
+                        return (
+                          <div
+                            key={service.id}
+                            onClick={() => {
+                              if (!isClickable) return
+                              setSelectedService(index)
+                            }}
+                            className={`
                 ${
                   isClickable
                     ? i18n._('cursor-pointer hover:opacity-100')
                     : i18n._('opacity-50 cursor-not-allowed')
                 }
               `}
-                              >
-                                <ServiceCard
-                                  service={service}
-                                  accessDetails={asset.accessDetails[index]}
-                                  onClick={() => {}}
-                                  isClickable={isPublished}
-                                />
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    ) : (
-                      <h4>
-                        <Trans id="No services are currently available." />
-                      </h4>
-                    )}
-                  </>
+                          >
+                            <ServiceCard
+                              service={service}
+                              accessDetails={asset.accessDetails[index]}
+                              onClick={() => {}}
+                              isClickable={isPublished}
+                            />
+                          </div>
+                        )
+                      })}
+                      <RequestButton asset={asset} service={requestService} />
+                    </div>
+                  </div>
                 ) : (
                   <AssetActions
                     asset={asset}

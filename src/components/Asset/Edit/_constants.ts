@@ -38,7 +38,7 @@ export const defaultServiceComputeOptions: Compute = {
 }
 
 function generateCredentials(
-  credentials: Credential,
+  credentials: Credential = { match_deny: 'any' },
   type?: string
 ): CredentialForm {
   const credentialForm: CredentialForm = {
@@ -154,7 +154,11 @@ function generateCredentials(
     }
   })
   allowAddresses = Array.from(new Set(allowAddresses))
-  credentialForm.allow = allowAddresses
+  // No address rule is unrestricted; show that as an explicit wildcard so
+  // saving unrelated edits does not turn a public asset into a closed one.
+  credentialForm.allow = credentials.allow?.some(isCredentialAddressBased)
+    ? allowAddresses
+    : ['*']
 
   let denyAddresses = []
   credentials.deny?.forEach((denyCredential) => {
@@ -184,10 +188,6 @@ function safeParse(val: any) {
 }
 
 function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
-  function genId() {
-    return Math.random().toString(36).slice(2)
-  }
-
   // Safe parse on args for every policy
   if (Array.isArray(credentialForm.vpPolicies)) {
     credentialForm.vpPolicies = credentialForm.vpPolicies.map((vp) =>
@@ -214,13 +214,13 @@ function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
       // Support policy, credential_type, any_of
       if (req.policy) {
         newVpRequiredCredentials.push({
-          id: genId(),
+          id: `existing-required-${newVpRequiredCredentials.length}`,
           credential_type: req.policy
         })
       }
       if (req.credential_type) {
         newVpRequiredCredentials.push({
-          id: genId(),
+          id: `existing-required-${newVpRequiredCredentials.length}`,
           credential_type: req.credential_type
         })
       }
@@ -261,7 +261,7 @@ function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
 
 export function getInitialValues(
   metadata: Metadata,
-  credentials: Credential,
+  credentials: Credential = { match_deny: 'any' },
   additionalDdos: AdditionalVerifiableCredentials[],
   assetState: string
 ): MetadataEditForm {
@@ -311,7 +311,7 @@ export function getInitialValues(
 
     if (isUrlSource) {
       additionalLicenseFiles.push({
-        id: `existing-${i}-${Date.now()}`,
+        id: `existing-${i}`,
         name: doc.name || '',
         sourceType: 'URL',
         url: [
@@ -328,7 +328,7 @@ export function getInitialValues(
       })
     } else {
       additionalLicenseFiles.push({
-        id: `existing-${i}-${Date.now()}`,
+        id: `existing-${i}`,
         name: doc.name || '',
         sourceType: 'Upload file',
         url: [],
@@ -491,7 +491,8 @@ export const getServiceInitialValues = (
   }
 
   const hasExistingEncryptedFile =
-    Array.isArray(service.files) && service.files.length > 0
+    (typeof service.files === 'string' || Array.isArray(service.files)) &&
+    service.files.length > 0
 
   let processedFiles = []
   if (hasExistingEncryptedFile) {
