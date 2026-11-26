@@ -30,6 +30,8 @@ export interface LlmReply {
   toolCalls: LlmToolCall[]
   /** As the model server counted it, when it sends it. */
   usage?: LlmUsage
+  /** The model the server says answered (the "model" of its stream), when it says. */
+  model?: string
 }
 
 export type CallLlm = (
@@ -49,8 +51,12 @@ export function createReplyAssembler(onText: (delta: string) => void) {
   let content = ''
   const calls = new Map<number, LlmToolCall>()
   let usage: LlmUsage | undefined
+  let model: string | undefined
 
   return {
+    setModel(value?: unknown) {
+      if (typeof value === 'string' && value.trim()) model = value.trim()
+    },
     setUsage(value?: { prompt_tokens?: unknown; completion_tokens?: unknown }) {
       const prompt = Number(value?.prompt_tokens)
       const completion = Number(value?.completion_tokens)
@@ -86,7 +92,12 @@ export function createReplyAssembler(onText: (delta: string) => void) {
           ...call,
           id: call.id || `call_${index}`
         }))
-      return { content, toolCalls, ...(usage ? { usage } : {}) }
+      return {
+        content,
+        toolCalls,
+        ...(usage ? { usage } : {}),
+        ...(model ? { model } : {})
+      }
     }
   }
 }
@@ -105,6 +116,7 @@ export function readStreamLine(
     error?: { message?: string } | string
     choices?: { delta?: Parameters<typeof assembler.add>[0] }[]
     usage?: Parameters<typeof assembler.setUsage>[0] | null
+    model?: unknown
   }
   try {
     chunk = JSON.parse(data)
@@ -112,6 +124,8 @@ export function readStreamLine(
     return
   }
   if (chunk.error) throw new Error('The language model returned an error')
+  // Every chunk names the model that answered, as the server serves it.
+  assembler.setModel(chunk.model)
   assembler.add(chunk.choices?.[0]?.delta)
   // vLLM sends it in a last chunk with no choices, asked for by include_usage.
   if (chunk.usage) assembler.setUsage(chunk.usage)

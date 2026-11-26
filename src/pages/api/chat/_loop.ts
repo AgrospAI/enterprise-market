@@ -48,9 +48,15 @@ function answerRules(isAnonymous: boolean): string {
 - Answer only from tool results${
     isAnonymous ? '' : ' and job results'
   }. Never invent assets, prices or links.
+- Keep it short: the whole answer under 120 words, not counting links. The user waits for every word.
 - Start with one sentence that answers directly, for example how many assets match.
-- Show each asset as a list item: **[Name](marketUrl)** followed by a dash and one or two sentences on what it contains, its price and how it is consumed (Compute-to-Data or download). Never write a bare URL.
-- Leave out results that are not relevant, without mentioning them.
+- Show at most 3 assets, the most relevant first. If more match, the first sentence says how many there are.
+- Show each asset as a list item: **[Name](marketUrl)** followed by a dash and one short sentence on what it contains, its price and how it is consumed (Compute-to-Data or download). Never write a bare URL.
+- Leave out results that are not relevant, without mentioning them.${
+    isAnonymous
+      ? ''
+      : '\n- After preparing an action, do not list its assets again: the card shows them. Answer in at most two sentences.'
+  }
 - Use no emojis.
 - End with one short sentence offering a useful next step${
     isAnonymous
@@ -71,11 +77,12 @@ How to search:
 - Asset names and descriptions are mostly in English, so search in English whatever language the user writes in: translate the topic first (for example "vino" becomes "wine").
 - Search once per topic. Search again only if the result has nothing relevant, and at most twice more.
 - Call get_asset only if the user needs something the search result does not include.
+- Every turn with tools makes the user wait. When tool calls do not depend on each other, for example searching for a dataset and an algorithm the user named, make them in the same turn.
 
 What you can do:
 - Read the catalogue with the tools above.
 - Prepare two actions: prepare_compute_job runs an algorithm on a dataset through Compute-to-Data, and prepare_download downloads the file of a dataset that has a download service. Prepare an action only when the user asks for it. If the user names a dataset but not what to run on it, find the compatible algorithms and ask. If the tool says a parameter is missing, ask the user for it. Do not ask about optional parameters: the card shows every parameter with its value, and the user can change them there before confirming.
-- Asking for a result that has to be computed (for example "give me the NDVI of this parcel") is asking for a job. Search for the algorithm that computes it (search_assets with type "algorithm"), call get_compatible_datasets on it, and prepare the job on the dataset that fits, passing the values the user gave as parameters. Call get_asset first only if you still do not know the parameters of an asset. If the user wants a result about something of theirs and does not identify it (for example "my parcel"), ask for it. But if the user names the dataset and the algorithm to run, prepare the job even when they give no values: the defaults are used and the user changes them in the card.
+- Asking for a result that has to be computed (for example "give me the NDVI of this parcel") is asking for a job. Search for the algorithm that computes it (search_assets with type "algorithm"), call get_compatible_datasets on it, and prepare the job on the dataset that fits, passing the values the user gave as parameters. The datasets get_compatible_datasets returns are the ones to choose from: do not search for the dataset as well. Call get_asset first only if you still do not know the parameters of an asset. If the user wants a result about something of theirs and does not identify it (for example "my parcel"), ask for it first, before calling any tool, with a direct question (for example "Which parcel is it? Give me its SIGPAC code or a point on it."). But if the user names the dataset and the algorithm to run, prepare the job even when they give no values: the defaults are used and the user changes them in the card.
 - Preparing runs nothing: the user sees a confirmation card, checks it and signs with their own wallet. After preparing, tell the user in one sentence to review the card and confirm it, and, if the assets have parameters, that they can change them in the card. Never say that a job started, that a file was downloaded or that anything was bought or paid.
 - Some actions cost money: paid assets, and jobs in the paid compute environment. Prepare them only when the user asks for them. Give the price from the tool result as approximate: the card shows the exact total, and nothing is paid until the user confirms it in their wallet.
 - If a tool refuses a paid asset, give the asset's link: the user buys it on its page in the market.
@@ -329,6 +336,8 @@ export async function runChatLoop({
   const onText = (delta: string) => emit({ type: 'text', delta })
   // The largest call of the request: the fullest the model's context got.
   let largest: ChatUsage | undefined
+  // The model the server said answered, from the latest call that named one.
+  let model: string | undefined
   let nearlyFull = false
 
   try {
@@ -341,7 +350,8 @@ export async function runChatLoop({
         ? undefined
         : mcp.tools.filter((tool) => isAllowedTool(tool.function.name, allowed))
       const reply = await callLlm(conversation, tools, onText)
-      const { content, toolCalls, usage } = reply
+      const { content, toolCalls, usage, model: served } = reply
+      if (served) model = served
       if (
         usage &&
         usage.promptTokens + usage.completionTokens >
@@ -385,6 +395,11 @@ export async function runChatLoop({
       }
     }
   } finally {
-    if (largest) emit({ type: 'usage', usage: largest })
+    if (largest) {
+      emit({
+        type: 'usage',
+        usage: { ...largest, ...(model ? { model } : {}) }
+      })
+    }
   }
 }

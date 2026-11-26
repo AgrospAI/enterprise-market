@@ -80,6 +80,11 @@ export interface ChatUsage {
   completionTokens: number
   /** The model's window (vLLM's --max-model-len), when it is configured. */
   contextTokens?: number
+  /**
+   * The model the server answered with, as it names it in its stream (vLLM's
+   * --served-model-name), not the one asked for: it follows the deployment.
+   */
+  model?: string
 }
 
 /**

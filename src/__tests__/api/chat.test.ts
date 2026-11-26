@@ -540,6 +540,26 @@ describe('runChatLoop', () => {
     })
   })
 
+  it('reports the model the server answered with', async () => {
+    const { events, run } = setup([
+      {
+        content: 'done',
+        toolCalls: [],
+        usage: { promptTokens: 1000, completionTokens: 10 },
+        model: 'Qwen/Qwen3.8-27b'
+      }
+    ])
+    await run()
+    expect(events.at(-1)).toEqual({
+      type: 'usage',
+      usage: {
+        promptTokens: 1000,
+        completionTokens: 10,
+        model: 'Qwen/Qwen3.8-27b'
+      }
+    })
+  })
+
   it('reports no usage when the model server gives none', async () => {
     const { events, run } = setup([{ content: 'hi', toolCalls: [] }])
     await run()
@@ -851,6 +871,22 @@ describe('reading the model stream', () => {
       promptTokens: 5120,
       completionTokens: 42
     })
+  })
+
+  it('reads the model the server says answered', () => {
+    const assembler = createReplyAssembler(jest.fn())
+    readStreamLine(
+      'data: {"model":"Qwen/Qwen3.8-27b","choices":[{"delta":{"content":"hi"}}]}',
+      assembler
+    )
+    expect(assembler.reply().model).toBe('Qwen/Qwen3.8-27b')
+  })
+
+  it('leaves out a model that is missing or not a name', () => {
+    const assembler = createReplyAssembler(jest.fn())
+    readStreamLine('data: {"model":42,"choices":[]}', assembler)
+    readStreamLine(line({ content: 'hi' }), assembler)
+    expect(assembler.reply()).not.toHaveProperty('model')
   })
 
   it('leaves out a usage that is null or not a count', () => {
