@@ -291,6 +291,11 @@ msgstr "Permitir dirección ETH"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
+msgid "Allow PostHog to help us understand how visitors use the marketplace."
+msgstr "Permitir que PostHog nos ayude a comprender cómo los visitantes utilizan el mercado."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
 msgid "Allow Trusted Algorithm Publishers"
 msgstr "Permitir editores de algoritmos confiables"
 
@@ -321,6 +326,16 @@ msgstr "Permitir algoritmos seleccionados"
 #: src/i18n/sourceMessages.ts
 msgid "Allow specific trusted algorithm publishers"
 msgstr "Permitir editores de algoritmos de confianza específicos"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "Analytics"
+msgstr "Analítica"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "AnalyticsCookieConsent"
+msgstr "Consentimiento de cookies de analítica"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -5921,6 +5936,13 @@ msgid "{value0}/"
 msgstr "{value0}/"
 
 #. js-lingui-explicit-id
+#: src/components/@shared/Web3Feedback/index.tsx
+#: src/components/ComputeWizard/WizardState.tsx
+#: src/components/ErrorBoundary.tsx
+msgid "Something went wrong."
+msgstr "Algo salió mal."
+
+#. js-lingui-explicit-id
 #: src/components/Search/Filter.tsx
 msgid "Service Type"
 msgstr "Tipo de servicio"
@@ -7498,12 +7520,6 @@ msgstr "Cargando asistente de cómputo..."
 #: src/components/ComputeWizard/WizardState.tsx
 msgid "Error"
 msgstr "Error"
-
-#. js-lingui-explicit-id
-#: src/components/@shared/Web3Feedback/index.tsx
-#: src/components/ComputeWizard/WizardState.tsx
-msgid "Something went wrong."
-msgstr "Algo salió mal."
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/_steps.ts

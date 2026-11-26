@@ -297,6 +297,11 @@ msgstr "Allow ETH Address"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
+msgid "Allow PostHog to help us understand how visitors use the marketplace."
+msgstr "Allow PostHog to help us understand how visitors use the marketplace."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
 msgid "Allow Trusted Algorithm Publishers"
 msgstr "Allow Trusted Algorithm Publishers"
 
@@ -327,6 +332,16 @@ msgstr "Allow selected algorithms"
 #: src/i18n/sourceMessages.ts
 msgid "Allow specific trusted algorithm publishers"
 msgstr "Allow specific trusted algorithm publishers"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "Analytics"
+msgstr "Analytics"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "AnalyticsCookieConsent"
+msgstr "AnalyticsCookieConsent"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -5941,6 +5956,13 @@ msgid "{value0}/"
 msgstr "{value0}/"
 
 #. js-lingui-explicit-id
+#: src/components/@shared/Web3Feedback/index.tsx
+#: src/components/ComputeWizard/WizardState.tsx
+#: src/components/ErrorBoundary.tsx
+msgid "Something went wrong."
+msgstr "Something went wrong."
+
+#. js-lingui-explicit-id
 #: src/components/Search/Filter.tsx
 msgid "Service Type"
 msgstr "Service Type"
@@ -7518,12 +7540,6 @@ msgstr "Loading compute wizard..."
 #: src/components/ComputeWizard/WizardState.tsx
 msgid "Error"
 msgstr "Error"
-
-#. js-lingui-explicit-id
-#: src/components/@shared/Web3Feedback/index.tsx
-#: src/components/ComputeWizard/WizardState.tsx
-msgid "Something went wrong."
-msgstr "Something went wrong."
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/_steps.ts

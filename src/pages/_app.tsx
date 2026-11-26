@@ -24,6 +24,7 @@ import { PontusXIdentityProvider } from '@context/PontusXIdentity'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@utils/authProvider'
 import AuthGuard from '@components/Auth/AuthGuard/AuthGuard'
+import ErrorBoundary from '@components/ErrorBoundary'
 import { maybeInitAnalytics } from '@utils/analytics'
 
 const queryClient = new QueryClient()
@@ -42,41 +43,43 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
 
   return (
-    <LocaleProvider>
-      <QueryClientProvider client={queryClient}>
-        <Script src="/runtime-config.js" strategy="beforeInteractive" />
-        <WagmiProvider config={wagmiConfig}>
-          <ConnectKitProvider
-            options={{ initialChainId: 0 }}
-            customTheme={connectKitTheme}
-          >
-            <MarketMetadataProvider>
-              <UrqlProvider>
-                <UserPreferencesProvider>
-                  <ConsentProvider>
-                    <SearchBarStatusProvider>
-                      <FilterProvider>
-                        <SsiWalletProvider>
-                          <AuthProvider>
-                            <PontusXIdentityProvider>
-                              <App>
-                                <AuthGuard>
-                                  <Component {...pageProps} />
-                                </AuthGuard>
-                              </App>
-                            </PontusXIdentityProvider>
-                          </AuthProvider>
-                        </SsiWalletProvider>
-                      </FilterProvider>
-                    </SearchBarStatusProvider>
-                  </ConsentProvider>
-                </UserPreferencesProvider>
-              </UrqlProvider>
-            </MarketMetadataProvider>
-          </ConnectKitProvider>
-        </WagmiProvider>
-      </QueryClientProvider>
-    </LocaleProvider>
+    <ErrorBoundary>
+      <LocaleProvider>
+        <QueryClientProvider client={queryClient}>
+          <Script src="/runtime-config.js" strategy="beforeInteractive" />
+          <WagmiProvider config={wagmiConfig}>
+            <ConnectKitProvider
+              options={{ initialChainId: 0 }}
+              customTheme={connectKitTheme}
+            >
+              <MarketMetadataProvider>
+                <UrqlProvider>
+                  <UserPreferencesProvider>
+                    <ConsentProvider>
+                      <SearchBarStatusProvider>
+                        <FilterProvider>
+                          <SsiWalletProvider>
+                            <AuthProvider>
+                              <PontusXIdentityProvider>
+                                <App>
+                                  <AuthGuard>
+                                    <Component {...pageProps} />
+                                  </AuthGuard>
+                                </App>
+                              </PontusXIdentityProvider>
+                            </AuthProvider>
+                          </SsiWalletProvider>
+                        </FilterProvider>
+                      </SearchBarStatusProvider>
+                    </ConsentProvider>
+                  </UserPreferencesProvider>
+                </UrqlProvider>
+              </MarketMetadataProvider>
+            </ConnectKitProvider>
+          </WagmiProvider>
+        </QueryClientProvider>
+      </LocaleProvider>
+    </ErrorBoundary>
   )
 }
 
