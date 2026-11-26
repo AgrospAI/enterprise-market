@@ -14,11 +14,14 @@
     "pregenerate": "bash scripts/pregenerate.sh",
     "set-barge-env": "bash scripts/barge-env.sh",
     "test": "npm run pregenerate && npm run lint && npm run type-check && npm run jest",
+    "prejest": "npm run lingui:compile",
     "jest": "jest -c .jest/jest.config.cjs",
+    "prejest:watch": "npm run lingui:compile",
     "jest:watch": "jest -c .jest/jest.config.cjs --watch",
     "lint": "eslint --ignore-path .gitignore --ext .js --ext .ts --ext .tsx .",
     "lint:fix": "eslint --ignore-path .gitignore --ext .ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json}' --write",
+    "pretype-check": "npm run lingui:compile",
     "type-check": "tsc --noEmit",
     "postinstall": "husky install",
     "knip": "knip",
@@ -27,6 +30,7 @@
     "lingui:check": "node scripts/i18n/audit.mjs && npm run lingui:extract -- --clean && npm run lingui:compile",
     "pinata:cleanup": "node --env-file=.env --experimental-strip-types scripts/cleanup-pinata.ts",
     "deploy:access-requests": "node scripts/deploy-access-requests.mjs",
+    "pretest:e2e": "npm run lingui:compile",
     "test:e2e": "vitest run --config vitest.e2e.config.ts"
   },
   "dependencies": {

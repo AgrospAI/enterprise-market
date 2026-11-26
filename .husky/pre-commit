@@ -1,4 +1,14 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-node_modules/.bin/pretty-quick --staged
+node_modules/.bin/pretty-quick --staged || exit 1
+
+npm run lingui:extract || exit 1
+npm run lingui:compile || exit 1
+
+# Generated catalogs must be included in the commit.
+if ! git diff --quiet -- src/locales ||
+  [ -n "$(git ls-files --others --exclude-standard -- src/locales)" ]; then
+  echo "Lingui catalogs changed. Review and stage src/locales, then commit again."
+  exit 1
+fi

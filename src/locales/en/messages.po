@@ -8,11 +8,6 @@ msgstr ""
 "Language: en\n"
 
 #. js-lingui-explicit-id
-#: src/@hooks/useAccountDisplayName.ts
-msgid "(you)"
-msgstr "(you)"
-
-#. js-lingui-explicit-id
 #: src/components/Privacy/PrivacyHeader.tsx
 #: src/i18n/contentMessages.ts
 #: src/pages/[slug].tsx
@@ -11995,6 +11990,11 @@ msgstr "SSI connection is disabled on chain {signerChainId}. Switch to an allowe
 #: src/@utils/aquarius/index.ts
 msgid "{value0} services"
 msgstr "{value0} services"
+
+#. js-lingui-explicit-id
+#: src/@hooks/useAccountDisplayName.ts
+msgid "(you)"
+msgstr "(you)"
 
 #. js-lingui-explicit-id
 #: src/@hooks/useAuth.ts

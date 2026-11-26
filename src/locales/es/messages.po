@@ -2,11 +2,6 @@ msgid ""
 msgstr ""
 
 #. js-lingui-explicit-id
-#: src/@hooks/useAccountDisplayName.ts
-msgid "(you)"
-msgstr "(tú)"
-
-#. js-lingui-explicit-id
 #: src/components/Privacy/PrivacyHeader.tsx
 #: src/i18n/contentMessages.ts
 #: src/pages/[slug].tsx
@@ -11975,6 +11970,11 @@ msgstr "La conexión SSI está deshabilitada en la cadena {signerChainId}. Prime
 #: src/@utils/aquarius/index.ts
 msgid "{value0} services"
 msgstr "Servicios {value0}"
+
+#. js-lingui-explicit-id
+#: src/@hooks/useAccountDisplayName.ts
+msgid "(you)"
+msgstr "(tú)"
 
 #. js-lingui-explicit-id
 #: src/@hooks/useAuth.ts
