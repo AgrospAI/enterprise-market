@@ -19,6 +19,8 @@ import { Asset } from 'src/@types/Asset'
 import { Credential } from 'src/@types/ddo/Credentials'
 import { State } from 'src/@types/ddo/State'
 import { assetStateToNumber } from '@utils/assetState'
+import { mergeEditedCredentials } from '@utils/credentials'
+import appConfig from 'app.config.cjs'
 
 export default function DebugEditService({
   values,
@@ -64,7 +66,11 @@ export default function DebugEditService({
             ? State.Active
             : assetStateToNumber(values.state),
         files: updatedFiles,
-        credentials,
+        credentials: mergeEditedCredentials(
+          service.credentials,
+          credentials,
+          appConfig.ssiEnabled
+        ),
         ...(values.access === 'compute' &&
           asset.credentialSubject?.metadata?.type === 'dataset' && {
             compute: await transformComputeFormToServiceComputeOptions(
@@ -75,11 +81,9 @@ export default function DebugEditService({
             )
           })
       }
-      if (values.consumerParameters) {
-        updatedService.consumerParameters = transformConsumerParameters(
-          values.consumerParameters
-        )
-      }
+      updatedService.consumerParameters = values.usesConsumerParameters
+        ? transformConsumerParameters(values.consumerParameters)
+        : undefined
       setUpdatedService(updatedService)
     }
 

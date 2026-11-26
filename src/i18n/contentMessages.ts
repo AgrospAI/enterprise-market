@@ -64,11 +64,16 @@ export const contentMessages = [
   /* i18n */ { id: 'AllUnity' },
   /* i18n */ { id: 'Allow Algorithms' },
   /* i18n */ { id: 'Allow ETH Address' },
+  /* i18n */ {
+    id: 'Allow PostHog to help us understand how visitors use the marketplace.'
+  },
   /* i18n */ { id: 'Allow Trusted Algorithm Publishers' },
   /* i18n */ { id: 'Allow all trusted algorithm publishers' },
   /* i18n */ { id: 'Allow any published algorithms' },
   /* i18n */ { id: 'Allow selected algorithms' },
   /* i18n */ { id: 'Allow specific trusted algorithm publishers' },
+  /* i18n */ { id: 'Analytics' },
+  /* i18n */ { id: 'AnalyticsCookieConsent' },
   /* i18n */ { id: 'Args' },
   /* i18n */ { id: 'Argument' },
   /* i18n */ { id: 'Argument VP Policy' },

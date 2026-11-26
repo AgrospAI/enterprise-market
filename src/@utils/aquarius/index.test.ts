@@ -11,19 +11,34 @@ import {
 } from '.'
 import { Asset } from 'src/@types/Asset'
 
-const defaultBaseQueryReturn: SearchQuery = {
+jest.mock('@oceanprotocol/lib', () => ({
+  LoggerInstance: { log: jest.fn(), error: jest.fn() }
+}))
+jest.mock('../../../app.config.cjs', () => ({
+  nodeUriIndex: ['https://provider.test'],
+  allowDynamicPricing: false
+}))
+
+const defaultBaseQueryReturn: SearchQuery & { index: string } = {
+  index: 'op_ddo_v5.0.0',
   from: 0,
   query: {
     bool: {
       filter: [
-        { terms: { chainId: [1, 3] } },
-        { term: { _index: 'aquarius' } },
-        { term: { 'purgatory.state': false } },
+        { terms: { 'credentialSubject.chainId': [1, 3] } },
+        { term: { 'indexedMetadata.purgatory.state': false } },
         {
           bool: {
             must_not: [
-              { term: { 'nft.state': 5 } },
-              { term: { 'price.type': 'pool' } }
+              { term: { 'indexedMetadata.nft.state': 5 } },
+              { term: { 'indexedMetadata.stats.prices.type': 'pool' } }
+            ]
+          }
+        },
+        {
+          terms: {
+            'credentialSubject.services.serviceEndpoint.keyword': [
+              'https://provider.test'
             ]
           }
         }

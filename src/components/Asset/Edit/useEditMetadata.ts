@@ -1,3 +1,4 @@
+import { buildEditedLicense } from './_license'
 import { i18n } from '../../../i18n/index'
 import { useFormikContext } from 'formik'
 import { useEffect, useState, useMemo } from 'react'
@@ -9,9 +10,7 @@ import { RemoteSource } from 'src/@types/ddo/RemoteSource'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
-import { useAsset } from '@context/Asset'
 import {
-  createEmptyUrlFileInfo,
   reindexBooleanMapAfterDeletion,
   additionalLicenseSourceOptions,
   inferNameFromUrl,
@@ -21,7 +20,6 @@ import { AdditionalLicenseSourceType } from '@components/Publish/_types'
 import { supportedLanguages } from '@components/Asset/languageType'
 
 export default function useEditMetadata() {
-  const { asset } = useAsset()
   const { values, setFieldValue, setFieldTouched, setFieldError } =
     useFormikContext<MetadataEditForm>()
   const [additionalFilesUploading, setAdditionalFilesUploading] = useState<
@@ -65,160 +63,14 @@ export default function useEditMetadata() {
     return !!values.licenseUrl?.[0]?.valid
   }
 
-  function getFileSizeFromContentLength(contentLength?: string): number | null {
-    const parsed = Number(contentLength)
-    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
-  }
-
   async function updateLicenseDocuments(
     additionalFiles: FormAdditionalLicenseFile[]
   ) {
-    let mainLicenseDoc: RemoteObject | undefined
-
-    if (
-      values.useRemoteLicense &&
-      values.uploadedLicense?.licenseDocuments?.[0]
-    ) {
-      mainLicenseDoc = values.uploadedLicense.licenseDocuments[0]
-    } else if (!values.useRemoteLicense && values.licenseUrl?.[0]?.valid) {
-      const urlDoc = values.licenseUrl[0]
-      const fileSize = getFileSizeFromContentLength(urlDoc.contentLength)
-      mainLicenseDoc = {
-        name: urlDoc.url?.split('/').pop() || urlDoc.url || 'license',
-        fileType: urlDoc.contentType || '',
-        sha256: urlDoc.checksum || '',
-        ...(fileSize !== null && {
-          additionalInformation: {
-            size: fileSize
-          }
-        }),
-        description: {
-          '@value': '',
-          '@direction': values.descriptionDirection || '',
-          '@language': values.descriptionLanguage || ''
-        },
-        displayName: {
-          '@value': urlDoc.url,
-          '@language': values.descriptionLanguage || '',
-          '@direction': values.descriptionDirection || ''
-        },
-        mirrors: [
-          {
-            url: urlDoc.url,
-            type: urlDoc.type || 'url',
-            method: urlDoc.method || 'get'
-          }
-        ]
-      }
-    }
-
-    const licenseDocs: RemoteObject[] = []
-
-    if (mainLicenseDoc) {
-      licenseDocs.push(mainLicenseDoc)
-    }
-
-    additionalFiles.forEach((file) => {
-      if (file.sourceType === 'Upload file' && file.uploadedDocument) {
-        licenseDocs.push({
-          ...file.uploadedDocument,
-          name: file.name || file.uploadedDocument.name
-        })
-      } else if (file.sourceType === 'URL' && file.url?.[0]?.valid) {
-        const urlDoc = file.url[0]
-        const fileSize = getFileSizeFromContentLength(urlDoc.contentLength)
-        licenseDocs.push({
-          name:
-            file.name ||
-            urlDoc.url?.split('/').pop() ||
-            urlDoc.url ||
-            'license',
-          fileType: urlDoc.contentType || '',
-          sha256: urlDoc.checksum || '',
-          ...(fileSize !== null && {
-            additionalInformation: {
-              size: fileSize
-            }
-          }),
-          description: {
-            '@value': '',
-            '@direction': values.descriptionDirection || '',
-            '@language': values.descriptionLanguage || ''
-          },
-          displayName: {
-            '@value': file.name,
-            '@language': values.descriptionLanguage || '',
-            '@direction': values.descriptionDirection || ''
-          },
-          mirrors: [
-            {
-              url: urlDoc.url,
-              type: urlDoc.type || 'url',
-              method: urlDoc.method || 'get'
-            }
-          ]
-        })
-      }
-    })
-
-    if (licenseDocs.length > 0) {
-      await setFieldValue('license', {
-        name: licenseDocs[0]?.name || 'license',
-        licenseDocuments: licenseDocs
-      })
-    }
+    await setFieldValue(
+      'license',
+      buildEditedLicense({ ...values, additionalLicenseFiles: additionalFiles })
+    )
   }
-
-  useEffect(() => {
-    const loadExistingAdditionalLicenses = async () => {
-      const existingLicenseDocs =
-        asset.credentialSubject?.metadata?.license?.licenseDocuments || []
-
-      const additionalDocs = existingLicenseDocs.slice(1)
-
-      if (additionalDocs.length > 0) {
-        const loadedFiles: FormAdditionalLicenseFile[] = additionalDocs.map(
-          (doc: any, index: number) => {
-            const isUrlSource = doc.mirrors?.[0]?.type === 'url'
-
-            if (isUrlSource) {
-              return {
-                id: `existing-${index}-${Date.now()}`,
-                name: doc.name || '',
-                sourceType: 'URL' as const,
-                url: [
-                  {
-                    url: doc.mirrors?.[0]?.url || '',
-                    type: 'url' as const,
-                    valid: true,
-                    checksum: doc.sha256 || '',
-                    method: doc.mirrors?.[0]?.method || 'get'
-                  }
-                ]
-              }
-            } else {
-              return {
-                id: `existing-${index}-${Date.now()}`,
-                name: doc.name || '',
-                sourceType: 'Upload file' as const,
-                url: [],
-                uploadedDocument: doc
-              }
-            }
-          }
-        )
-
-        await setFieldValue('additionalLicenseFiles', loadedFiles, false)
-        await updateLicenseDocuments(loadedFiles)
-      }
-    }
-
-    if (
-      asset?.credentialSubject?.metadata?.license?.licenseDocuments?.length > 1
-    ) {
-      loadExistingAdditionalLicenses()
-    }
-  }, [asset, setFieldValue])
 
   useEffect(() => {
     const additionalFiles = values.additionalLicenseFiles || []
@@ -493,7 +345,6 @@ export default function useEditMetadata() {
 
   return {
     values,
-    asset,
     additionalFiles,
     additionalFilesUploading,
     additionalFilesDeleting,

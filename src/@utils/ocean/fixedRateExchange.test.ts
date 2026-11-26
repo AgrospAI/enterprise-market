@@ -1,43 +1,100 @@
-import { FixedRateExchange } from '@oceanprotocol/lib'
-import { getFixedBuyPrice } from './fixedRateExchange'
+import { Datatoken, FixedRateExchange } from '@oceanprotocol/lib'
+import { Signer } from 'ethers'
+import {
+  getFixedBuyPrice,
+  resolveFixedRateExchangeAddress
+} from './fixedRateExchange'
 
-const CONFIGURED = '0x6976320eC365202118B4B0B0906E13DDf21633A5'
-const ASSET_EXCHANGE = '0x69B6E54Ad2b3c2801d11d8Ad56ea1d892555b776'
-
-jest.mock('@oceanprotocol/lib', () => ({ FixedRateExchange: jest.fn() }))
-jest.mock('.', () => ({
-  getOceanConfig: () => ({ fixedRateExchangeAddress: CONFIGURED })
+jest.mock('@oceanprotocol/lib', () => ({
+  Datatoken: jest.fn(),
+  FixedRateExchange: jest.fn()
 }))
+jest.mock('@utils/wallet', () => ({ getDummySigner: jest.fn() }))
 jest.mock('../../../app.config.cjs', () => ({ consumeMarketFixedSwapFee: '0' }))
-jest.mock('@utils/wallet', () => ({ getDummySigner: async () => ({}) }))
 
-const calcBaseInGivenDatatokensOut = jest.fn()
-const fixed = (fixedRateExchangeAddress?: string) =>
-  ({
-    type: 'fixed',
-    addressOrId: '0xexchangeid',
-    fixedRateExchangeAddress
-  } as AccessDetails)
+const signer = {} as Signer
+const details = {
+  type: 'fixed',
+  addressOrId: '0xABC',
+  datatoken: { address: '0xDataset' }
+} as AccessDetails
+const getFixedRates = jest.fn()
+const quote = jest.fn()
 
-describe('getFixedBuyPrice', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest
-      .mocked(FixedRateExchange)
-      .mockImplementation(() => ({ calcBaseInGivenDatatokensOut } as never))
-    calcBaseInGivenDatatokensOut.mockResolvedValue({ baseTokenAmount: '1' })
-  })
+beforeEach(() => {
+  jest.clearAllMocks()
+  ;(Datatoken as jest.Mock).mockImplementation(() => ({ getFixedRates }))
+  ;(FixedRateExchange as jest.Mock).mockImplementation(() => ({
+    calcBaseInGivenDatatokensOut: quote
+  }))
+})
 
-  it('quotes the offer on its own exchange', async () => {
-    await expect(
-      getFixedBuyPrice(fixed(ASSET_EXCHANGE), 11155420)
-    ).resolves.toEqual({ baseTokenAmount: '1' })
-    expect(jest.mocked(FixedRateExchange).mock.calls[0][0]).toBe(ASSET_EXCHANGE)
-    expect(calcBaseInGivenDatatokensOut.mock.calls[0][0]).toBe('0xexchangeid')
-  })
+it('quotes the registered legacy exchange for cached access details', async () => {
+  getFixedRates.mockResolvedValue([
+    { id: '0xOther', contractAddress: '0xOtherExchange' },
+    { id: '0xabc', contractAddress: '0xLegacyExchange' }
+  ])
+  const expected = {
+    baseTokenAmount: '1.052',
+    marketFeeAmount: '0.05',
+    oceanFeeAmount: '0.002',
+    consumeMarketFeeAmount: '0'
+  }
+  quote.mockResolvedValue(expected)
+  await expect(getFixedBuyPrice(details, 11155420, signer)).resolves.toEqual(
+    expected
+  )
+  expect(FixedRateExchange).toHaveBeenCalledWith(
+    '0xLegacyExchange',
+    signer,
+    11155420
+  )
+})
 
-  it('quotes on the configured exchange when the offer has none', async () => {
-    await getFixedBuyPrice(fixed(), 11155420)
-    expect(jest.mocked(FixedRateExchange).mock.calls[0][0]).toBe(CONFIGURED)
-  })
+it('uses the contract retained when access details were loaded', async () => {
+  await expect(
+    resolveFixedRateExchangeAddress(
+      { ...details, exchangeContract: '0xRegistered' },
+      signer,
+      11155420
+    )
+  ).resolves.toBe('0xRegistered')
+  expect(getFixedRates).not.toHaveBeenCalled()
+})
+
+it('rejects unknown exchanges instead of falling back to a chain default', async () => {
+  getFixedRates.mockResolvedValue([])
+  await expect(getFixedBuyPrice(details, 11155420, signer)).rejects.toThrow(
+    'not registered'
+  )
+  expect(FixedRateExchange).not.toHaveBeenCalled()
+})
+
+it('propagates failed quotes instead of presenting zero fees', async () => {
+  quote.mockRejectedValue(new Error('RPC unavailable'))
+  await expect(
+    getFixedBuyPrice(
+      { ...details, exchangeContract: '0xRegistered' },
+      11155420,
+      signer
+    )
+  ).rejects.toThrow('RPC unavailable')
+})
+
+it('quotes on the offer fixed-rate exchange address when retained', async () => {
+  const expected = { baseTokenAmount: '1' }
+  quote.mockResolvedValue(expected)
+  await expect(
+    getFixedBuyPrice(
+      { ...details, fixedRateExchangeAddress: '0xAssetExchange' },
+      11155420,
+      signer
+    )
+  ).resolves.toEqual(expected)
+  expect(FixedRateExchange).toHaveBeenCalledWith(
+    '0xAssetExchange',
+    signer,
+    11155420
+  )
+  expect(getFixedRates).not.toHaveBeenCalled()
 })

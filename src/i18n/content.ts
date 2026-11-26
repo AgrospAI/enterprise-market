@@ -86,7 +86,10 @@ export const contentGdpr = localizeContent(content4, [
   'reject',
   'configure',
   'essential.title',
-  'essential.desc'
+  'essential.desc',
+  'optionalCookies.0.title',
+  'optionalCookies.0.desc',
+  'optionalCookies.0.cookieName'
 ])
 export const contentOnboardingIndex = localizeContent(content5, [
   'subtitle',

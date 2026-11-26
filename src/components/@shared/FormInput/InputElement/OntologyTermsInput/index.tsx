@@ -12,7 +12,7 @@ import type {
   OntologyTerm
 } from 'src/@types/AgroPortal'
 import OntologyFilter from './OntologyFilter'
-import selectStyles from '../TagsAutoComplete/index.module.css'
+import selectStyles from '@shared/MultiSelect/index.module.css'
 import { selectSpacing } from './selectSpacing'
 import styles from './index.module.css'
 

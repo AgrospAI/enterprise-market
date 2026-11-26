@@ -297,3 +297,10 @@ input[type='radio'] {
 select {
   appearance: none;
 }
+
+/* React Modal reference-counts these classes, including nested dialogs. */
+html.ReactModal__Html--open,
+body.ReactModal__Body--open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}

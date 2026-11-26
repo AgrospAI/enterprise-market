@@ -22,3 +22,12 @@ storybook-static
 next-env.d.ts
 public/runtime-config.js
 .env.bak
+
+# Compiled Lingui catalogs (generated from tracked messages.po files)
+src/locales/*/messages.ts
+
+# Local credentials and publication wallets
+.env.*
+!.env.example
+examples/asset-publication/keys/
+examples/asset-publication/.env

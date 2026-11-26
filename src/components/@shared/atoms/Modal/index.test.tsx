@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import Modal from './'
 import ReactModal from 'react-modal'
 
@@ -19,4 +19,28 @@ describe('Modal', () => {
       </Modal>
     )
   })
+})
+
+it('locks page scrolling while open and supports Escape by default', () => {
+  const onClose = jest.fn()
+  const { rerender } = render(
+    <Modal title="Scrollable dialog" isOpen onToggleModal={onClose}>
+      Content
+    </Modal>
+  )
+  expect(document.body).toHaveClass('ReactModal__Body--open')
+  expect(document.documentElement).toHaveClass('ReactModal__Html--open')
+  fireEvent.keyDown(screen.getByRole('dialog'), {
+    key: 'Escape',
+    code: 'Escape',
+    keyCode: 27
+  })
+  expect(onClose).toHaveBeenCalledTimes(1)
+  rerender(
+    <Modal title="Scrollable dialog" isOpen={false} onToggleModal={onClose}>
+      Content
+    </Modal>
+  )
+  expect(document.body).not.toHaveClass('ReactModal__Body--open')
+  expect(document.documentElement).not.toHaveClass('ReactModal__Html--open')
 })

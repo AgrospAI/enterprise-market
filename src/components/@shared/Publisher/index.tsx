@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { accountTruncate } from '@utils/wallet'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { usePontusXLegalName } from '@context/PontusXIdentity'
+import { useAccountDisplayName } from '@hooks/useAccountDisplayName'
 
 interface PublisherProps {
   account: string
@@ -37,8 +38,10 @@ export default function Publisher({
     }
   }, [account, isMounted, resolvedName])
 
+  const displayName = useAccountDisplayName(account, name)
+
   if (minimal) {
-    return <span className={styles.publisher}>{name}</span>
+    return <span className={styles.publisher}>{displayName}</span>
   }
 
   return (
@@ -49,7 +52,7 @@ export default function Publisher({
           className={styles.truncated}
           title={i18n._('Show profile page.')}
         >
-          {name}
+          {displayName}
         </Link>
 
         <span className={styles.fullValue}>{account}</span>

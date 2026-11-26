@@ -6,6 +6,7 @@ import styles from './index.module.css'
 import axios from 'axios'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { Asset } from 'src/@types/Asset'
+import { getAsset } from '@utils/aquarius'
 
 export default function AssetListTitle({
   asset,
@@ -23,44 +24,42 @@ export default function AssetListTitle({
   useLingui()
 
   const { appConfig } = useMarketMetadata()
-  const [assetTitle, setAssetTitle] = useState<string>(title)
-  const [assetTitleTrimmed, setAssetTitleTrimmed] = useState(title)
+  const [resolvedName, setResolvedName] = useState<{
+    did: string
+    name: string
+  }>()
+  const assetTitle =
+    title ||
+    asset?.credentialSubject?.metadata?.name ||
+    (resolvedName?.did === did ? resolvedName.name : undefined) ||
+    did ||
+    ''
+  const assetTitleTrimmed =
+    assetTitle.length > maxTitleLength
+      ? assetTitle.slice(0, Math.max(0, maxTitleLength - 3)) + '...'
+      : assetTitle
   useEffect(() => {
-    if (title || !appConfig.metadataCacheUri) return
-    if (asset) {
-      const name = asset.credentialSubject?.metadata.name
-      setAssetTitle(name)
-
-      if (name.length > maxTitleLength) {
-        setAssetTitleTrimmed(name.slice(0, maxTitleLength - 3) + '...')
-        return
-      }
-      setAssetTitleTrimmed(name)
-      return
-    }
+    if (title || asset || !did || !appConfig.metadataCacheUri) return
 
     const source = axios.CancelToken.source()
+    let active = true
 
     async function getAssetName() {
-      if (title.length > maxTitleLength) {
-        setAssetTitleTrimmed(title.slice(0, maxTitleLength - 3) + '...')
-      } else {
-        setAssetTitleTrimmed(title)
+      try {
+        const resolved = await getAsset(did, source.token)
+        const name = resolved?.credentialSubject?.metadata?.name
+        if (active && name) setResolvedName({ did, name })
+      } catch {
+        // Keep the DID visible when metadata cannot be resolved.
       }
     }
-    !asset && did && getAssetName()
+    getAssetName()
 
     return () => {
+      active = false
       source.cancel()
     }
-  }, [
-    assetTitle,
-    appConfig.metadataCacheUri,
-    asset,
-    did,
-    maxTitleLength,
-    title
-  ])
+  }, [appConfig.metadataCacheUri, asset, did, title])
 
   const assetId = did || asset?.id
   const assetHref = assetId ? `/asset/${assetId}` : undefined

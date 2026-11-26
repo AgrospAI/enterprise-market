@@ -1,10 +1,14 @@
+import { buildEditedLicense } from './_license'
 import { translate } from '../../../i18n/translate'
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
+import { persistDdo } from '@utils/metadataPersistence'
+import { mergeEditedCredentials } from '@utils/credentials'
+import appConfig from 'app.config.cjs'
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
-import { LoggerInstance, Nft } from '@oceanprotocol/lib'
-import { metadataValidationSchema } from './_validation'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { getMetadataValidationSchema } from './_validation'
 import { getInitialValues } from './_constants'
 import { MetadataEditForm } from './_types'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -18,17 +22,13 @@ import { useAsset } from '@context/Asset'
 import { useAccount } from 'wagmi'
 import {
   transformConsumerParameters,
-  generateCredentials,
-  signAssetAndUploadToIpfs,
-  IpfsUpload,
-  stringifyCredentialPolicies
+  generateCredentials
 } from '@components/Publish/_utils'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { transformGeoMetadata } from '@utils/dcat'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
-import { isAddress, Signer, toBeHex } from 'ethers'
+import { isAddress, Signer } from 'ethers'
 import { keyValuePairsToRecord } from '@utils/links'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -99,29 +99,7 @@ export default function Edit({
         processAddress(values.credentials.denyInputValue, 'deny')
       }
 
-      let { license } = values
-      if (!license && !values.useRemoteLicense && values.licenseUrl[0]) {
-        license = {
-          name: values.licenseUrl[0].url,
-          licenseDocuments: [
-            {
-              name: values.licenseUrl[0].url,
-              fileType: values.licenseUrl[0].contentType,
-              sha256: values.licenseUrl[0].checksum,
-              mirrors: [
-                {
-                  type: values.licenseUrl[0].type,
-                  method: values.licenseUrl[0].method,
-                  url: values.licenseUrl[0].url
-                }
-              ]
-            }
-          ]
-        }
-      }
-      if (!license && values.useRemoteLicense) {
-        license = values.uploadedLicense
-      }
+      const license = buildEditedLicense(values)
 
       const updatedMetadata: Metadata = {
         ...asset.credentialSubject?.metadata,
@@ -185,7 +163,11 @@ export default function Edit({
         credentialSubject: {
           ...(asset as Asset).credentialSubject,
           metadata: updatedMetadata,
-          credentials: updatedCredentials
+          credentials: mergeEditedCredentials(
+            asset.credentialSubject.credentials,
+            updatedCredentials,
+            appConfig.ssiEnabled
+          )
         },
         indexedMetadata: {
           ...asset?.indexedMetadata,
@@ -195,47 +177,13 @@ export default function Edit({
           (values?.additionalDdos as AdditionalVerifiableCredentials[]) || []
       }
 
-      updatedAsset.credentialSubject.services =
-        updatedAsset.credentialSubject.services.map((svc) => ({
-          ...svc,
-          credentials: generateCredentials(values?.credentials, opaServerUrl)
-        }))
-
-      stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
-      updatedAsset.credentialSubject.services.forEach((service) => {
-        stringifyCredentialPolicies(service.credentials)
-      })
-
-      // delete custom helper properties injected in the market so we don't write them on chain
-      delete (updatedAsset as AssetExtended).accessDetails
-      delete (updatedAsset as AssetExtended).views
-      delete (updatedAsset as AssetExtended).offchain
-      delete (updatedAsset as any).credentialSubject.stats
-      const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
-        updatedAsset,
+      await persistDdo({
+        asset: updatedAsset,
         signer,
-        encryptAsset,
-        updatedAsset?.credentialSubject?.services[0]?.serviceEndpoint ||
-          customProviderUrl,
-        ssiWalletContext
-      )
-
-      if (ipfsUpload /* && values.assetState !== assetState */) {
-        const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
-        await nft.setMetadata(
-          updatedAsset.credentialSubject.nftAddress,
-          await signer.getAddress(),
-          updatedNft.state,
-          updatedAsset?.credentialSubject?.services[0]?.serviceEndpoint ||
-            customProviderUrl,
-          '',
-          toBeHex(ipfsUpload.flags as any),
-          ipfsUpload.metadataIPFS,
-          ipfsUpload.metadataIPFSHash
-        )
-
-        LoggerInstance.log('Version 5.0.0 Asset updated. ID:', updatedAsset.id)
-      }
+        ssiWalletContext,
+        serviceId: updatedAsset.credentialSubject.services[0].id,
+        state: updatedNft.state
+      })
 
       // Edit succeeded
       setSuccess(content.form.success)
@@ -255,7 +203,10 @@ export default function Edit({
         asset?.additionalDdos,
         assetState
       )}
-      validationSchema={metadataValidationSchema}
+      validateOnMount
+      validationSchema={getMetadataValidationSchema(
+        asset?.credentialSubject?.metadata?.providedBy
+      )}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

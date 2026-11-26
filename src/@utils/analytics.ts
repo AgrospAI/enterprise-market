@@ -107,7 +107,8 @@ export function initAnalytics({
         // Matches the marketing site. Enables SPA-aware pageviews
         // (capture_pageview: 'history_change') and injects external scripts into
         // <head> to avoid Next.js SSR hydration errors.
-        defaults: '2026-01-30'
+        defaults: '2026-01-30',
+        capture_exceptions: true
       })
       initialized = true
     }

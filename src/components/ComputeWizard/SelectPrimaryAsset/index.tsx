@@ -439,6 +439,7 @@ export default function SelectPrimaryAsset({
 
         <div className={selectionWrapperClasses}>
           <DatasetSelection
+            assetType={isDatasetFlow ? 'algorithm' : 'dataset'}
             asset={asset}
             datasets={datasetsForSelection}
             selected={selectedIds}

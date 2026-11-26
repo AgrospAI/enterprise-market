@@ -109,7 +109,8 @@
   opacity: 0.4;
 }
 
-.bookmarksRow svg {
+.bookmarksRow svg,
+.accessRequestsRow svg {
   color: var(--deck-blue);
   fill: currentColor;
 }

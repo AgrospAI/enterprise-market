@@ -169,7 +169,7 @@ function hasServiceEndpointFilter(filters?: FilterTerm[]): boolean {
   return (
     filters?.some((filter) =>
       JSON.stringify(filter).includes(
-        'credentialSubject.services.serviceEndpoint.keyword'
+        'credentialSubject.services.serviceEndpoint'
       )
     ) || false
   )
@@ -342,6 +342,8 @@ interface MetadataCacheQuery {
 
 const serviceEndpointFilterPath =
   'credentialSubject.services.serviceEndpoint.keyword'
+const nativeServiceEndpointFilterPath =
+  'credentialSubject.services.serviceEndpoint'
 
 function getSearchFilters(query: SearchQuery): unknown[] {
   return Array.isArray(query?.query?.bool?.filter)
@@ -357,8 +359,70 @@ function getServiceEndpointFilterValue(filter: unknown): unknown {
 
   return (
     typedFilter?.terms?.[serviceEndpointFilterPath] ||
-    typedFilter?.term?.[serviceEndpointFilterPath]
+    typedFilter?.term?.[serviceEndpointFilterPath] ||
+    typedFilter?.terms?.[nativeServiceEndpointFilterPath] ||
+    typedFilter?.term?.[nativeServiceEndpointFilterPath]
   )
+}
+
+// Existing indices can use flat services while newer indices use nested services.
+// With ignore_unmapped, a nested query silently matches nothing on a flat index.
+function withCompatibleServiceEndpointFilters(
+  query: SearchQuery,
+  nested = true
+): SearchQuery {
+  if (
+    !getSearchFilters(query).some(
+      (filter) => getServiceEndpointFilterValue(filter) !== undefined
+    )
+  )
+    return query
+  return {
+    ...query,
+    query: {
+      ...query.query,
+      bool: {
+        ...query.query.bool,
+        filter: getSearchFilters(query).map((filter) => {
+          const value = getServiceEndpointFilterValue(filter)
+          if (
+            typeof value !== 'string' &&
+            !(
+              Array.isArray(value) &&
+              value.every((item) => typeof item === 'string')
+            )
+          )
+            return filter
+          const endpointQuery = {
+            bool: {
+              should: [
+                getFilterTerm(nativeServiceEndpointFilterPath, value),
+                getFilterTerm(serviceEndpointFilterPath, value)
+              ],
+              minimum_should_match: 1
+            }
+          }
+          return nested
+            ? {
+                bool: {
+                  should: [
+                    {
+                      nested: {
+                        path: 'credentialSubject.services',
+                        ignore_unmapped: true,
+                        query: endpointQuery
+                      }
+                    },
+                    endpointQuery
+                  ],
+                  minimum_should_match: 1
+                }
+              }
+            : endpointQuery
+        })
+      }
+    }
+  } as SearchQuery
 }
 
 function getServiceEndpointFilterValues(query: SearchQuery): string[] {
@@ -409,7 +473,7 @@ function getMergedQueryFetchSize(query: SearchQuery): number {
 function prepareMergedCacheQuery(query: SearchQuery): SearchQuery {
   return {
     ...query,
-    from: 1,
+    from: 0,
     size: getMergedQueryFetchSize(query)
   }
 }
@@ -566,11 +630,25 @@ async function postMetadataQuery(
   cancelToken: CancelToken
 ): Promise<AquariusQueryResult | undefined> {
   try {
-    const response: AxiosResponse<unknown> = await axios.post(
-      `${cacheUri}/api/aquarius/assets/metadata/query`,
-      { ...query },
-      { cancelToken }
-    )
+    const uri = `${cacheUri}/api/aquarius/assets/metadata/query`
+    const compatibleQuery = withCompatibleServiceEndpointFilters(query)
+    let response: AxiosResponse<unknown>
+    try {
+      response = await axios.post(uri, compatibleQuery, { cancelToken })
+    } catch (error) {
+      // Older schemas map services as ordinary objects and reject nested queries.
+      // Both requests are reads with identical endpoint restrictions.
+      if (
+        compatibleQuery === query ||
+        ![400, 500].includes(error.response?.status)
+      )
+        throw error
+      response = await axios.post(
+        uri,
+        withCompatibleServiceEndpointFilters(query, false),
+        { cancelToken }
+      )
+    }
     if (!response || response.status !== 200 || !response.data) return
 
     return getQueryResult(response.data)
@@ -592,21 +670,22 @@ export async function queryMetadata(
   const cacheUris = getMetadataCacheUris()
   if (cacheUris.length === 0) return
   const cacheQueries = buildMetadataCacheQueries(cacheUris, query)
-  const queryResults = (
-    await Promise.all(
-      cacheQueries.map(({ cacheUri, query }) =>
-        postMetadataQuery(cacheUri, query, cancelToken)
-      )
+  const responses = await Promise.all(
+    cacheQueries.map(({ cacheUri, query }) =>
+      postMetadataQuery(cacheUri, query, cancelToken)
     )
-  ).filter((queryResult): queryResult is AquariusQueryResult =>
-    Boolean(queryResult)
+  )
+  const queryResults = responses.filter(
+    (queryResult): queryResult is AquariusQueryResult => Boolean(queryResult)
   )
 
   if (queryResults.length === 0) return
 
-  return cacheQueries.length === 1
-    ? transformQueryResult(queryResults[0], query.from, query.size)
-    : transformMergedQueryResults(queryResults, query)
+  const result =
+    cacheQueries.length === 1
+      ? transformQueryResult(queryResults[0], query.from, query.size)
+      : transformMergedQueryResults(queryResults, query)
+  return { ...result, partial: queryResults.length < cacheQueries.length }
 }
 
 export async function getAsset(

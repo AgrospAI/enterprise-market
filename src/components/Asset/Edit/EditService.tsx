@@ -1,13 +1,13 @@
 import { translate } from '../../../i18n/translate'
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
+import { persistDdo } from '@utils/metadataPersistence'
 import { ReactElement, useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import {
   LoggerInstance,
   FixedRateExchange,
-  Datatoken,
-  Nft
+  Datatoken
 } from '@oceanprotocol/lib'
 import Decimal from 'decimal.js'
 import { getServiceInitialValues } from './_constants'
@@ -15,7 +15,7 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import { contentPagesEditService as content } from '../../../i18n/content'
-import { isAddress, Signer, toBeHex } from 'ethers'
+import { isAddress, Signer } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
@@ -25,9 +25,6 @@ import { convertLinks } from '@utils/links'
 import { sanitizeUrl } from '@utils/url'
 import {
   generateCredentials,
-  IpfsUpload,
-  signAssetAndUploadToIpfs,
-  stringifyCredentialPolicies,
   transformConsumerParameters
 } from '@components/Publish/_utils'
 import FormEditService from './FormEditService'
@@ -42,7 +39,8 @@ import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { customProviderUrl, encryptAsset } from 'app.config.cjs'
+import appConfig, { customProviderUrl } from 'app.config.cjs'
+import { mergeEditedCredentials } from '@utils/credentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
 import { assetStateToNumber } from '@utils/assetState'
@@ -130,8 +128,7 @@ export default function EditService({
     )
     LoggerInstance.log('[edit] setFixedRate result', setPriceResp)
     if (!setPriceResp) {
-      setError(content.form.error)
-      LoggerInstance.error(content.form.error)
+      throw new Error(content.form.error)
     }
   }
 
@@ -219,8 +216,7 @@ export default function EditService({
           : undefined
 
       const serviceCredentials = {
-        ...(values.credentials || {}),
-        vcPolicies: []
+        ...(values.credentials || {})
       }
       const opaServerUrl = await getOpaServerUrl(service.serviceEndpoint)
       const updatedCredentials = generateCredentials(
@@ -242,7 +238,11 @@ export default function EditService({
             : assetStateToNumber(values.state),
         files: updatedFiles,
         links: linksTransformed,
-        credentials: updatedCredentials,
+        credentials: mergeEditedCredentials(
+          service.credentials,
+          updatedCredentials,
+          appConfig.ssiEnabled
+        ),
         ...(values.access === 'compute' &&
           asset.credentialSubject?.metadata?.type === 'dataset' && {
             compute: await transformComputeFormToServiceComputeOptions(
@@ -253,16 +253,14 @@ export default function EditService({
             )
           })
       }
-      if (values.consumerParameters) {
-        updatedService.consumerParameters = transformConsumerParameters(
-          values.consumerParameters
-        )
-      }
+      updatedService.consumerParameters = values.usesConsumerParameters
+        ? transformConsumerParameters(values.consumerParameters)
+        : undefined
 
       const serviceIndex = asset.credentialSubject?.services.findIndex(
         (s) => s.id === service.id
       )
-      const updatedAsset = { ...asset }
+      const updatedAsset: AssetExtended = JSON.parse(JSON.stringify(asset))
       if (updatedAsset.credentialSubject) {
         updatedAsset.credentialSubject.services[serviceIndex] = updatedService
         updatedAsset.credentialSubject.metadata = {
@@ -271,44 +269,12 @@ export default function EditService({
         }
       }
 
-      stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
-      updatedAsset.credentialSubject.services.forEach((service) => {
-        stringifyCredentialPolicies(service.credentials)
-      })
-
-      // delete custom helper properties injected in the market so we don't write them on chain
-      delete (updatedAsset as AssetExtended).accessDetails
-      delete (updatedAsset as AssetExtended).views
-      delete (updatedAsset as AssetExtended).offchain
-      delete (updatedAsset as any).credentialSubject.stats
-
-      const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
-        updatedAsset,
+      await persistDdo({
+        asset: updatedAsset,
         signer,
-        encryptAsset,
-        updatedAsset?.credentialSubject?.services[0]?.serviceEndpoint ||
-          customProviderUrl,
-        ssiWalletContext
-      )
-
-      if (ipfsUpload /* && values.assetState !== assetState */) {
-        const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
-
-        await nft.setMetadata(
-          updatedAsset.credentialSubject.nftAddress,
-          await signer.getAddress(),
-          0,
-          updatedAsset?.credentialSubject?.services[0]?.serviceEndpoint ||
-            updatedAsset?.credentialSubject?.services[0]?.serviceEndpoint ||
-            customProviderUrl,
-          '',
-          toBeHex(ipfsUpload.flags),
-          ipfsUpload.metadataIPFS,
-          ipfsUpload.metadataIPFSHash
-        )
-
-        LoggerInstance.log('Version 5.0.0 Asset updated. ID:', updatedAsset.id)
-      }
+        ssiWalletContext,
+        serviceId: service.id
+      })
 
       // Edit succeeded
       setSuccess(content.form.success)
@@ -406,9 +372,9 @@ export default function EditService({
                     ...(values.access === 'compute' && {
                       compute: service.compute
                     }),
-                    consumerParameters: values.consumerParameters
+                    consumerParameters: values.usesConsumerParameters
                       ? transformConsumerParameters(values.consumerParameters)
-                      : service.consumerParameters
+                      : undefined
                   }}
                 />
               </div>

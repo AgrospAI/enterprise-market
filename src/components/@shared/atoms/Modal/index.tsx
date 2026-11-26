@@ -1,4 +1,5 @@
-import { Trans, useLingui } from '@lingui/react'
+import { i18n } from '../../../../i18n/index'
+import { useLingui } from '@lingui/react'
 import { ReactElement, ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import styles from './index.module.css'
@@ -34,24 +35,28 @@ export default function Modal({
 
   return (
     <ReactModal
+      onRequestClose={onToggleModal}
+      bodyOpenClassName="ReactModal__Body--open"
+      htmlOpenClassName="ReactModal__Html--open"
       contentLabel={title}
       className={mergeClassName(styles.modal, className)}
       overlayClassName={mergeClassName(styles.modalOverlay, overlayClassName)}
       {...props}
     >
-      <button
-        className={styles.close}
-        onClick={onToggleModal}
-        data-testid="closeModal"
-      >
-        <Trans id="&times;" />{' '}
-      </button>
-
       <header className={styles.header}>
         <h2 className={styles.title}>{title}</h2>
+        <button
+          className={styles.close}
+          onClick={onToggleModal}
+          data-testid="closeModal"
+          type="button"
+          aria-label={i18n._('Close dialog')}
+        >
+          &times;
+        </button>
       </header>
 
-      {children}
+      <div className={styles.body}>{children}</div>
     </ReactModal>
   )
 }

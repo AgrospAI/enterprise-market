@@ -1,0 +1,526 @@
+.panel {
+  margin-block: var(--spacer);
+  padding: var(--spacer);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--background-content);
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacer) / 2);
+  align-items: center;
+  margin-block: calc(var(--spacer) / 2);
+}
+.diff {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--spacer) / 2);
+}
+.diff pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-small);
+}
+.field {
+  display: block;
+  width: 100%;
+  margin-block: calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 3);
+}
+@media (max-width: 40rem) {
+  .diff {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    padding: calc(var(--spacer) / 2);
+  }
+}
+
+.requestModal {
+  width: 48rem;
+  max-width: 48rem;
+}
+.requestContext {
+  padding: 1.25rem;
+  border-left: 3px solid var(--deck-blue);
+  border-radius: var(--radius-md);
+  background: var(--deck-blue-8);
+  gap: 0.4rem;
+  overflow-wrap: anywhere;
+  margin-bottom: 1.75rem;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--deck-blue);
+}
+.requestContext strong {
+  font-family: var(--font-family-heading);
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+.requestContext p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+.formSection {
+  margin-top: 1.75rem;
+}
+.formSection h3,
+.reviewScope h3,
+.permissions legend {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+}
+.permissions {
+  padding: 0;
+  margin: 1.75rem 0;
+  border: 0;
+  min-width: 0;
+}
+.permissionOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-top: 0.65rem;
+  padding: 1rem 1.15rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.permissionOption:hover {
+  border-color: var(--deck-blue-40);
+}
+.permissionSelected {
+  background: var(--deck-blue-8);
+  border-color: var(--deck-blue);
+  box-shadow: inset 3px 0 var(--deck-blue);
+}
+.permissionOption:focus-within {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 2px;
+}
+.permissionOption input,
+.confirmation input {
+  flex-shrink: 0;
+  margin: 0.25rem 0 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--deck-blue);
+}
+.permissionTitle {
+  display: block;
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--foreground);
+}
+.permissionDescription {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+.reviewScope {
+  padding: 1.25rem;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
+.submitArea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.submitArea > span,
+.pageCount {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+@media (max-width: 40rem) {
+  .requestModal {
+    width: 100%;
+  }
+  .requestContext,
+  .reviewScope {
+    padding: 1rem;
+  }
+  .permissionOption {
+    padding: 0.85rem;
+  }
+  .submitArea {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+.requestModal .details {
+  padding: 1rem;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.requestModal .details dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+.requestModal .details dt:first-child {
+  margin-top: 0;
+}
+.requestModal .details dd {
+  font-family: var(--font-family-monospace);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Request ledger: names lead; contract identifiers remain close at hand. */
+.intro {
+  max-width: 65rem;
+  margin-bottom: 1.5rem;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+.assetCell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.requesterName {
+  display: block;
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.requesterName {
+  color: var(--foreground);
+  font-size: 0.85rem;
+}
+.identifier {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  color: var(--muted-foreground);
+}
+.identifier > a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  min-width: 0;
+  color: inherit;
+}
+.identifier code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-family-monospace);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.identifier > button {
+  flex: 0 0 1.75rem;
+  min-height: 1.75rem;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+.identifier > button:hover {
+  background: var(--deck-blue-8);
+}
+.secondary {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+.status::before {
+  content: '';
+  width: 0.35rem;
+  height: 0.35rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status[data-status='Approved'] {
+  color: var(--success);
+  background: var(--success-soft);
+}
+.status[data-status='Pending'] {
+  color: var(--warning-strong);
+  background: var(--warning-soft);
+}
+.status[data-status='Rejected'] {
+  color: var(--destructive-strong);
+  background: var(--destructive-tint);
+}
+@media (max-width: 40rem) {
+  .requestTable :global(.rdt_TableCol),
+  .requestTable :global(.rdt_TableCell) {
+    padding: 2px;
+  }
+  .identifier > button {
+    flex-basis: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.filters label {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.requestFields {
+  display: grid;
+  border: 0;
+  padding: 0;
+  margin: var(--spacer) 0;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.requestFields h3 {
+  margin: 0.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.requestFields h3:first-child {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.requestFields label,
+.fieldLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.requestFields .field {
+  margin: 0.5rem 0 0;
+  min-height: var(--field-height);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+.requestFields .secondary {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.characterCount {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: right;
+}
+.requestFields .toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2rem;
+  cursor: pointer;
+}
+.toggle input {
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--deck-blue);
+}
+.walletCard {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  min-width: 0;
+}
+.walletCardTitle {
+  margin: 0 0 0.5rem;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.walletCard .assetCell {
+  gap: 0;
+}
+.walletCard .requesterName {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.walletCard .identifier {
+  margin: 0;
+}
+
+.reviewAction {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.requestModal .statusLoader {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.baseServiceOption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  white-space: normal;
+}
+
+.baseServiceOption small {
+  color: var(--muted-foreground);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.baseServiceField {
+  margin-bottom: 1.5rem;
+}
+
+.requestFields .accessType label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+  margin: 0;
+}
+
+.requestFields .accessType svg {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.accessType > .fieldLabel {
+  margin-bottom: 0.5rem;
+}
+
+.serviceRequestCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 0;
+  padding: calc(var(--spacer) * 0.75) var(--spacer);
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--deck-blue);
+  border-radius: var(--radius-xl);
+  background: var(--deck-blue-8);
+}
+
+.serviceRequestTitle {
+  margin: 0;
+  max-width: 32ch;
+  font-family: var(--font-family-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.serviceRequestCard:focus-within {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 3px;
+}
+
+.priceInput {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.requestFields .priceInput .field {
+  flex: 0 1 10rem;
+  width: 10rem;
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.accessTermsGroup {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  overflow: hidden;
+}
+
+.accessTermsBlock {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  min-width: 0;
+}
+
+.accessTermsBlock + .accessTermsBlock {
+  border-top: 1px solid var(--border);
+}
+
+.durationFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.durationFields > label {
+  min-width: 0;
+}

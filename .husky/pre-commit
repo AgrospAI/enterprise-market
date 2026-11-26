@@ -1,4 +1,33 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-node_modules/.bin/pretty-quick --staged
+echo "Checking formatting of staged files..."
+if ! node_modules/.bin/pretty-quick --staged; then
+  echo "Commit blocked: formatting check failed. Review the errors above, stage any formatting fixes, and retry."
+  exit 1
+fi
+
+echo "Extracting translation messages..."
+if ! npm run lingui:extract; then
+  echo "Commit blocked: translation extraction failed. Fix the errors above, then run npm run lingui:extract and retry."
+  exit 1
+fi
+
+echo "Checking translations (all configured languages must be complete)..."
+if ! npm run lingui:compile; then
+  echo "Commit blocked: translation validation failed."
+  echo "For each missing translation listed above, fill in msgstr for its msgid in the indicated src/locales/<locale>/messages.po file."
+  echo "Fix any other catalog errors shown above, then run npm run lingui:compile to verify."
+  echo "Review and stage the updated catalogs with git add src/locales, then retry the commit."
+  exit 1
+fi
+
+# Generated catalogs must be included in the commit.
+if ! git diff --quiet -- src/locales ||
+  [ -n "$(git ls-files --others --exclude-standard -- src/locales)" ]; then
+  echo "Commit blocked: translation extraction generated catalog changes that are not staged."
+  git diff --name-only -- src/locales
+  git ls-files --others --exclude-standard -- src/locales
+  echo "Review these files, run git add src/locales, then retry the commit."
+  exit 1
+fi

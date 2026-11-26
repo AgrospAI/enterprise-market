@@ -21,11 +21,13 @@
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-.select [class$='ValueContainer'] {
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
+.select .valueContainer {
+  padding: 0.65rem 0.75rem;
+  gap: 0.35rem;
+  align-content: flex-start;
 }
 
-.select [class$='Input'] {
+.select .input {
   margin: 0;
   padding-bottom: 0;
   padding-top: 0;
@@ -54,20 +56,21 @@
   background-color: var(--deck-blue-12);
 }
 
-.select [class$='multiValue'],
-.select [class$='multiValue'] > *,
-.select [class$='multiValue']:hover > * {
-  border-radius: var(--radius-pill);
-  background-color: var(--deck-blue-8);
+.select :is(.multiValue, [class$='multiValue']),
+.select :is(.multiValue, [class$='multiValue']) > *,
+.select :is(.multiValue, [class$='multiValue']):hover > * {
+  border-radius: var(--radius-md);
   color: var(--deck-blue);
   font-size: 12px;
   font-family: var(--font-family-base);
   font-weight: var(--text-weight-regular);
   padding-top: 0;
   padding-bottom: 0;
+  display: flex;
+  gap: 0.2rem;
 }
 
-.select [class$='multiValue'] > div[role$='button'],
+.select :is(.multiValue, [class$='multiValue']) > div[role$='button'],
 .select [class$='indicatorContainer'] svg {
   cursor: pointer;
 }
@@ -127,4 +130,40 @@
   text-align: left;
   padding: var(--sp-4);
   margin: 0;
+}
+
+.select :is(.multiValue, [class$='multiValue']) {
+  background-color: var(--deck-blue-8-solid);
+  margin: 0;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--radius-md);
+  max-width: 100%;
+}
+
+.select .multiValue .optionLabel,
+.select .multiValue .optionLabel:hover,
+.select .multiValue .optionLabel small {
+  color: var(--deck-blue);
+}
+
+.select .multiValue > div[role='button']:hover {
+  background-color: var(--deck-blue-12-solid);
+  color: var(--deck-blue-hover);
+}
+
+.optionLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  line-height: 1.4;
+}
+.optionLabel small {
+  font-family: var(--font-family-monospace);
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+.optionLabel a:focus-visible {
+  outline: 2px solid var(--deck-blue);
+  outline-offset: 2px;
 }

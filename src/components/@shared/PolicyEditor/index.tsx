@@ -683,7 +683,7 @@ export function PolicyEditor(props): ReactElement {
   }, [defaultPolicies, credentials.vcPolicies])
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled || hideDefaultPolicies) return
 
     const selectedPolicies = Object.entries(defaultPolicyStates)
       .filter(([, isSelected]) => isSelected)
@@ -697,7 +697,13 @@ export function PolicyEditor(props): ReactElement {
     ) {
       setCredentials({ ...credentials, vcPolicies: selectedPolicies })
     }
-  }, [defaultPolicyStates, enabled, credentials.vcPolicies, setCredentials])
+  }, [
+    defaultPolicyStates,
+    enabled,
+    hideDefaultPolicies,
+    credentials.vcPolicies,
+    setCredentials
+  ])
 
   const ssiContent = enabled && (
     <>

@@ -1,3 +1,6 @@
+import { buildEditedLicense } from './_license'
+import { mergeEditedCredentials } from '@utils/credentials'
+import appConfig from 'app.config.cjs'
 import { useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
 import { ReactElement, useEffect, useState } from 'react'
@@ -43,7 +46,7 @@ export default function DebugEditMetadata({
         providedBy: values.providedBy || '',
         copyrightHolder: values.copyrightHolder || '',
         tags: values.tags,
-        license: values.license,
+        license: buildEditedLicense(values),
         additionalInformation: {
           ...asset?.credentialSubject?.metadata?.additionalInformation,
           'dcat:theme': values.ontologyTerms?.length
@@ -61,10 +64,18 @@ export default function DebugEditMetadata({
       }
 
       if (asset.credentialSubject?.metadata.type === 'algorithm') {
-        newMetadata.algorithm.consumerParameters =
-          !values.usesConsumerParameters
+        newMetadata.algorithm = {
+          ...newMetadata.algorithm,
+          container: {
+            image: values.containerImage?.trim() || '',
+            tag: values.containerTag?.trim() || '',
+            checksum: values.containerChecksum?.trim() || '',
+            entrypoint: values.containerEntrypoint?.trim() || ''
+          },
+          consumerParameters: !values.usesConsumerParameters
             ? undefined
             : transformConsumerParameters(values.consumerParameters)
+        }
       }
       const updatedCredentials: Credential = generateCredentials(
         values.credentials
@@ -81,7 +92,11 @@ export default function DebugEditMetadata({
         credentialSubject: {
           ...asset.credentialSubject,
           metadata: newMetadata,
-          credentials: updatedCredentials
+          credentials: mergeEditedCredentials(
+            asset.credentialSubject.credentials,
+            updatedCredentials,
+            appConfig.ssiEnabled
+          )
         },
         indexedMetadata: {
           ...asset?.indexedMetadata,

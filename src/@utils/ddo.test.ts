@@ -270,3 +270,47 @@ describe('credentials allow/deny lists', () => {
     ).toBe(true)
   })
 })
+
+describe('independent address policy scopes', () => {
+  const denied = '0x0000000000000000000000000000000000000123'
+  const credentials = {
+    match_deny: 'any',
+    deny: [{ type: 'address', values: [{ address: denied }] }]
+  }
+  it('enforces asset deny when service credentials are absent', () => {
+    const asset = { credentialSubject: { credentials } } as unknown as Asset
+    expect(isAddressWhitelisted(asset, denied)).toBe(false)
+  })
+  it('enforces service deny when asset credentials are absent', () => {
+    const asset = { credentialSubject: {} } as Asset
+    expect(
+      isAddressWhitelisted(asset, denied, { credentials } as unknown as Service)
+    ).toBe(false)
+  })
+})
+
+describe('explicit empty address allow rules', () => {
+  const account = '0x7774693eBe0352092cF1C81368AfB034E4D042D1'
+  const closed = {
+    allow: [{ type: 'address', values: [] }],
+    deny: [],
+    match_deny: 'any'
+  }
+  const unrestricted = { allow: [], deny: [], match_deny: 'any' }
+  it('distinguishes no rules from an empty address rule at both scopes', () => {
+    for (const credentials of [closed, unrestricted]) {
+      const asset = { credentialSubject: { credentials } } as unknown as Asset
+      const service = { credentials } as unknown as Service
+      expect(isAddressWhitelisted(asset, account)).toBe(
+        credentials === unrestricted
+      )
+      expect(
+        isAddressWhitelisted(
+          { credentialSubject: {} } as Asset,
+          account,
+          service
+        )
+      ).toBe(credentials === unrestricted)
+    }
+  })
+})

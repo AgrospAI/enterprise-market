@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/AgrospAI/pontus-x_cli/refs/heads/main/src/types/schema.json
+metadata:
+  type: dataset
+  name: Red Wine Dataset
+  author: 'Cortez et al., 2009'
+  description: description.md
+  tags:
+    - agriculture
+    - wine
+    - agrospai
+    - udl
+    - tabular-data
+  license: CC-BY-4.0
+  links:
+    - 'https://archive.ics.uci.edu/dataset/186/wine+quality'
+  additionalInformation:
+    termsAndConditions: true
+    gaiaXInformation:
+      termsAndConditions:
+        - url: 'https://creativecommons.org/licenses/by/4.0/'
+    http://purl.org/dc/terms/spatial:
+      '@type':
+        - 'http://purl.org/dc/terms/Location'
+        - 'http://www.w3.org/2004/02/skos/core#Concept'
+      http://www.w3.org/2004/02/skos/core#prefLabel: 'Denominação de Origem Vinho Verde'
+      http://www.w3.org/ns/dcat#bbox:
+        '@type': 'http://www.opengis.net/ont/geosparql#wktLiteral'
+        '@value':
+          'POLYGON(( -8.8 40.95, -7.60 40.95, -7.60 42.00, -8.8 42.00, -8.8
+          40.95 ))'
+  owner: '0x7e102FF28971Be04C3EcB5B486eDC94ED2b83C12'
+  network: OP_SEPOLIA
+nftData:
+  name: Red Wine
+  symbol: RED
+  templateIndex: 1
+  tokenURI: >-
+    https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Red_and_white_wine_12-2015.jpg/240px-Red_and_white_wine_12-2015.jpg
+  transferable: false
+services:
+  - name: Red Wine Compute
+    serviceType: compute
+    fileType: url
+    serviceEndpoint: 'http://localhost:8000'
+    timeout: 3600
+    files:
+      - method: GET
+        type: url
+        url: >-
+          https://raw.githubusercontent.com/plotly/datasets/master/winequality-red.csv
+    pricing:
+      type: fixed
+      amount: 1
+      currency: devEURAU
+    datatoken:
+      name: Red Wine
+      symbol: RED
+    credentials:
+      allow: ['*']
+  - name: Red Wine Download
+    serviceType: access
+    fileType: url
+    serviceEndpoint: http://localhost:8000
+    timeout: 3600
+    state: 0
+    credentials:
+      allow: ['*']
+    files:
+      - method: GET
+        type: url
+        url: https://raw.githubusercontent.com/plotly/datasets/master/winequality-red.csv
+    pricing:
+      type: fixed
+      amount: 1
+      currency: devEURAU
+    datatoken:
+      name: Red Wine Download
+      symbol: RED-DL
+trustOwnerAlgorithms: true
+
+trustedAlgorithmPublishers:
+  - '0x7774693ebe0352092cf1c81368afb034e4d042d1'
+credentials:
+  allow:
+    - '*'

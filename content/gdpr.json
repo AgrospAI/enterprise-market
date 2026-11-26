@@ -12,5 +12,11 @@
     "title": "Strictly necessary",
     "desc": "Sign-in, wallet connections, saved settings"
   },
-  "optionalCookies": []
+  "optionalCookies": [
+    {
+      "title": "Analytics",
+      "desc": "Allow PostHog to help us understand how visitors use the marketplace.",
+      "cookieName": "AnalyticsCookieConsent"
+    }
+  ]
 }

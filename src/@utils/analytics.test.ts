@@ -67,7 +67,8 @@ describe('initAnalytics', () => {
     expect(mockInit).toHaveBeenCalledTimes(1)
     expect(mockInit).toHaveBeenCalledWith('phc_test', {
       api_host: 'https://example.posthog.com',
-      defaults: '2026-01-30'
+      defaults: '2026-01-30',
+      capture_exceptions: true
     })
     expect(mockSetConfig).toHaveBeenLastCalledWith({
       persistence: 'localStorage+cookie',
@@ -86,7 +87,8 @@ describe('initAnalytics', () => {
 
     expect(mockInit).toHaveBeenCalledWith('phc_test', {
       api_host: 'https://eu.i.posthog.com',
-      defaults: '2026-01-30'
+      defaults: '2026-01-30',
+      capture_exceptions: true
     })
   })
 

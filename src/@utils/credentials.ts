@@ -39,6 +39,28 @@ export function isCredentialPolicyBased(
   )
 }
 
+/** Replace editable rules; retain policies hidden by a wallet-only deployment. */
+export function mergeEditedCredentials(
+  original: Credential | undefined,
+  updated: Credential,
+  policiesEditable: boolean
+): Credential {
+  const policies = policiesEditable ? updated : original
+  return {
+    ...original,
+    ...updated,
+    match_allow: original?.match_allow ?? updated.match_allow,
+    match_deny: original?.match_deny ?? updated.match_deny,
+    allow: [
+      ...(updated.allow || []).filter(isCredentialAddressBased),
+      ...(policies?.allow || []).filter(
+        (rule) => !isCredentialAddressBased(rule)
+      )
+    ],
+    deny: updated.deny || []
+  }
+}
+
 /**
  * Addresses held by an address-based credential, read from both stored shapes:
  * bare strings and `{ address }` objects. The original case is kept, callers

@@ -81,11 +81,7 @@ describe('Asset/AssetActions/ButtonBuy', () => {
     render(<ButtonBuy {...downloadProps} priceType="free" hasPreviousOrder />)
     const button = screen.getByText('Download')
     expect(button).toContainHTML('<button')
-    expect(
-      screen.getByText(
-        'This Dataset is free to use. Please note that network gas fees still apply, even when using free assets.'
-      )
-    ).toBeInTheDocument()
+    expect(screen.queryByText(/you will buy 1/)).not.toBeInTheDocument()
   })
 
   it('Renders "Get" button for free assets without crashing', () => {
@@ -145,7 +141,7 @@ describe('Asset/AssetActions/ButtonBuy', () => {
     render(<ButtonBuy {...computeProps} />)
     expect(
       screen.getByText(
-        'To use this algorithm, you will buy 1 dtSymbol and immediately send it back to the publisher. Additionally, the selected selectedComputeAssetType is free to use. The C2D resources required to start the job are available, no payment is required for them. Please note that network gas fees still apply, even when using free assets.'
+        'To use this algorithm, you will buy 1 dtSymbol and immediately send it back to the publisher. Additionally, the selected selectedComputeAssetType is free to use. The C2D resources required to start the job are available, no payment is required for them.'
       )
     ).toBeInTheDocument()
   })
@@ -154,7 +150,7 @@ describe('Asset/AssetActions/ButtonBuy', () => {
     render(<ButtonBuy {...computeProps} priceType="free" />)
     expect(
       screen.getByText(
-        'This algorithm is free to use. Additionally, the selected selectedComputeAssetType is free to use. The C2D resources required to start the job are available, no payment is required for them. Please note that network gas fees still apply, even when using free assets.'
+        'Additionally, the selected selectedComputeAssetType is free to use. The C2D resources required to start the job are available, no payment is required for them.'
       )
     ).toBeInTheDocument()
   })

@@ -1,3 +1,4 @@
+import NotificationBadge from '@components/AccessRequests/NotificationBadge'
 import { Trans, useLingui } from '@lingui/react'
 import { i18n } from '../../../i18n/index'
 import { ReactElement, ReactNode, useState } from 'react'
@@ -5,6 +6,7 @@ import { useDisconnect, useAccount, useSwitchChain } from 'wagmi'
 import styles from './Details.module.css'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
+import Mail from '@images/mail.svg'
 import DisconnectWallet from '@images/disconnect.svg'
 import LogoutIcon from '@images/logout.svg'
 import Copy from '@shared/atoms/Copy'
@@ -33,7 +35,7 @@ function formatWalletAddress(address: string): string {
 
 interface MenuRowProps {
   icon: ReactNode
-  label: string
+  label: ReactNode
   onClick?: () => void
   disabled?: boolean
   className?: string
@@ -225,6 +227,17 @@ export default function Details({
           onClick={() => handleNavigation('/bookmarks')}
           disabled={!isWalletConnected}
           className={styles.bookmarksRow}
+        />
+        <MenuRow
+          icon={<Mail />}
+          label={
+            <>
+              {i18n._('View Access Requests')} <NotificationBadge />
+            </>
+          }
+          onClick={() => handleNavigation('/profile?defaultTab=accessRequests')}
+          disabled={!isWalletConnected}
+          className={styles.accessRequestsRow}
         />
       </div>
 
