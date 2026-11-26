@@ -506,7 +506,7 @@ export const legalMessages = [
     id: 'Capitalized terms shall have the meaning given to them in the Terms and Conditions.'
   },
   /* i18n */ {
-    id: 'Contact information of the provider of the AgrospAI Demonstration Marketplace.'
+    id: 'Contact information of the provider of the AgrospAI Marketplace.'
   },
   /* i18n */ { id: 'Cookie Policy' },
   /* i18n */ {

@@ -1,6 +1,6 @@
 {
   "name": "@deltadao/enterprise-market",
-  "description": "AgrospAI Demonstration Marketplace, an agri-food data and AI marketplace built on Ocean Enterprise",
+  "description": "AgrospAI Marketplace, an agri-food data and AI marketplace built on Ocean Enterprise",
   "version": "1.5.0",
   "license": "Apache-2.0",
   "homepage": "https://github.com/AgrospAI/enterprise-market",

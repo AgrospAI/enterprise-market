@@ -535,9 +535,6 @@ export const contentMessages = [
     id: 'The datatoken used for accessing this asset will be created with this name & symbol.'
   },
   /* i18n */ {
-    id: 'The demonstration marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet.'
-  },
-  /* i18n */ {
     id: 'The encrypted DDO is stored on-chain as part of the Data NFT. Indexers like Aquarius can decrypt the DDO for displaying purposes, but the file URLs can only be decrypted by exchanging the respective datatokens for this asset.'
   },
   /* i18n */ { id: 'The end date of the time period covered by this asset.' },
@@ -555,6 +552,9 @@ export const contentMessages = [
   },
   /* i18n */ {
     id: 'The license that governs how this dataset or its content can be used, shared, or modified. Examples include: https://file.com/license.json, MIT, Apache 2.0, or GPL licenses.'
+  },
+  /* i18n */ {
+    id: 'The marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet.'
   },
   /* i18n */ {
     id: 'The parameter name (this is sent as HTTP param or key towards algo).'

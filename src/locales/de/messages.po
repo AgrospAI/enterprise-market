@@ -2168,11 +2168,6 @@ msgstr "Der für den Zugriff auf dieses Asset verwendete Datentoken wird mit die
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
-msgid "The demonstration marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
-msgstr "Der Demo-Marktplatz unterstützt derzeit die folgenden Token. Um die Token im verbundenen Netzwerk verwenden zu können, müssen Sie die Token zu Ihrem MetaMask-Wallet hinzufügen."
-
-#. js-lingui-explicit-id
-#: src/i18n/contentMessages.ts
 msgid "The encrypted DDO is stored on-chain as part of the Data NFT. Indexers like Aquarius can decrypt the DDO for displaying purposes, but the file URLs can only be decrypted by exchanging the respective datatokens for this asset."
 msgstr "Das verschlüsselte DDO wird als Teil des Daten-NFT in der Kette gespeichert. Indexer wie Aquarius können das DDO zu Anzeigezwecken entschlüsseln, die Datei-URLs können jedoch nur durch Austausch der entsprechenden Datentokens für dieses Asset entschlüsselt werden."
 
@@ -2215,6 +2210,11 @@ msgstr "Die Lizenz, die regelt, wie dieser Datensatz oder sein Inhalt verwendet,
 #: src/i18n/contentMessages.ts
 msgid "The license that governs how this dataset or its content can be used, shared, or modified. Examples include: https://file.com/license.json, MIT, Apache 2.0, or GPL licenses."
 msgstr "Die Lizenz, die regelt, wie dieser Datensatz oder sein Inhalt verwendet, geteilt oder geändert werden kann. Beispiele hierfür sind: https://file.com/license.json, MIT-, Apache 2.0- oder GPL-Lizenzen."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "The marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
+msgstr "Der Marktplatz unterstützt derzeit die folgenden Token. Um die Token im verbundenen Netzwerk verwenden zu können, müssen Sie die Token zu Ihrem MetaMask-Wallet hinzufügen."
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -3994,8 +3994,8 @@ msgstr "Großgeschriebene Begriffe haben die ihnen in den Allgemeinen Geschäfts
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts
-msgid "Contact information of the provider of the AgrospAI Demonstration Marketplace."
-msgstr "Kontaktinformationen des Anbieters des AgrospAI-Demonstrationsmarktplatzes."
+msgid "Contact information of the provider of the AgrospAI Marketplace."
+msgstr "Kontaktinformationen des Anbieters des AgrospAI-Marktplatzes."
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts

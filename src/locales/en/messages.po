@@ -2174,11 +2174,6 @@ msgstr "The datatoken used for accessing this asset will be created with this na
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
-msgid "The demonstration marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
-msgstr "The demonstration marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
-
-#. js-lingui-explicit-id
-#: src/i18n/contentMessages.ts
 msgid "The encrypted DDO is stored on-chain as part of the Data NFT. Indexers like Aquarius can decrypt the DDO for displaying purposes, but the file URLs can only be decrypted by exchanging the respective datatokens for this asset."
 msgstr "The encrypted DDO is stored on-chain as part of the Data NFT. Indexers like Aquarius can decrypt the DDO for displaying purposes, but the file URLs can only be decrypted by exchanging the respective datatokens for this asset."
 
@@ -2221,6 +2216,11 @@ msgstr "The license that governs how this dataset or its content can be used, sh
 #: src/i18n/contentMessages.ts
 msgid "The license that governs how this dataset or its content can be used, shared, or modified. Examples include: https://file.com/license.json, MIT, Apache 2.0, or GPL licenses."
 msgstr "The license that governs how this dataset or its content can be used, shared, or modified. Examples include: https://file.com/license.json, MIT, Apache 2.0, or GPL licenses."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "The marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
+msgstr "The marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -4011,8 +4011,8 @@ msgstr "Capitalized terms shall have the meaning given to them in the Terms and 
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts
-msgid "Contact information of the provider of the AgrospAI Demonstration Marketplace."
-msgstr "Contact information of the provider of the AgrospAI Demonstration Marketplace."
+msgid "Contact information of the provider of the AgrospAI Marketplace."
+msgstr "Contact information of the provider of the AgrospAI Marketplace."
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts

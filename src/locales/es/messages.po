@@ -2168,11 +2168,6 @@ msgstr "El token de datos utilizado para acceder a este activo se creará con es
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
-msgid "The demonstration marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
-msgstr "El mercado de demostración actualmente admite los siguientes tokens. Para usar los tokens en la red conectada, deberá agregarlos a su monedero MetaMask."
-
-#. js-lingui-explicit-id
-#: src/i18n/contentMessages.ts
 msgid "The encrypted DDO is stored on-chain as part of the Data NFT. Indexers like Aquarius can decrypt the DDO for displaying purposes, but the file URLs can only be decrypted by exchanging the respective datatokens for this asset."
 msgstr "El DDO cifrado se almacena en cadena como parte del Data NFT. Los indexadores como Aquarius pueden descifrar el DDO con fines de visualización, pero las URL del archivo solo se pueden descifrar intercambiando los tokens de datos respectivos por este activo."
 
@@ -2215,6 +2210,11 @@ msgstr "La licencia que rige cómo se puede utilizar, compartir o modificar este
 #: src/i18n/contentMessages.ts
 msgid "The license that governs how this dataset or its content can be used, shared, or modified. Examples include: https://file.com/license.json, MIT, Apache 2.0, or GPL licenses."
 msgstr "La licencia que rige cómo se puede utilizar, compartir o modificar este conjunto de datos o su contenido. Los ejemplos incluyen: licencias https://file.com/license.json, MIT, Apache 2.0 o GPL."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "The marketplace currently supports the following tokens. To use the tokens on the connected network, you will need to add the tokens to your MetaMask wallet."
+msgstr "El mercado actualmente admite los siguientes tokens. Para usar los tokens en la red conectada, deberá agregarlos a su monedero MetaMask."
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -3994,8 +3994,8 @@ msgstr "Los términos en mayúscula tendrán el significado que se les atribuye 
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts
-msgid "Contact information of the provider of the AgrospAI Demonstration Marketplace."
-msgstr "Datos de contacto del proveedor del Marketplace de Demostración de AgrospAI."
+msgid "Contact information of the provider of the AgrospAI Marketplace."
+msgstr "Datos de contacto del proveedor del Marketplace de AgrospAI."
 
 #. js-lingui-explicit-id
 #: src/i18n/legalMessages.ts

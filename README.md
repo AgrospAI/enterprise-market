@@ -1,6 +1,6 @@
-[![AgrospAI Demonstration Marketplace](public/share.png)](https://market.agrospai.udl.cat)
+[![AgrospAI Marketplace](public/share.png)](https://market.agrospai.udl.cat)
 
-<h1 align="center">AgrospAI Demonstration Marketplace</h1>
+<h1 align="center">AgrospAI Marketplace</h1>
 
 <p align="center">An agri-food data and AI marketplace by <a href="https://www.udl.cat">Universitat de Lleida</a>, built on the open-source <a href="https://github.com/OceanProtocolEnterprise/market">Ocean Enterprise market</a> and powered by <a href="https://delta-dao.com">deltaDAO</a>.</p>
 

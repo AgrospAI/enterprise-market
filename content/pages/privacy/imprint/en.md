@@ -1,6 +1,6 @@
 ---
 title: Imprint
-description: Contact information of the provider of the AgrospAI Demonstration Marketplace.
+description: Contact information of the provider of the AgrospAI Marketplace.
 lastUpdated: '2026-11-04'
 ---
 
