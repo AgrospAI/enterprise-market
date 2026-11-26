@@ -11,7 +11,7 @@
   justify-content: center;
   position: relative;
   isolation: isolate;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgb(212, 227, 147); /* AgrospAI lime, same as the bar */
   color: var(--foreground);
 }
 

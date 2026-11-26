@@ -218,14 +218,15 @@ msgid "AgrospAI"
 msgstr "AgrospAI"
 
 #. js-lingui-explicit-id
+#: src/@utils/wallet/dfnsConnector.ts
 #: src/i18n/contentMessages.ts
-msgid "AgrospAI Demonstration Marketplace"
-msgstr "AgrospAI-Demonstrationsmarktplatz"
+msgid "AgrospAI Marketplace"
+msgstr "AgrospAI-Marktplatz"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
-msgid "AgrospAI Demonstration Marketplace: sovereign agri-food data-sharing and AI services"
-msgstr "AgrospAI-Demonstrationsmarktplatz: Souveräner Datenaustausch im Agrar- und Lebensmittelbereich und KI-Dienste"
+msgid "AgrospAI Marketplace: sovereign agri-food data-sharing and AI services"
+msgstr "AgrospAI-Marktplatz: Souveräner Datenaustausch im Agrar- und Lebensmittelbereich und KI-Dienste"
 
 #. js-lingui-explicit-id
 #: src/components/Auth/constants.ts
@@ -4521,6 +4522,16 @@ msgstr "Abonnement"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "</?{value0}"
+msgstr "</?{value0}"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "A request is already in progress"
+msgstr "Es läuft bereits eine Anfrage"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "A requested algorithm changed. Create a new service request with its updated version."
 msgstr "Ein angefragter Algorithmus hat sich geändert. Erstellen Sie eine neue Dienstanfrage mit der aktualisierten Version."
 
@@ -4576,6 +4587,11 @@ msgstr "Algorithmus-Service-ID nicht gefunden."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Algorithms for satellite images"
+msgstr "Algorithmen für Satellitenbilder"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "All requested credential types are necessary for verification"
 msgstr "Für die Verifizierung sind alle angeforderten Zugangsdatentypen erforderlich"
 
@@ -4598,6 +4614,11 @@ msgstr "Genehmigung und Metadatenaktualisierung übermittelt. Warten auf Bestät
 #: src/i18n/sourceMessages.ts
 msgid "Approval could not be confirmed. Check the transaction and retry verification."
 msgstr "Die Genehmigung konnte nicht bestätigt werden. Prüfen Sie die Transaktion und wiederholen Sie die Überprüfung."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Ask the AI assistant: find, download or analyse data…"
+msgstr "Fragen Sie den KI-Assistenten: Daten finden, herunterladen oder analysieren…"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4674,6 +4695,11 @@ msgstr "Bucket-Name"
 #: src/i18n/sourceMessages.ts
 msgid "Cannot resolve the OPA server URL without an Ocean Node URL."
 msgstr "Die OPA-Server-URL kann ohne eine Ocean-Knoten-URL nicht aufgelöst werden."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Check the credentials of {value0}"
+msgstr "Prüfen Sie die Nachweise von {value0}"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4759,6 +4785,11 @@ msgstr "Der Linux/amd64-Digest für {value0}:latest konnte nicht aufgelöst werd
 #: src/i18n/sourceMessages.ts
 msgid "Could not resolve the price token."
 msgstr "Der Zahlungstoken konnte nicht ermittelt werden."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not start the sign-in."
+msgstr "Die Anmeldung konnte nicht gestartet werden."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5046,6 +5077,16 @@ msgstr "Der Rechenjob konnte nicht gestartet werden. Weitere Details finden Sie 
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Find a free dataset I can download, and prepare the download for me."
+msgstr "Finde einen kostenlosen Datensatz, den ich herunterladen kann, und bereite den Download für mich vor."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Find datasets about soil or crops"
+msgstr "Finde Datensätze zu Böden oder Kulturen"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Fixed rate exchange is not registered for this datatoken."
 msgstr "Für diesen Datentoken ist kein Festkurstausch registriert."
 
@@ -5065,8 +5106,23 @@ msgstr "Für immer"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Free datasets I can download"
+msgstr "Kostenlose Datensätze, die ich herunterladen kann"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Gateway timeout"
 msgstr "Gateway-Timeout"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Help me run a Compute-to-Data job: suggest a dataset and a compatible algorithm, then prepare the job."
+msgstr "Hilf mir, einen Compute-to-Data-Job auszuführen: Schlag einen Datensatz und einen kompatiblen Algorithmus vor und bereite dann den Job vor."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "I could not finish this in the steps I am allowed. Ask again naming the dataset or the algorithm to use."
+msgstr "Ich konnte das nicht in den mir erlaubten Schritten abschließen. Fragen Sie erneut und nennen Sie den Datensatz oder Algorithmus, der verwendet werden soll."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5110,6 +5166,16 @@ msgstr "Ungültige Berechnungseinstellungen oder vertrauenswürdige Algorithmen.
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Invalid message"
+msgstr "Ungültige Nachricht"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid messages"
+msgstr "Ungültige Nachrichten"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Invalid redirect"
 msgstr "Ungültige Weiterleitung"
 
@@ -5117,6 +5183,16 @@ msgstr "Ungültige Weiterleitung"
 #: src/i18n/sourceMessages.ts
 msgid "Invalid registry address or deployment block."
 msgstr "Ungültige Registry-Adresse oder ungültiger Bereitstellungsblock."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid request"
+msgstr "Ungültige Anfrage"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid signature"
+msgstr "Ungültige Signatur"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5178,6 +5254,11 @@ msgstr "Daten zur Recheninitialisierung fehlen."
 #: src/i18n/sourceMessages.ts
 msgid "Missing nodeUri in Ocean config"
 msgstr "NodeUri fehlt in der Ocean-Konfiguration"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Missing or expired nonce"
+msgstr "Nonce fehlt oder ist abgelaufen"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5294,6 +5375,11 @@ msgstr "Keine Sitzung"
 #: src/i18n/sourceMessages.ts
 msgid "No supported networks by Signer Server"
 msgstr "Keine vom Signer-Server unterstützten Netzwerke"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Nonce already used"
+msgstr "Nonce wurde bereits verwendet"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5429,6 +5515,11 @@ msgstr "SSI-Richtlinien"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Searching is open to everyone. Sign in with your wallet to download data or run jobs."
+msgstr "Die Suche steht allen offen. Melden Sie sich mit Ihrer Wallet an, um Daten herunterzuladen oder Jobs auszuführen."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Secure random generation is not available in this browser."
 msgstr "Die sichere Zufallsgenerierung ist in diesem Browser nicht verfügbar."
 
@@ -5477,6 +5568,11 @@ msgstr "Sitzungsüberprüfung erforderlich"
 #: src/i18n/sourceMessages.ts
 msgid "Show onboarding tutorial"
 msgstr "Onboarding-Tutorial anzeigen"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Sign in to the AgrospAI market chat. This signature costs no gas and authorizes no transaction."
+msgstr "Melden Sie sich im Chat des AgrospAI-Markts an. Diese Signatur kostet kein Gas und autorisiert keine Transaktion."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5596,6 +5692,41 @@ msgstr "Die Entscheidung konnte nicht bestätigt werden. Prüfen Sie die Transak
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "The escrow authorization was not confirmed."
+msgstr "Die Treuhand-Autorisierung wurde nicht bestätigt."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The escrow deposit was not confirmed."
+msgstr "Die Treuhand-Einzahlung wurde nicht bestätigt."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The job has no results to read yet."
+msgstr "Der Job hat noch keine Ergebnisse zum Lesen."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The job needs an order for each asset."
+msgstr "Der Job benötigt eine Bestellung für jedes Asset."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The language model answered HTTP {value0}"
+msgstr "Das Sprachmodell hat mit HTTP {value0} geantwortet"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The language model returned an error"
+msgstr "Das Sprachmodell hat einen Fehler zurückgegeben"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The model returned no answer."
+msgstr "Das Modell hat keine Antwort zurückgegeben."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "The new datatoken has incompatible pricing."
 msgstr "Der neue Datentoken hat eine inkompatible Preisgestaltung."
 
@@ -5606,8 +5737,38 @@ msgstr "Der Preis des neuen Datentokens weicht vom angefragten Preis ab."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "The node asks for a different payment than the card showed. Nothing was paid: ask again."
+msgstr "Der Knoten verlangt eine andere Zahlung als auf der Karte angezeigt. Es wurde nichts bezahlt: Fragen Sie erneut."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The node asks for a fee for this job. Run it from the market instead."
+msgstr "Der Knoten verlangt für diesen Job eine Gebühr. Führen Sie ihn stattdessen über den Marktplatz aus."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The node did not give the results ({value0})."
+msgstr "Der Knoten hat die Ergebnisse nicht geliefert ({value0})."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "The node did not return encrypted service files."
 msgstr "Der Knoten hat keine verschlüsselten Dienstdateien zurückgegeben."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The node did not start the job."
+msgstr "Der Knoten hat den Job nicht gestartet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The order of {value0} was not confirmed."
+msgstr "Die Bestellung von {value0} wurde nicht bestätigt."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The order was not confirmed."
+msgstr "Die Bestellung wurde nicht bestätigt."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5661,6 +5822,11 @@ msgstr "Der Dienstknoten ist für diesen Marktplatz nicht konfiguriert."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "The sign-in could not be verified."
+msgstr "Die Anmeldung konnte nicht verifiziert werden."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "This endpoint only accepts POST requests"
 msgstr "Dieser Endpunkt akzeptiert nur POST-Anfragen"
 
@@ -5686,6 +5852,11 @@ msgstr "Beim Warten auf die Aktualisierung des Treuhandkontos ist eine Zeitüber
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Timed out waiting for the escrow allowance."
+msgstr "Zeitüberschreitung beim Warten auf die Treuhand-Freigabe."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Timed out waiting for token allowance update."
 msgstr "Zeitüberschreitung beim Warten auf die Aktualisierung des Token-Kontingents."
 
@@ -5696,8 +5867,18 @@ msgstr "Zeitüberschreitung beim Warten auf das Festlegen von Berechtigungen"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Too many requests"
+msgstr "Zu viele Anfragen"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Too many selected algorithms or publishers."
 msgstr "Es wurden zu viele Algorithmen oder Herausgeber ausgewählt."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Tool arguments must be a JSON object"
+msgstr "Die Werkzeugargumente müssen ein JSON-Objekt sein"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5772,6 +5953,11 @@ msgstr "VP benötigte Nachweise"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Wait until the action in progress finishes"
+msgstr "Warten Sie, bis die laufende Aktion abgeschlossen ist"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Waiting for the metadata cache to index the new service."
 msgstr "Warten auf die Indexierung des neuen Dienstes im Metadaten-Cache."
 
@@ -5812,6 +5998,11 @@ msgstr "Für die Blockchain-Transaktion ist ein Wallet-Unterzeichner erforderlic
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "What do the results of this job show?"
+msgstr "Was zeigen die Ergebnisse dieses Jobs?"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "You can also switch networks directly from your wallet"
 msgstr "Sie können das Netzwerk auch direkt von Ihrem Wallet aus wechseln"
 
@@ -5829,6 +6020,11 @@ msgstr "Ihre Anfrage wird bestätigt. Es ist keine Aktion erforderlich."
 #: src/i18n/sourceMessages.ts
 msgid "[Initialize check file did] Error: {value0}"
 msgstr "[Prüfdatei wurde initialisiert] Fehler: {value0}"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "[data-autofocus], [data-autofocus-within] button"
+msgstr "[data-autofocus], [data-autofocus-within] button"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5929,6 +6125,26 @@ msgstr "useQueryFilter muss innerhalb eines QueryFilterProvider verwendet werden
 #: src/i18n/sourceMessages.ts
 msgid "web3 and chainId can't be undefined at the same time!"
 msgstr "web3 und chainId können nicht gleichzeitig undefiniert sein!"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "{value0} asks for verifiable credentials"
+msgstr "{value0} verlangt verifizierbare Nachweise"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "{value0} does not accept: {value1}"
+msgstr "{value0} akzeptiert nicht: {value1}"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "{value0} has an invalid value for \"{value1}\""
+msgstr "{value0} hat einen ungültigen Wert für \"{value1}\""
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "{value0} needs a value for \"{value1}\""
+msgstr "{value0} benötigt einen Wert für \"{value1}\""
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -6884,27 +7100,6 @@ msgstr "Wählen Sie aus, welche Cookies diese Website verwenden darf."
 #: src/components/Privacy/PrivacyPreferenceCenter.tsx
 msgid "Always on"
 msgstr "Immer an"
-
-#. js-lingui-explicit-id
-#: src/components/Home/index.tsx
-msgid "Search for data"
-msgstr "Nach Daten suchen"
-
-#. js-lingui-explicit-id
-#: src/components/@shared/SearchSection/index.tsx
-#: src/components/Home/index.tsx
-msgid "Search"
-msgstr "Suchen"
-
-#. js-lingui-explicit-id
-#: src/components/Home/index.tsx
-msgid "Publish an asset"
-msgstr "Veröffentlichen Sie ein Asset"
-
-#. js-lingui-explicit-id
-#: src/components/Home/index.tsx
-msgid "Browse the catalogue"
-msgstr "Durchsuchen Sie den Katalog"
 
 #. js-lingui-explicit-id
 #: src/components/Home/Sections/Products.tsx
@@ -10401,6 +10596,11 @@ msgid "Search assets"
 msgstr "Assets suchen"
 
 #. js-lingui-explicit-id
+#: src/components/@shared/SearchSection/index.tsx
+msgid "Search"
+msgstr "Suchen"
+
+#. js-lingui-explicit-id
 #: src/components/@shared/Publisher/index.tsx
 msgid "Show profile page."
 msgstr "Profilseite anzeigen."
@@ -11855,11 +12055,6 @@ msgstr "Für die Kette {nextChainId} ist kein DFNS-Wallet bereitgestellt."
 #: src/@utils/wallet/dfnsConnector.ts
 msgid "Dfns Account"
 msgstr "Dfns-Konto"
-
-#. js-lingui-explicit-id
-#: src/@utils/wallet/dfnsConnector.ts
-msgid "AgrospAI Marketplace"
-msgstr "AgrospAI-Marktplatz"
 
 #. js-lingui-explicit-id
 #: src/@utils/wallet/dfnsConnector.ts

@@ -253,6 +253,7 @@ body .websiteLink:hover {
   font-size: 13px;
 }
 
+.footer.oneLine::before,
 .footer.oneLine::after {
   display: none;
 }

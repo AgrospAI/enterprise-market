@@ -45,9 +45,9 @@ export const contentMessages = [
     id: 'Agri-food data space for sovereign data-sharing and AI services, developed by Universitat de Lleida and powered by Ocean Enterprise.'
   },
   /* i18n */ { id: 'AgrospAI' },
-  /* i18n */ { id: 'AgrospAI Demonstration Marketplace' },
+  /* i18n */ { id: 'AgrospAI Marketplace' },
   /* i18n */ {
-    id: 'AgrospAI Demonstration Marketplace: sovereign agri-food data-sharing and AI services'
+    id: 'AgrospAI Marketplace: sovereign agri-food data-sharing and AI services'
   },
   /* i18n */ { id: 'AgrospAI Portal' },
   /* i18n */ { id: 'Airbus' },

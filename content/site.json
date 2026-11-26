@@ -1,10 +1,10 @@
 {
-  "siteTitle": "AgrospAI Demonstration Marketplace",
+  "siteTitle": "AgrospAI Marketplace",
   "siteTagline": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services",
   "taglineContinuation": "",
   "siteUrl": "",
   "siteImage": "/share.png",
-  "siteImageAlt": "AgrospAI Demonstration Marketplace: sovereign agri-food data-sharing and AI services",
+  "siteImageAlt": "AgrospAI Marketplace: sovereign agri-food data-sharing and AI services",
   "menu": [
     {
       "name": "Catalogue",

@@ -8,6 +8,8 @@ export const sourceMessages = [
   /* i18n */ { id: '1 year' },
   /* i18n */ { id: '10 minutes' },
   /* i18n */ { id: '6 months' },
+  /* i18n */ { id: '</?{value0}' },
+  /* i18n */ { id: 'A request is already in progress' },
   /* i18n */ {
     id: 'A requested algorithm changed. Create a new service request with its updated version.'
   },
@@ -28,6 +30,7 @@ export const sourceMessages = [
   /* i18n */ { id: 'Add optional group (Any of)' },
   /* i18n */ { id: 'AgroPortal API error: {value0}' },
   /* i18n */ { id: 'Algorithm serviceId not found.' },
+  /* i18n */ { id: 'Algorithms for satellite images' },
   /* i18n */ {
     id: 'All requested credential types are necessary for verification'
   },
@@ -43,6 +46,7 @@ export const sourceMessages = [
   /* i18n */ {
     id: 'Approval could not be confirmed. Check the transaction and retry verification.'
   },
+  /* i18n */ { id: 'Ask the AI assistant: find, download or analyse data…' },
   /* i18n */ { id: 'Asset has no configured metadata node.' },
   /* i18n */ { id: 'Asset identity could not be verified.' },
   /* i18n */ {
@@ -76,6 +80,7 @@ export const sourceMessages = [
   /* i18n */ {
     id: 'Cannot resolve the OPA server URL without an Ocean Node URL.'
   },
+  /* i18n */ { id: 'Check the credentials of {value0}' },
   /* i18n */ { id: 'Checking the source service and requested settings.' },
   /* i18n */ { id: 'Compute options only apply to compute services.' },
   /* i18n */ { id: 'Configuration Required' },
@@ -103,6 +108,7 @@ export const sourceMessages = [
     id: 'Could not resolve the Linux/amd64 digest for {value0}:latest.'
   },
   /* i18n */ { id: 'Could not resolve the price token.' },
+  /* i18n */ { id: 'Could not start the sign-in.' },
   /* i18n */ { id: 'Could not submit the service request.' },
   /* i18n */ {
     id: 'Could not verify the metadata cache yet. Retry verification before trying again.'
@@ -173,12 +179,23 @@ export const sourceMessages = [
     id: 'Failed to start compute job, check console for more details.'
   },
   /* i18n */ {
+    id: 'Find a free dataset I can download, and prepare the download for me.'
+  },
+  /* i18n */ { id: 'Find datasets about soil or crops' },
+  /* i18n */ {
     id: 'Fixed rate exchange is not registered for this datatoken.'
   },
   /* i18n */ { id: 'Forbidden' },
   /* i18n */ { id: 'Forever' },
+  /* i18n */ { id: 'Free datasets I can download' },
   /* i18n */ { id: 'GPU' },
   /* i18n */ { id: 'Gateway timeout' },
+  /* i18n */ {
+    id: 'Help me run a Compute-to-Data job: suggest a dataset and a compatible algorithm, then prepare the job.'
+  },
+  /* i18n */ {
+    id: 'I could not finish this in the steps I am allowed. Ask again naming the dataset or the algorithm to use.'
+  },
   /* i18n */ { id: 'Import cancelled' },
   /* i18n */ { id: 'Internal server error' },
   /* i18n */ { id: 'Invalid JSON body' },
@@ -187,8 +204,12 @@ export const sourceMessages = [
   /* i18n */ { id: 'Invalid access request configuration.' },
   /* i18n */ { id: 'Invalid algorithm policy.' },
   /* i18n */ { id: 'Invalid compute settings or trusted algorithms.' },
+  /* i18n */ { id: 'Invalid message' },
+  /* i18n */ { id: 'Invalid messages' },
   /* i18n */ { id: 'Invalid redirect' },
   /* i18n */ { id: 'Invalid registry address or deployment block.' },
+  /* i18n */ { id: 'Invalid request' },
+  /* i18n */ { id: 'Invalid signature' },
   /* i18n */ { id: 'Invalid wallet_switchEthereumChain chain id.' },
   /* i18n */ { id: 'JSON Wallet connector not found.' },
   /* i18n */ { id: 'License Terms' },
@@ -203,6 +224,7 @@ export const sourceMessages = [
   },
   /* i18n */ { id: 'Missing compute initialization data.' },
   /* i18n */ { id: 'Missing nodeUri in Ocean config' },
+  /* i18n */ { id: 'Missing or expired nonce' },
   /* i18n */ { id: 'Missing token or provider for escrow payment' },
   /* i18n */ { id: 'Missing wallet_switchEthereumChain parameters.' },
   /* i18n */ {
@@ -232,6 +254,7 @@ export const sourceMessages = [
   /* i18n */ { id: 'No registry deployed at the configured address.' },
   /* i18n */ { id: 'No session' },
   /* i18n */ { id: 'No supported networks by Signer Server' },
+  /* i18n */ { id: 'Nonce already used' },
   /* i18n */ { id: 'Not found' },
   /* i18n */ { id: 'OIDC credentials or token URL not configured' },
   /* i18n */ { id: 'OIDC discovery document missing jwks_uri' },
@@ -272,6 +295,9 @@ export const sourceMessages = [
   /* i18n */ { id: 'S3 configuration is required for S3 file type' },
   /* i18n */ { id: 'S3 configuration is required for S3 file validation' },
   /* i18n */ { id: 'SSI Policies' },
+  /* i18n */ {
+    id: 'Searching is open to everyone. Sign in with your wallet to download data or run jobs.'
+  },
   /* i18n */ { id: 'Secret Access Key' },
   /* i18n */ {
     id: 'Secure random generation is not available in this browser.'
@@ -289,6 +315,9 @@ export const sourceMessages = [
   /* i18n */ { id: 'Session verification failed' },
   /* i18n */ { id: 'Session verification required' },
   /* i18n */ { id: 'Show onboarding tutorial' },
+  /* i18n */ {
+    id: 'Sign in to the AgrospAI market chat. This signature costs no gas and authorizes no transaction.'
+  },
   /* i18n */ { id: 'Signer server URL must be HTTP(S).' },
   /* i18n */ { id: 'Signer server does not support this network.' },
   /* i18n */ { id: 'Signer server does not support typed data signing.' },
@@ -327,11 +356,28 @@ export const sourceMessages = [
   /* i18n */ {
     id: 'The decision could not be confirmed. Check the transaction, then retry.'
   },
+  /* i18n */ { id: 'The escrow authorization was not confirmed.' },
+  /* i18n */ { id: 'The escrow deposit was not confirmed.' },
+  /* i18n */ { id: 'The job has no results to read yet.' },
+  /* i18n */ { id: 'The job needs an order for each asset.' },
+  /* i18n */ { id: 'The language model answered HTTP {value0}' },
+  /* i18n */ { id: 'The language model returned an error' },
+  /* i18n */ { id: 'The model returned no answer.' },
   /* i18n */ { id: 'The new datatoken has incompatible pricing.' },
   /* i18n */ {
     id: 'The new datatoken price differs from the requested price.'
   },
+  /* i18n */ {
+    id: 'The node asks for a different payment than the card showed. Nothing was paid: ask again.'
+  },
+  /* i18n */ {
+    id: 'The node asks for a fee for this job. Run it from the market instead.'
+  },
+  /* i18n */ { id: 'The node did not give the results ({value0}).' },
   /* i18n */ { id: 'The node did not return encrypted service files.' },
+  /* i18n */ { id: 'The node did not start the job.' },
+  /* i18n */ { id: 'The order of {value0} was not confirmed.' },
+  /* i18n */ { id: 'The order was not confirmed.' },
   /* i18n */ {
     id: 'The original Ocean Node does not support automatic service cloning.'
   },
@@ -352,6 +398,7 @@ export const sourceMessages = [
   },
   /* i18n */ { id: 'The service needs a configured price token.' },
   /* i18n */ { id: 'The service node is not configured for this marketplace.' },
+  /* i18n */ { id: 'The sign-in could not be verified.' },
   /* i18n */ { id: 'This endpoint only accepts POST requests' },
   /* i18n */ {
     id: 'This network either has no approved tokens or is not configured for this marketplace.'
@@ -359,9 +406,12 @@ export const sourceMessages = [
   /* i18n */ { id: 'This request can no longer be accepted by this wallet.' },
   /* i18n */ { id: 'This service already exists. Retry verification.' },
   /* i18n */ { id: 'Timed out waiting for escrow allowance update.' },
+  /* i18n */ { id: 'Timed out waiting for the escrow allowance.' },
   /* i18n */ { id: 'Timed out waiting for token allowance update.' },
   /* i18n */ { id: 'Timeout waiting for permissions to be set' },
+  /* i18n */ { id: 'Too many requests' },
   /* i18n */ { id: 'Too many selected algorithms or publishers.' },
+  /* i18n */ { id: 'Tool arguments must be a JSON object' },
   /* i18n */ {
     id: 'Transaction did not succeed. Reconcile its receipt before retrying.'
   },
@@ -383,6 +433,7 @@ export const sourceMessages = [
   },
   /* i18n */ { id: 'User does not have enough permissions from DFNS' },
   /* i18n */ { id: 'VP required credentials' },
+  /* i18n */ { id: 'Wait until the action in progress finishes' },
   /* i18n */ { id: 'Waiting for the metadata cache to index the new service.' },
   /* i18n */ { id: 'Wallet changed.' },
   /* i18n */ { id: 'Wallet network changed.' },
@@ -391,12 +442,14 @@ export const sourceMessages = [
   /* i18n */ { id: 'Wallet or network changed. Review again.' },
   /* i18n */ { id: 'Wallet signer is not available.' },
   /* i18n */ { id: 'Wallet signer is required for blockchain transaction.' },
+  /* i18n */ { id: 'What do the results of this job show?' },
   /* i18n */ { id: 'You can also switch networks directly from your wallet' },
   /* i18n */ {
     id: 'Your request has been submitted. You will be notified when the request is approved or rejected.'
   },
   /* i18n */ { id: 'Your request is being confirmed. No action is needed.' },
   /* i18n */ { id: '[Initialize check file did] Error: {value0}' },
+  /* i18n */ { id: '[data-autofocus], [data-autofocus-within] button' },
   /* i18n */ { id: '[deleteIpfsFile] {value0}' },
   /* i18n */ { id: '[downloadRemoteSourceFromIpfs] Set IPFS_GATEWAY' },
   /* i18n */ { id: '[downloadRemoteSourceFromIpfs] {value0}' },
@@ -427,5 +480,9 @@ export const sourceMessages = [
   },
   /* i18n */ { id: 'useQueryFilter must be used within a QueryFilterProvider' },
   /* i18n */ { id: "web3 and chainId can't be undefined at the same time!" },
+  /* i18n */ { id: '{value0} asks for verifiable credentials' },
+  /* i18n */ { id: '{value0} does not accept: {value1}' },
+  /* i18n */ { id: '{value0} has an invalid value for "{value1}"' },
+  /* i18n */ { id: '{value0} needs a value for "{value1}"' },
   /* i18n */ { id: '{value0}/' }
 ]
