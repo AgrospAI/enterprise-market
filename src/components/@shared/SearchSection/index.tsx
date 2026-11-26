@@ -9,13 +9,17 @@ interface SearchSectionProps {
   value: string
   onChange: (value: string) => void
   disabled?: boolean
+  onSearch?: () => void
+  label?: string
 }
 
 export default function SearchSection({
   placeholder = i18n._('Search by title, datatoken, or DID...'),
   value,
   onChange,
-  disabled = false
+  disabled = false,
+  onSearch,
+  label = i18n._('Search assets')
 }: SearchSectionProps): ReactElement {
   useLingui()
 
@@ -26,6 +30,13 @@ export default function SearchSection({
   return (
     <div className={styles.searchContainer}>
       <input
+        aria-label={label}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            onSearch?.()
+          }
+        }}
         type="search"
         name="search"
         placeholder={placeholder}
@@ -36,6 +47,7 @@ export default function SearchSection({
       />
       <div className={styles.searchButtonContainer}>
         <button
+          onClick={() => onSearch?.()}
           type="button"
           className={styles.searchButton}
           disabled={disabled}

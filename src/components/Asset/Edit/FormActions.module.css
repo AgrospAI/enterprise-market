@@ -30,3 +30,8 @@
   text-decoration: none;
   color: var(--deck-blue);
 }
+
+.errors {
+  margin-top: var(--sp-10);
+  color: var(--brand-alert-red, #b42318);
+}

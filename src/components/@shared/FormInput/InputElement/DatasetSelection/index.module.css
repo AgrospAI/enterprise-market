@@ -84,6 +84,8 @@
 
 .titleSection {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -186,9 +188,8 @@
   font-weight: 400;
   color: var(--muted-foreground);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .cardActions {
@@ -263,5 +264,22 @@
   .datasetCard:hover,
   .environmentCard:hover {
     transform: none;
+  }
+}
+
+.serviceName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--deck-blue);
+}
+
+@media (max-width: 40rem) {
+  .datasetCard {
+    padding: 1rem;
+  }
+  .cardHeader,
+  .cardContent {
+    gap: 0.75rem;
+    flex-wrap: wrap;
   }
 }

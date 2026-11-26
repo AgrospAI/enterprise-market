@@ -58,6 +58,7 @@ declare global {
         | number[]
         | string[]
         | { gte: string }
+        | { value: string; case_insensitive: boolean }
     }
   }
 

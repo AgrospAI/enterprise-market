@@ -59,7 +59,7 @@ function walk(dir) {
           messages.add(node.initializer.text)
         if (
           ts.isNewExpression(node) &&
-          node.expression.getText(ast) === 'Error' &&
+          /^(Error|ReviewChangedError)$/.test(node.expression.getText(ast)) &&
           node.arguments?.length &&
           ts.isStringLiteral(node.arguments[0]) &&
           human(node.arguments[0].text)
@@ -89,6 +89,21 @@ function walk(dir) {
           for (const item of node.initializer.expression.elements)
             if (ts.isStringLiteral(item) && human(item.text))
               messages.add(item.text)
+        if (
+          ts.isCallExpression(node) &&
+          /^(setMessage|setSeenError)$/.test(node.expression.getText(ast))
+        ) {
+          function collect(value) {
+            if (!value) return
+            if (ts.isStringLiteral(value) && human(value.text))
+              messages.add(value.text)
+            else if (ts.isConditionalExpression(value)) {
+              collect(value.whenTrue)
+              collect(value.whenFalse)
+            }
+          }
+          collect(node.arguments[0])
+        }
         ts.forEachChild(node, visit)
       }
       visit(ast)

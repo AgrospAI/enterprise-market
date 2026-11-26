@@ -4,7 +4,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import { OnChangeValue } from 'react-select'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import selectStyles from '../TagsAutoComplete/index.module.css'
+import selectStyles from '@shared/MultiSelect/index.module.css'
 import { selectSpacing } from './selectSpacing'
 
 interface AutoCompleteOption {

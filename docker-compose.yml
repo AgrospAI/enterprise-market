@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   ocean-market:
-    image: oceanenterprise/market:latest
+    image: ${MARKETPLACE_IMAGE:?Set MARKETPLACE_IMAGE to ghcr.io/agrospai/enterprise-market@sha256 release digest}
     container_name: ocean-market
     ports:
       - '8008:8008'

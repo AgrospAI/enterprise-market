@@ -18,7 +18,11 @@ import { getOceanConfig, sanitizeDevelopmentConfig } from '@utils/ocean'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from './MarketMetadata'
-import { assetStateToString, displayAssetState } from '@utils/assetState'
+import {
+  assetStateToString,
+  displayAssetState,
+  isNftActive
+} from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import { useAccount, useChainId } from 'wagmi'
@@ -47,10 +51,12 @@ const AssetContext = createContext({} as AssetProviderValue)
 
 function AssetProvider({
   did,
-  children
+  children,
+  allowInactiveForOwner = false
 }: {
   did: string
   children: ReactNode
+  allowInactiveForOwner?: boolean
 }): ReactElement {
   useLingui()
 
@@ -122,7 +128,15 @@ function AssetProvider({
           return
         }
 
-        if (asset.indexedMetadata.nft.state === (1 | 2 | 3)) {
+        // Owners must be able to reopen the editor to reactivate an unlisted
+        // or temporarily disabled asset. Purchase/request guards stay strict.
+        const canEditInactive =
+          allowInactiveForOwner &&
+          Boolean(accountId) &&
+          [4, 5].includes(Number(asset.indexedMetadata.nft.state)) &&
+          accountId?.toLowerCase() ===
+            asset.indexedMetadata.nft.owner?.toLowerCase()
+        if (!isNftActive(asset.indexedMetadata.nft.state) && !canEditInactive) {
           setTitle(
             i18n._('This asset has been set as "{value0}" by the publisher', {
               value0: displayAssetState(
@@ -177,7 +191,7 @@ function AssetProvider({
         setLoading(false)
       }
     },
-    [did, accountId, i18n.locale]
+    [did, accountId, i18n.locale, allowInactiveForOwner]
   )
 
   // -----------------------------------

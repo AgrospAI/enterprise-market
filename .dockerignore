@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+.next
+coverage
+contracts/access-requests/node_modules
+contracts/access-requests/out
+contracts/access-requests/cache
+contracts/access-requests/broadcast
+*.log
+.DS_Store
+examples/asset-publication/keys
+.artifacts
+.codegraph

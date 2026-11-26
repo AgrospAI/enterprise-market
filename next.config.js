@@ -1,4 +1,6 @@
 import { createRequire } from 'module'
+import { withPostHogConfig } from '@posthog/nextjs-config'
+
 const require = createRequire(import.meta.url)
 
 // Search engines may only index the NEXT_PUBLIC_SITE_URL host (see
@@ -129,4 +131,17 @@ const nextConfig = {
   }
 }
 
-export default nextConfig
+export default withPostHogConfig(nextConfig, {
+  personalApiKey: process.env.POSTHOG_API_KEY ?? '',
+  projectId: process.env.POSTHOG_PROJECT_ID,
+  host: process.env.POSTHOG_HOST,
+  sourcemaps: {
+    enabled: Boolean(
+      process.env.POSTHOG_API_KEY && process.env.POSTHOG_PROJECT_ID
+    ),
+    // Docker excludes .git, so use the commit supplied by Argo explicitly.
+    releaseName: 'enterprise-market',
+    releaseVersion: process.env.COMMIT_REF,
+    deleteAfterUpload: true
+  }
+})

@@ -5,6 +5,7 @@ import InputRadio from '@shared/FormInput/InputElement/Radio'
 import styles from './index.module.css'
 export interface TabsItem {
   title: string
+  badge?: ReactNode
   content: ReactNode
   disabled?: boolean
 }
@@ -75,6 +76,7 @@ export default function Tabs({
                 ) : (
                   item.title
                 )}
+                {item.badge}
               </Tab>
             ))}
           </TabList>

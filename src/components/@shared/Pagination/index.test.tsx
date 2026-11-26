@@ -25,7 +25,7 @@ describe('@shared/Pagination', () => {
     )
   })
 
-  it('renders page 1 when there is only one page', () => {
+  it('hides pagination when there is only one page', () => {
     render(
       <Pagination
         totalPages={1}
@@ -36,6 +36,6 @@ describe('@shared/Pagination', () => {
       />
     )
 
-    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 })

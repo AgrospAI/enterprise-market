@@ -1,5 +1,14 @@
 // Display labels for stable values stored in forms. Never translate the stored values.
 export const optionMessages = [
+  /* i18n */ { id: '3 months' },
+  /* i18n */ { id: 'Pending' },
+  /* i18n */ { id: 'Approved' },
+  /* i18n */ { id: 'Rejected' },
+  /* i18n */ { id: 'Cancelled' },
+  /* i18n */ { id: 'Expired' },
+  /* i18n */ { id: 'Could not verify expiry' },
+  /* i18n */ { id: 'Could not verify' },
+  /* i18n */ { id: 'EXCHANGE SWAP FEE' },
   /* i18n */ { id: '{count, plural, one {# year} other {# years}}' },
   /* i18n */ { id: '{count, plural, one {# month} other {# months}}' },
   /* i18n */ { id: '{count, plural, one {# week} other {# weeks}}' },

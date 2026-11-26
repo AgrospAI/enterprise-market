@@ -297,6 +297,11 @@ msgstr "Allow ETH Address"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
+msgid "Allow PostHog to help us understand how visitors use the marketplace."
+msgstr "Allow PostHog to help us understand how visitors use the marketplace."
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
 msgid "Allow Trusted Algorithm Publishers"
 msgstr "Allow Trusted Algorithm Publishers"
 
@@ -327,6 +332,16 @@ msgstr "Allow selected algorithms"
 #: src/i18n/sourceMessages.ts
 msgid "Allow specific trusted algorithm publishers"
 msgstr "Allow specific trusted algorithm publishers"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "Analytics"
+msgstr "Analytics"
+
+#. js-lingui-explicit-id
+#: src/i18n/contentMessages.ts
+msgid "AnalyticsCookieConsent"
+msgstr "AnalyticsCookieConsent"
 
 #. js-lingui-explicit-id
 #: src/i18n/contentMessages.ts
@@ -537,6 +552,8 @@ msgstr "Command used to start the algorithm."
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetType/index.tsx
 #: src/components/@shared/ServiceTypeIcon/index.tsx
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/components/Asset/AssetContent/ServiceCard.tsx
 #: src/components/Bookmarks/BookmarksTable/ExpandedServices.tsx
 #: src/components/Home/Features/scenes/AgentScene.tsx
@@ -674,6 +691,7 @@ msgid "Crypto.com"
 msgstr "Crypto.com"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
 #: src/components/Publish/Metadata/useMetadata.ts
 #: src/i18n/contentMessages.ts
 msgid "Custom"
@@ -889,6 +907,8 @@ msgstr "Docs"
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetType/index.tsx
 #: src/components/@shared/ServiceTypeIcon/index.tsx
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/components/Asset/AssetActions/ButtonBuy/index.tsx
 #: src/components/Asset/AssetContent/ServiceCard.tsx
 #: src/components/Bookmarks/BookmarksTable/ExpandedServices.tsx
@@ -1632,6 +1652,8 @@ msgid "Preview"
 msgstr "Preview"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/components/Bookmarks/BookmarksTable/ExpandedServices.tsx
 #: src/components/Profile/History/Downloads.tsx
 #: src/components/Profile/History/ExpandedServices.tsx
@@ -1821,6 +1843,7 @@ msgid "Results displayed are limited to the first 10,000 matches. Please refine 
 msgstr "Results displayed are limited to the first 10,000 matches. Please refine your search."
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
 #: src/i18n/contentMessages.ts
 #: src/i18n/optionMessages.ts
 msgid "Review"
@@ -1989,6 +2012,8 @@ msgid "Service State"
 msgstr "Service State"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/i18n/contentMessages.ts
 msgid "Service description"
 msgstr "Service description"
@@ -4302,6 +4327,56 @@ msgstr "| Severity | Description                                                
 
 #. js-lingui-explicit-id
 #: src/i18n/optionMessages.ts
+msgid "3 months"
+msgstr "3 months"
+
+#. js-lingui-explicit-id
+#: src/components/Auth/AuthLayout/SetupPanel.tsx
+#: src/components/ComputeWizard/Review/index.tsx
+#: src/i18n/optionMessages.ts
+msgid "Pending"
+msgstr "Pending"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
+msgid "Approved"
+msgstr "Approved"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
+msgid "Rejected"
+msgstr "Rejected"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
+#: src/i18n/sourceMessages.ts
+msgid "Cancelled"
+msgstr "Cancelled"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/i18n/optionMessages.ts
+msgid "Expired"
+msgstr "Expired"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
+msgid "Could not verify expiry"
+msgstr "Could not verify expiry"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
+msgid "Could not verify"
+msgstr "Could not verify"
+
+#. js-lingui-explicit-id
+#: src/components/ComputeWizard/Review/index.tsx
+#: src/i18n/optionMessages.ts
+msgid "EXCHANGE SWAP FEE"
+msgstr "EXCHANGE SWAP FEE"
+
+#. js-lingui-explicit-id
+#: src/i18n/optionMessages.ts
 msgid "{count, plural, one {# year} other {# years}}"
 msgstr "{count, plural, one {# year} other {# years}}"
 
@@ -4316,11 +4391,13 @@ msgid "{count, plural, one {# week} other {# weeks}}"
 msgstr "{count, plural, one {# week} other {# weeks}}"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/i18n/optionMessages.ts
 msgid "{count, plural, one {# day} other {# days}}"
 msgstr "{count, plural, one {# day} other {# days}}"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/i18n/optionMessages.ts
 msgid "{count, plural, one {# hour} other {# hours}}"
 msgstr "{count, plural, one {# hour} other {# hours}}"
@@ -4331,6 +4408,7 @@ msgid "{count, plural, one {# minute} other {# minutes}}"
 msgstr "{count, plural, one {# minute} other {# minutes}}"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/i18n/optionMessages.ts
 msgid "{count, plural, one {# second} other {# seconds}}"
 msgstr "{count, plural, one {# second} other {# seconds}}"
@@ -4463,6 +4541,11 @@ msgstr "Subscription"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "A requested algorithm changed. Create a new service request with its updated version."
+msgstr "A requested algorithm changed. Create a new service request with its updated version."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "A selected algorithm has an invalid identifier."
 msgstr "A selected algorithm has an invalid identifier."
 
@@ -4473,6 +4556,16 @@ msgstr "AGROPORTAL_API_KEY not configured"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Access duration must be a whole number of seconds (0 means unlimited)."
+msgstr "Access duration must be a whole number of seconds (0 means unlimited)."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Access requests are unavailable: invalid registry configuration."
+msgstr "Access requests are unavailable: invalid registry configuration."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Access token missing"
 msgstr "Access token missing"
 
@@ -4480,6 +4573,11 @@ msgstr "Access token missing"
 #: src/i18n/sourceMessages.ts
 msgid "Activate Debug Mode"
 msgstr "Activate Debug Mode"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Activation is pending or not visible on the read RPC. Check its transaction and retry verification."
+msgstr "Activation is pending or not visible on the read RPC. Check its transaction and retry verification."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4508,8 +4606,84 @@ msgstr "Allow external content"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Another metadata update is in progress for this asset."
+msgstr "Another metadata update is in progress for this asset."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Approval and metadata update submitted. Waiting for confirmation."
+msgstr "Approval and metadata update submitted. Waiting for confirmation."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Approval could not be confirmed. Check the transaction and retry verification."
+msgstr "Approval could not be confirmed. Check the transaction and retry verification."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset has no configured metadata node."
+msgstr "Asset has no configured metadata node."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset identity could not be verified."
+msgstr "Asset identity could not be verified."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset is unknown or ambiguous in the configured metadata cache."
+msgstr "Asset is unknown or ambiguous in the configured metadata cache."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset lookup cancelled"
+msgstr "Asset lookup cancelled"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+#: src/i18n/sourceMessages.ts
+msgid "Asset metadata unavailable"
+msgstr "Asset metadata unavailable"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset owners can add services directly."
+msgstr "Asset owners can add services directly."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Asset policy, ownership or algorithm changed. Review the updated change again."
+msgstr "Asset policy, ownership or algorithm changed. Review the updated change again."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Authentication server did not respond in time"
 msgstr "Authentication server did not respond in time"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Authorization confirmed. Approving the request automatically."
+msgstr "Authorization confirmed. Approving the request automatically."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Authorization confirmed. Continue approving the request in your wallet."
+msgstr "Authorization confirmed. Continue approving the request in your wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Authorize the consent contract to update this dataset first."
+msgstr "Authorize the consent contract to update this dataset first."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Authorizing the asset automatically. Approval will continue afterwards."
+msgstr "Authorizing the asset automatically. Approval will continue afterwards."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Automatic service cloning requires an HTTP Ocean Node endpoint."
+msgstr "Automatic service cloning requires an HTTP Ocean Node endpoint."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4523,8 +4697,48 @@ msgstr "Cannot resolve the OPA server URL without an Ocean Node URL."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Checking the source service and requested settings."
+msgstr "Checking the source service and requested settings."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Compute options only apply to compute services."
+msgstr "Compute options only apply to compute services."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Configuration Required"
 msgstr "Configuration Required"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Configure a version 6 service request contract with wallet inboxes."
+msgstr "Configure a version 6 service request contract with wallet inboxes."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Confirm the decision in your wallet."
+msgstr "Confirm the decision in your wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Confirm the new service request in your wallet."
+msgstr "Confirm the new service request in your wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Confirm the one-time asset authorization in your wallet. Approval will continue afterwards."
+msgstr "Confirm the one-time asset authorization in your wallet. Approval will continue afterwards."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Connect a signing wallet."
+msgstr "Connect a signing wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Connect your wallet on OP Sepolia."
+msgstr "Connect your wallet on OP Sepolia."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4538,13 +4752,48 @@ msgstr "Could not find a stable version tag matching {value0}:latest."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Could not identify the original Ocean Node."
+msgstr "Could not identify the original Ocean Node."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not load the original service price."
+msgstr "Could not load the original service price."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Could not load the selected algorithms."
 msgstr "Could not load the selected algorithms."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Could not mark activity as seen. Reopen Details to retry."
+msgstr "Could not mark activity as seen. Reopen Details to retry."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Could not resolve the Linux/amd64 digest for {value0}:latest."
 msgstr "Could not resolve the Linux/amd64 digest for {value0}:latest."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not resolve the price token."
+msgstr "Could not resolve the price token."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not submit the service request."
+msgstr "Could not submit the service request."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not verify the metadata cache yet. Retry verification before trying again."
+msgstr "Could not verify the metadata cache yet. Retry verification before trying again."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Could not verify the service request contract. Check your connection and try again."
+msgstr "Could not verify the service request contract. Check your connection and try again."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4566,6 +4815,11 @@ msgstr "DFNS wallet is not connected."
 #: src/i18n/sourceMessages.ts
 msgid "DISK"
 msgstr "DISK"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Decision confirmed."
+msgstr "Decision confirmed."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4711,8 +4965,23 @@ msgstr "Enter a 64-character hex encryption key."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Enter a price between 0 and 1000000 with at most 18 decimals."
+msgstr "Enter a price between 0 and 1000000 with at most 18 decimals."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Enter a service name (maximum 128 characters)."
+msgstr "Enter a service name (maximum 128 characters)."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Enter a valid Docker Hub image and tag."
 msgstr "Enter a valid Docker Hub image and tag."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Enter a valid service description."
+msgstr "Enter a valid service description."
 
 #. js-lingui-explicit-id
 #: src/components/Asset/Edit/_validation.ts
@@ -4797,6 +5066,11 @@ msgstr "Failed to start compute job, check console for more details."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Fixed rate exchange is not registered for this datatoken."
+msgstr "Fixed rate exchange is not registered for this datatoken."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Forbidden"
 msgstr "Forbidden"
 
@@ -4836,6 +5110,36 @@ msgstr "Invalid SSI Wallet session"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Invalid URL"
+msgstr "Invalid URL"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid access request configuration."
+msgstr "Invalid access request configuration."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid algorithm policy."
+msgstr "Invalid algorithm policy."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid compute settings or trusted algorithms."
+msgstr "Invalid compute settings or trusted algorithms."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid redirect"
+msgstr "Invalid redirect"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Invalid registry address or deployment block."
+msgstr "Invalid registry address or deployment block."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Invalid wallet_switchEthereumChain chain id."
 msgstr "Invalid wallet_switchEthereumChain chain id."
 
@@ -4854,6 +5158,16 @@ msgstr "License Terms"
 #: src/i18n/sourceMessages.ts
 msgid "Maximum number of credentials required"
 msgstr "Maximum number of credentials required"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Message must be 2048 bytes or fewer."
+msgstr "Message must be 2048 bytes or fewer."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Metadata upload failed."
+msgstr "Metadata upload failed."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4902,8 +5216,23 @@ msgstr "NEXT_PUBLIC_ALLOWED_ERC20_ADDRESSES must be set with at least one suppor
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "NFT has no owner."
+msgstr "NFT has no owner."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "NFT metadata is inactive or unavailable."
+msgstr "NFT metadata is inactive or unavailable."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Network Not Supported"
 msgstr "Network Not Supported"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "New service created."
+msgstr "New service created."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4958,8 +5287,8 @@ msgstr "No encrypted DDO received. Please try again."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
-msgid "No encrypted IPFS metadata received. Please try again."
-msgstr "No encrypted IPFS metadata received. Please try again."
+msgid "No encrypted metadata received."
+msgstr "No encrypted metadata received."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -4970,6 +5299,11 @@ msgstr "No initializeData found, please try again."
 #: src/i18n/sourceMessages.ts
 msgid "No payment token selected. Please choose a price token in C2D Environment Configuration."
 msgstr "No payment token selected. Please choose a price token in C2D Environment Configuration."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "No registry deployed at the configured address."
+msgstr "No registry deployed at the configured address."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5003,6 +5337,11 @@ msgstr "Object key"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Ocean Node file cloning failed ({value0}). Check ownership and retry verification."
+msgstr "Ocean Node file cloning failed ({value0}). Check ownership and retry verification."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Ocean Node returned an invalid OPA server URL response."
 msgstr "Ocean Node returned an invalid OPA server URL response."
 
@@ -5013,8 +5352,23 @@ msgstr "Ocean node status returned an invalid response."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Only the current dataset owner can authorize metadata updates."
+msgstr "Only the current dataset owner can authorize metadata updates."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Only the node:latest and python:latest presets are supported."
 msgstr "Only the node:latest and python:latest presets are supported."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Only the receiver who still owns the dataset can reject this request."
+msgstr "Only the receiver who still owns the dataset can reject this request."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Only the recorded receiver who is the current dataset owner can approve a pending request."
+msgstr "Only the recorded receiver who is the current dataset owner can approve a pending request."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5038,13 +5392,43 @@ msgstr "Please switch to one of the supported networks:"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Private address"
+msgstr "Private address"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Query parameter \"q\" is required"
 msgstr "Query parameter \"q\" is required"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Raw algorithm settings must match the source service."
+msgstr "Raw algorithm settings must match the source service."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Rechecking the requested service before signing."
+msgstr "Rechecking the requested service before signing."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Reconnect the signing wallet."
+msgstr "Reconnect the signing wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Refresh token required"
 msgstr "Refresh token required"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Registry RPC is on the wrong chain."
+msgstr "Registry RPC is on the wrong chain."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Registry address must be checksummed and nonzero."
+msgstr "Registry address must be checksummed and nonzero."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5067,6 +5451,11 @@ msgstr "SSI Policies"
 #: src/i18n/sourceMessages.ts
 msgid "Secure random generation is not available in this browser."
 msgstr "Secure random generation is not available in this browser."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Select compute or download access."
+msgstr "Select compute or download access."
 
 #. js-lingui-explicit-id
 #: src/components/Publish/AccessPolicies/SSIPoliciesSection/index.tsx
@@ -5167,8 +5556,28 @@ msgstr "SignerServerEoaSigner requires a JsonRpcProvider."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Signing and submitting your decision automatically."
+msgstr "Signing and submitting your decision automatically."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Signing and submitting your request automatically."
+msgstr "Signing and submitting your request automatically."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Superseded by new attempt"
 msgstr "Superseded by new attempt"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Switch the wallet to the asset network."
+msgstr "Switch the wallet to the asset network."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Switch to OP Sepolia."
+msgstr "Switch to OP Sepolia."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5179,6 +5588,11 @@ msgstr "The Docker image does not include a Linux/amd64 manifest."
 #: src/i18n/sourceMessages.ts
 msgid "The algorithm metadata and dataset allowlist checksums do not match. The algorithm owner must verify the algorithm metadata, and the dataset owner must refresh the selected algorithm checksums."
 msgstr "The algorithm metadata and dataset allowlist checksums do not match. The algorithm owner must verify the algorithm metadata, and the dataset owner must refresh the selected algorithm checksums."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The asset changed. Review the updated settings before accepting."
+msgstr "The asset changed. Review the updated settings before accepting."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5197,6 +5611,76 @@ msgstr "The chain you are connected to with your wallet is not supported"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "The decision could not be confirmed. Check the transaction, then retry."
+msgstr "The decision could not be confirmed. Check the transaction, then retry."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The new datatoken has incompatible pricing."
+msgstr "The new datatoken has incompatible pricing."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The new datatoken price differs from the requested price."
+msgstr "The new datatoken price differs from the requested price."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The node did not return encrypted service files."
+msgstr "The node did not return encrypted service files."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The original Ocean Node does not support automatic service cloning."
+msgstr "The original Ocean Node does not support automatic service cloning."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The original service changed. Close this form and review a new request."
+msgstr "The original service changed. Close this form and review a new request."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The original service is unavailable."
+msgstr "The original service is unavailable."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The selected algorithm is not available on a configured node."
+msgstr "The selected algorithm is not available on a configured node."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The selected algorithm service is unavailable or uses an unconfigured node."
+msgstr "The selected algorithm service is unavailable or uses an unconfigured node."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The selected algorithm service is unavailable."
+msgstr "The selected algorithm service is unavailable."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The selected service is unavailable."
+msgstr "The selected service is unavailable."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The selected service is unavailable. Create a new request."
+msgstr "The selected service is unavailable. Create a new request."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The service needs a configured price token."
+msgstr "The service needs a configured price token."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "The service node is not configured for this marketplace."
+msgstr "The service node is not configured for this marketplace."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "This endpoint only accepts POST requests"
 msgstr "This endpoint only accepts POST requests"
 
@@ -5204,6 +5688,16 @@ msgstr "This endpoint only accepts POST requests"
 #: src/i18n/sourceMessages.ts
 msgid "This network either has no approved tokens or is not configured for this marketplace."
 msgstr "This network either has no approved tokens or is not configured for this marketplace."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "This request can no longer be accepted by this wallet."
+msgstr "This request can no longer be accepted by this wallet."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "This service already exists. Retry verification."
+msgstr "This service already exists. Retry verification."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5222,6 +5716,21 @@ msgstr "Timeout waiting for permissions to be set"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Too many selected algorithms or publishers."
+msgstr "Too many selected algorithms or publishers."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Transaction did not succeed. Reconcile its receipt before retrying."
+msgstr "Transaction did not succeed. Reconcile its receipt before retrying."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Transaction submitted. Waiting for confirmation."
+msgstr "Transaction submitted. Waiting for confirmation."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "USDC"
 msgstr "USDC"
 
@@ -5229,6 +5738,16 @@ msgstr "USDC"
 #: src/i18n/sourceMessages.ts
 msgid "Unable to load OIDC discovery document"
 msgstr "Unable to load OIDC discovery document"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Unknown NFT or network."
+msgstr "Unknown NFT or network."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Unsupported NFT interface."
+msgstr "Unsupported NFT interface."
 
 #. js-lingui-explicit-id
 #: src/components/Publish/Actions/index.tsx
@@ -5245,6 +5764,11 @@ msgstr "Unsupported chain"
 #: src/i18n/sourceMessages.ts
 msgid "Update SSI Wallet API"
 msgstr "Update SSI Wallet API"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Updating asset permissions. Wait for metadata indexing before sending another activation."
+msgstr "Updating asset permissions. Wait for metadata indexing before sending another activation."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5268,6 +5792,21 @@ msgstr "VP required credentials"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "Waiting for the metadata cache to index the new service."
+msgstr "Waiting for the metadata cache to index the new service."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Wallet changed."
+msgstr "Wallet changed."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Wallet network changed."
+msgstr "Wallet network changed."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "Wallet not loaded"
 msgstr "Wallet not loaded"
 
@@ -5275,6 +5814,11 @@ msgstr "Wallet not loaded"
 #: src/i18n/sourceMessages.ts
 msgid "Wallet not loaded."
 msgstr "Wallet not loaded."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Wallet or network changed. Review again."
+msgstr "Wallet or network changed. Review again."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5290,6 +5834,16 @@ msgstr "Wallet signer is required for blockchain transaction."
 #: src/i18n/sourceMessages.ts
 msgid "You can also switch networks directly from your wallet"
 msgstr "You can also switch networks directly from your wallet"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Your request has been submitted. You will be notified when the request is approved or rejected."
+msgstr "Your request has been submitted. You will be notified when the request is approved or rejected."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "Your request is being confirmed. No action is needed."
+msgstr "Your request is being confirmed. No action is needed."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
@@ -5400,6 +5954,13 @@ msgstr "web3 and chainId can't be undefined at the same time!"
 #: src/i18n/sourceMessages.ts
 msgid "{value0}/"
 msgstr "{value0}/"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/Web3Feedback/index.tsx
+#: src/components/ComputeWizard/WizardState.tsx
+#: src/components/ErrorBoundary.tsx
+msgid "Something went wrong."
+msgstr "Something went wrong."
 
 #. js-lingui-explicit-id
 #: src/components/Search/Filter.tsx
@@ -5881,6 +6442,7 @@ msgid "Continue"
 msgstr "Continue"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
 #: src/components/Asset/AssetActions/ButtonBuy/index.tsx
 #: src/components/Asset/AssetActions/CheckCredentials/checkCredentialsAlgo.tsx
 #: src/components/Asset/AssetActions/CheckCredentials/index.tsx
@@ -5935,6 +6497,11 @@ msgstr "Web3 wallet addresses are used to control access to registered assets. I
 
 #. js-lingui-explicit-id
 #: src/components/Publish/AccessPolicies/AccessRulesSection/index.tsx
+msgid "No wallet addresses are allowed. Select Allow all addresses to make access public."
+msgstr "No wallet addresses are allowed. Select Allow all addresses to make access public."
+
+#. js-lingui-explicit-id
+#: src/components/Publish/AccessPolicies/AccessRulesSection/index.tsx
 msgid "All wallet addresses are allowed access."
 msgstr "All wallet addresses are allowed access."
 
@@ -5965,6 +6532,8 @@ msgid "No downloaded services for this asset."
 msgstr "No downloaded services for this asset."
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
 #: src/components/Profile/History/Downloads.tsx
 #: src/components/Profile/History/ExpandedServices.tsx
 msgid "Service name"
@@ -5983,6 +6552,8 @@ msgstr "Order ID"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetList/index.tsx
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/components/AccessRequests/RequestTable.tsx
 #: src/components/Profile/History/Downloads.tsx
 #: src/components/Profile/History/HistoryData.tsx
 msgid "Asset"
@@ -6060,6 +6631,11 @@ msgid "History"
 msgstr "History"
 
 #. js-lingui-explicit-id
+#: src/components/Profile/History/index.tsx
+msgid "Access requests"
+msgstr "Access requests"
+
+#. js-lingui-explicit-id
 #: src/components/Profile/History/ComputeJobs/Details.tsx
 msgid "Dataset Asset Not Available"
 msgstr "Dataset Asset Not Available"
@@ -6085,12 +6661,15 @@ msgid "Job Details"
 msgstr "Job Details"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
 #: src/components/Profile/History/ComputeJobs/Details.tsx
 #: src/components/Profile/History/ComputeJobs/index.tsx
 msgid "Status"
 msgstr "Status"
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/components/AccessRequests/RequestTable.tsx
 #: src/components/Profile/History/ComputeJobs/Details.tsx
 #: src/components/Profile/History/ComputeJobs/index.tsx
 msgid "Created"
@@ -6130,6 +6709,7 @@ msgstr "Rerun Job"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/SsiWalletControl.tsx
+#: src/components/AccessRequests/RequestButton.tsx
 #: src/components/App/index.tsx
 #: src/components/Asset/AssetActions/VpSelector/index.tsx
 #: src/components/Profile/Header/EscrowWithdrawModal.tsx
@@ -6537,6 +7117,11 @@ msgstr "View Profile"
 #: src/components/Header/Wallet/Details.tsx
 msgid "View Bookmarks"
 msgstr "View Bookmarks"
+
+#. js-lingui-explicit-id
+#: src/components/Header/Wallet/Details.tsx
+msgid "View Access Requests"
+msgstr "View Access Requests"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/WalletNetworkSwitcher/index.tsx
@@ -6957,12 +7542,6 @@ msgid "Error"
 msgstr "Error"
 
 #. js-lingui-explicit-id
-#: src/components/@shared/Web3Feedback/index.tsx
-#: src/components/ComputeWizard/WizardState.tsx
-msgid "Something went wrong."
-msgstr "Something went wrong."
-
-#. js-lingui-explicit-id
 #: src/components/ComputeWizard/_steps.ts
 msgid "Missing compute wizard step: {title}"
 msgstr "Missing compute wizard step: {title}"
@@ -7275,12 +7854,6 @@ msgstr "In progress"
 #: src/components/ComputeWizard/Review/index.tsx
 msgid "Needs retry"
 msgstr "Needs retry"
-
-#. js-lingui-explicit-id
-#: src/components/Auth/AuthLayout/SetupPanel.tsx
-#: src/components/ComputeWizard/Review/index.tsx
-msgid "Pending"
-msgstr "Pending"
 
 #. js-lingui-explicit-id
 #: src/components/ComputeWizard/Review/index.tsx
@@ -7656,7 +8229,6 @@ msgstr "value..."
 
 #. js-lingui-explicit-id
 #: src/components/@shared/atoms/Alert/index.tsx
-#: src/components/@shared/atoms/Modal/index.tsx
 #: src/components/@shared/FormInput/InputElement/ContainerInput/Info.tsx
 #: src/components/Asset/AssetActions/index.tsx
 #: src/components/ComputeWizard/ConfigureEnvironment/index.tsx
@@ -8305,6 +8877,16 @@ msgid "Edit service {value0}"
 msgstr "Edit service {value0}"
 
 #. js-lingui-explicit-id
+#: src/components/Asset/Edit/FormActions.tsx
+msgid "Please correct the following errors before submitting:"
+msgstr "Please correct the following errors before submitting:"
+
+#. js-lingui-explicit-id
+#: src/components/Asset/Edit/FormActions.tsx
+msgid "Connect to the asset network to submit changes."
+msgstr "Connect to the asset network to submit changes."
+
+#. js-lingui-explicit-id
 #: src/components/@shared/DfnsRegistrationModal/index.tsx
 #: src/components/Asset/AssetActions/DidSelector/index.tsx
 #: src/components/Asset/Edit/FormActions.tsx
@@ -8643,9 +9225,10 @@ msgid "Loading access details..."
 msgstr "Loading access details..."
 
 #. js-lingui-explicit-id
+#: src/components/@shared/AssetList/ServiceTypeIcons.tsx
 #: src/components/Asset/AssetContent/index.tsx
-msgid "Choose service to see Price:"
-msgstr "Choose service to see Price:"
+msgid "Services"
+msgstr "Services"
 
 #. js-lingui-explicit-id
 #: src/components/Asset/AssetContent/index.tsx
@@ -8656,11 +9239,6 @@ msgstr "cursor-pointer hover:opacity-100"
 #: src/components/Asset/AssetContent/index.tsx
 msgid "opacity-50 cursor-not-allowed"
 msgstr "opacity-50 cursor-not-allowed"
-
-#. js-lingui-explicit-id
-#: src/components/Asset/AssetContent/index.tsx
-msgid "No services are currently available."
-msgstr "No services are currently available."
 
 #. js-lingui-explicit-id
 #: src/components/Asset/AssetContent/index.tsx
@@ -8884,8 +9462,8 @@ msgstr "Algo Params"
 
 #. js-lingui-explicit-id
 #: src/components/Asset/AssetActions/Compute/WhitelistIndicator.tsx
-msgid "Web3 address verification passed"
-msgstr "Web3 address verification passed"
+msgid "Wallet address meets access rules"
+msgstr "Wallet address meets access rules"
 
 #. js-lingui-explicit-id
 #: src/components/Asset/AssetActions/Compute/WhitelistIndicator.tsx
@@ -9200,6 +9778,442 @@ msgid "No currencies approved by O.E.C are used in this market instance. For det
 msgstr "No currencies approved by O.E.C are used in this market instance. For details on accepted currencies, consult https://docs.oceanenterprise.io/developers/networks#supported-currencies."
 
 #. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+msgid "Access terms"
+msgstr "Access terms"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Free access"
+msgstr "Free access"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+msgid "Unlimited access"
+msgstr "Unlimited access"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Access duration"
+msgstr "Access duration"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/AccessTermsFields.tsx
+msgid "Custom duration (seconds)"
+msgstr "Custom duration (seconds)"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/Identifier.tsx
+msgid "Copy {label}"
+msgstr "Copy {label}"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/NotificationBadge.tsx
+msgid "{count, plural, one {# unread notification} other {# unread notifications}}"
+msgstr "{count, plural, one {# unread notification} other {# unread notifications}}"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Not applicable"
+msgstr "Not applicable"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Loading dataset…"
+msgstr "Loading dataset…"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Loading algorithm…"
+msgstr "Loading algorithm…"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Loading asset…"
+msgstr "Loading asset…"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Dataset metadata unavailable"
+msgstr "Dataset metadata unavailable"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestAssetCell.tsx
+msgid "Algorithm metadata unavailable"
+msgstr "Algorithm metadata unavailable"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "All publishers"
+msgstr "All publishers"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/WalletLabel.tsx
+msgid "Wallet"
+msgstr "Wallet"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Any published algorithm"
+msgstr "Any published algorithm"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Algorithm service {serviceId}"
+msgstr "Algorithm service {serviceId}"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "View transaction"
+msgstr "View transaction"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Allowed wallet"
+msgstr "Allowed wallet"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Message (optional)"
+msgstr "Message (optional)"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "{count, plural, one {# character remaining} other {# characters remaining}}"
+msgstr "{count, plural, one {# character remaining} other {# characters remaining}}"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Service settings"
+msgstr "Service settings"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Access type"
+msgstr "Access type"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Compute permissions"
+msgstr "Compute permissions"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Allowed algorithms"
+msgstr "Allowed algorithms"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Could not load algorithms. Try searching again."
+msgstr "Could not load algorithms. Try searching again."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Allowed trusted publishers"
+msgstr "Allowed trusted publishers"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Allow network access"
+msgstr "Allow network access"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Request new service"
+msgstr "Request new service"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Request a new service"
+msgstr "Request a new service"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Base service to clone"
+msgstr "Base service to clone"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Loading original service settings…"
+msgstr "Loading original service settings…"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Need access to a service or want it with different conditions?"
+msgstr "Need access to a service or want it with different conditions?"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestButton.tsx
+msgid "Request access"
+msgstr "Request access"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Request details"
+msgstr "Request details"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Review access request"
+msgstr "Review access request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Sent request"
+msgstr "Sent request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Received request"
+msgstr "Received request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Create service"
+msgstr "Create service"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Receiver"
+msgstr "Receiver"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Requester"
+msgstr "Requester"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Expires"
+msgstr "Expires"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Message"
+msgstr "Message"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "No message provided."
+msgstr "No message provided."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Dataset ownership changed. This request remains in the original receiver’s history. Cancel it and create a request to the new owner."
+msgstr "Dataset ownership changed. This request remains in the original receiver’s history. Cancel it and create a request to the new owner."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "View new service details"
+msgstr "View new service details"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Original service"
+msgstr "Original service"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "After approval"
+msgstr "After approval"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "I reviewed the requested service settings."
+msgstr "I reviewed the requested service settings."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Accepting creates a service with these settings."
+msgstr "Accepting creates a service with these settings."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Cancel request"
+msgstr "Cancel request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Accept request"
+msgstr "Accept request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Reject request"
+msgstr "Reject request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Retry verification"
+msgstr "Retry verification"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Cancel this request?"
+msgstr "Cancel this request?"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "The receiver will no longer be able to accept this request. You can send a new request later."
+msgstr "The receiver will no longer be able to accept this request. You can send a new request later."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Confirm cancellation"
+msgstr "Confirm cancellation"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Keep request"
+msgstr "Keep request"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestDialog.tsx
+msgid "Could not verify asset permissions. Retry when the node is available."
+msgstr "Could not verify asset permissions. Retry when the node is available."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Unlimited"
+msgstr "Unlimited"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Requested service settings"
+msgstr "Requested service settings"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Allowed ETH address"
+msgstr "Allowed ETH address"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Payment token"
+msgstr "Payment token"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Copy payment token"
+msgstr "Copy payment token"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Network access"
+msgstr "Network access"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Allowed"
+msgstr "Allowed"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Disabled"
+msgstr "Disabled"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "None"
+msgstr "None"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestServiceDetails.tsx
+msgid "Trusted publishers"
+msgstr "Trusted publishers"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Review request {id}"
+msgstr "Review request {id}"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Details"
+msgstr "Details"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Search requests"
+msgstr "Search requests"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "Asset, service, wallet or request ID"
+msgstr "Asset, service, wallet or request ID"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "All statuses"
+msgstr "All statuses"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/RequestTable.tsx
+msgid "No matching access requests."
+msgstr "No matching access requests."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/WalletLabel.tsx
+msgid "Wallet account"
+msgstr "Wallet account"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/WalletLabel.tsx
+msgid " (You)"
+msgstr " (You)"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Could not load all sent requests. Results may be incomplete."
+msgstr "Could not load all sent requests. Results may be incomplete."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Could not load all received requests. Results may be incomplete."
+msgstr "Could not load all received requests. Results may be incomplete."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Loading more requests. Filters and sorting currently apply to loaded requests."
+msgstr "Loading more requests. Filters and sorting currently apply to loaded requests."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Refresh requests"
+msgstr "Refresh requests"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Connect your wallet to view access requests."
+msgstr "Connect your wallet to view access requests."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Access requests are unavailable on this network or have not been configured."
+msgstr "Access requests are unavailable on this network or have not been configured."
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Received"
+msgstr "Received"
+
+#. js-lingui-explicit-id
+#: src/components/AccessRequests/index.tsx
+msgid "Sent"
+msgstr "Sent"
+
+#. js-lingui-explicit-id
 #: src/components/@shared/SsiWalletControl.tsx
 msgid "Wallet signer not available"
 msgstr "Wallet signer not available"
@@ -9296,6 +10310,11 @@ msgstr "Total sales"
 #: src/components/@shared/atoms/Table/HistoryTable.tsx
 msgid "Total published"
 msgstr "Total published"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/atoms/Modal/index.tsx
+msgid "Close dialog"
+msgstr "Close dialog"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/atoms/Copy/index.tsx
@@ -9395,6 +10414,11 @@ msgstr "Contents"
 #: src/components/@shared/SearchSection/index.tsx
 msgid "Search by title, datatoken, or DID..."
 msgstr "Search by title, datatoken, or DID..."
+
+#. js-lingui-explicit-id
+#: src/components/@shared/SearchSection/index.tsx
+msgid "Search assets"
+msgstr "Search assets"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/Publisher/index.tsx
@@ -9770,6 +10794,21 @@ msgid "❌ Please connect to a supported network."
 msgstr "❌ Please connect to a supported network."
 
 #. js-lingui-explicit-id
+#: src/components/@shared/MultiSelect/index.tsx
+msgid "Add {value}"
+msgstr "Add {value}"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/MultiSelect/index.tsx
+msgid "Loading…"
+msgstr "Loading…"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/MultiSelect/index.tsx
+msgid "No matches. Try another name or address."
+msgstr "No matches. Try another name or address."
+
+#. js-lingui-explicit-id
 #: src/components/@shared/IpfsRemoteSource/index.tsx
 msgid "No document"
 msgstr "No document"
@@ -10046,13 +11085,63 @@ msgstr "Generate new name & symbol"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
-msgid "Search for Datasets"
-msgstr "Search for Datasets"
+msgid "Search algorithms by name"
+msgstr "Search algorithms by name"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Search datasets by name"
+msgstr "Search datasets by name"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Search algorithms"
+msgstr "Search algorithms"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Search datasets"
+msgstr "Search datasets"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Loading algorithms…"
+msgstr "Loading algorithms…"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Loading datasets…"
+msgstr "Loading datasets…"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "No algorithms found. Try another search."
+msgstr "No algorithms found. Try another search."
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "No datasets found. Try another search."
+msgstr "No datasets found. Try another search."
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Why is this algorithm unavailable?"
+msgstr "Why is this algorithm unavailable?"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
 msgid "Why is this dataset unavailable?"
 msgstr "Why is this dataset unavailable?"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Selected {name}, {service}"
+msgstr "Selected {name}, {service}"
+
+#. js-lingui-explicit-id
+#: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
+msgid "Select {name}, {service}"
+msgstr "Select {name}, {service}"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/FormInput/InputElement/DatasetSelection/index.tsx
@@ -10444,11 +11533,6 @@ msgstr "Access service"
 #: src/components/@shared/AssetList/ServiceTypeIcons.tsx
 msgid "Compute service"
 msgstr "Compute service"
-
-#. js-lingui-explicit-id
-#: src/components/@shared/AssetList/ServiceTypeIcons.tsx
-msgid "Services"
-msgstr "Services"
 
 #. js-lingui-explicit-id
 #: src/components/@shared/AssetList/ServiceTypeIcons.tsx
@@ -10922,6 +12006,11 @@ msgstr "SSI connection is disabled on chain {signerChainId}. Switch to an allowe
 #: src/@utils/aquarius/index.ts
 msgid "{value0} services"
 msgstr "{value0} services"
+
+#. js-lingui-explicit-id
+#: src/@hooks/useAccountDisplayName.ts
+msgid "(you)"
+msgstr "(you)"
 
 #. js-lingui-explicit-id
 #: src/@hooks/useAuth.ts

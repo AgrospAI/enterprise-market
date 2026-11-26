@@ -50,7 +50,12 @@ export default function Page({
           /> */}
           {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
           {title && !noPageHeader && (
-            <PageHeader center={headerCenter} isHome={isHome} />
+            <PageHeader
+              title={title}
+              description={description}
+              center={headerCenter}
+              isHome={isHome}
+            />
           )}
         </Container>
       )}

@@ -14,7 +14,9 @@ const identifiers = new Set([
   'EDC',
   'REA',
   'SaaS',
-  'N/A'
+  'N/A',
+  'DID',
+  'devEURAU'
 ])
 function displayLiterals(node) {
   if (!node) return []
@@ -65,13 +67,19 @@ function walk(dir) {
             ))
         )
           return
-        const rawText = ts.isJsxText(node) && /[a-zA-Z]/.test(node.text)
+        const rawText =
+          ts.isJsxText(node) &&
+          /[a-zA-Z]/.test(
+            node.text.replace(/&(?:#\d+|#x[\da-f]+|\w+);/gi, '')
+          ) &&
+          !identifiers.has(node.text.trim())
         const rawAttribute =
           ts.isJsxAttribute(node) &&
           displayAttribute.test(node.name.text) &&
           node.initializer &&
           ts.isStringLiteral(node.initializer) &&
           /[a-zA-Z]/.test(node.initializer.text) &&
+          !identifiers.has(node.initializer.text) &&
           !/^(https?:|did:|\/|0x)/.test(node.initializer.text)
         if (ts.isJsxExpression(node) && !ts.isJsxAttribute(node.parent)) {
           for (const literal of displayLiterals(node.expression))

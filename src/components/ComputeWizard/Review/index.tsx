@@ -305,6 +305,9 @@ export default function Review({
     algorithmProviderFeeProp || null
   )
   const [algoOrderPriceValue, setAlgoOrderPriceValue] = useState<string>()
+  const [exchangeSwapFeeEntries, setExchangeSwapFeeEntries] = useState<
+    TotalPriceEntry[]
+  >([])
   const [totalPrices, setTotalPrices] = useState<TotalPriceEntry[]>([])
   const [totalPriceBreakdown, setTotalPriceBreakdown] = useState<
     TotalPriceEntry[]
@@ -534,6 +537,26 @@ export default function Review({
 
   useEffect(() => {
     let cancelled = false
+    const swapFees: TotalPriceEntry[] = []
+    async function quoteFixedBuyPrice(
+      details: AccessDetails,
+      chainId: number,
+      quoteSigner: Signer
+    ) {
+      const quote = await getFixedBuyPrice(details, chainId, quoteSigner)
+      const fee = new Decimal(quote.marketFeeAmount || 0).add(
+        quote.consumeMarketFeeAmount || 0
+      )
+      if (fee.gt(0))
+        swapFees.push({
+          symbol: resolveSymbol(
+            details.baseToken?.symbol,
+            details.baseToken?.address
+          ),
+          value: fee.toString()
+        })
+      return quote
+    }
     async function fetchPricesDatasetFlow() {
       if (!isDatasetFlow) return
 
@@ -553,7 +576,7 @@ export default function Review({
         setDatasetOecFeesBySymbol({})
       } else {
         try {
-          const datasetFixed = await getFixedBuyPrice(
+          const datasetFixed = await quoteFixedBuyPrice(
             accessDetails,
             asset.credentialSubject.chainId,
             signer
@@ -585,7 +608,7 @@ export default function Review({
       }
 
       try {
-        const algoFixed = await getFixedBuyPrice(
+        const algoFixed = await quoteFixedBuyPrice(
           algoDetails,
           selectedAlgorithmAsset.credentialSubject?.chainId,
           signer
@@ -609,7 +632,7 @@ export default function Review({
               if (!details || !dataset.credentialSubject?.chainId || !signer)
                 return null
               if (details.isOwned || details.validOrderTx) return null
-              const fixed = await getFixedBuyPrice(
+              const fixed = await quoteFixedBuyPrice(
                 details,
                 dataset.credentialSubject.chainId,
                 signer
@@ -653,7 +676,7 @@ export default function Review({
       }
 
       try {
-        const algoFixed = await getFixedBuyPrice(
+        const algoFixed = await quoteFixedBuyPrice(
           accessDetails,
           asset.credentialSubject?.chainId,
           signer
@@ -673,6 +696,7 @@ export default function Review({
         ])
       } finally {
         if (!cancelled) {
+          setExchangeSwapFeeEntries(swapFees)
           setIsOecFeesLoading(false)
         }
       }
@@ -1508,8 +1532,7 @@ export default function Review({
     }
 
     priceEntries.forEach((entry) => addAmount(entry.symbol, entry.value || 0))
-
-    providerFeeEntries.forEach((entry) =>
+    ;[...providerFeeEntries, ...exchangeSwapFeeEntries].forEach((entry) =>
       addAmount(entry.symbol, entry.value || 0)
     )
 
@@ -1548,6 +1571,7 @@ export default function Review({
   }, [
     totalPrices,
     providerFeeEntries,
+    exchangeSwapFeeEntries,
     datasetOecFeesBySymbol,
     algoOecFee,
     datasetSymbol,
@@ -2008,7 +2032,13 @@ export default function Review({
       ? marketFeesBase.filter((fee) => !fee.name.includes('DATASET'))
       : marketFeesBase
 
-  const mergedMarketFees = mergeFeeRows(marketFees)
+  const mergedMarketFees = mergeFeeRows([
+    ...marketFees,
+    ...exchangeSwapFeeEntries.map((entry) => ({
+      ...entry,
+      name: i18n._('EXCHANGE SWAP FEE')
+    }))
+  ])
   const mergedDatasetProviderFees = mergeFeeRows(datasetProviderFeesList)
   const mergedAlgorithmProviderFees = mergeFeeRows(algorithmProviderFeesList)
   const renderC2dSummary = () => {

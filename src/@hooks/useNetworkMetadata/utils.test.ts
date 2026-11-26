@@ -28,7 +28,7 @@ describe('useNetworkMetadata/utils', () => {
       chain: 'ETH',
       name: 'Ethereum Mainnet'
     } as any)
-    expect(type1).toBe('ETH')
+    expect(type1).toBe('Ethereum Mainnet')
 
     const type2 = getNetworkDisplayName({ chainId: 80001 } as any)
     expect(type2).toBe('Mumbai')

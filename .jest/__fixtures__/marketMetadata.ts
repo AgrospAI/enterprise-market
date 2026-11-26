@@ -4,6 +4,7 @@ import appConfig from '../../app.config.cjs'
 export default {
   getOpcFeeForToken: jest.fn(),
   siteContent,
+  validatedSupportedChains: [1, 137],
   appConfig,
   opcFees: [
     {

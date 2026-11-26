@@ -1,0 +1,9 @@
+accounts:
+  - name: Universitat de Lleida (Test 1)
+    address: '0x7774693ebe0352092cf1c81368afb034e4d042d1'
+    privateKeyPath: keys/UdL-Test1-7774693ebe0352092cf1c81368afb034e4d042d1.json
+    passwordEnvKey: UDL_KEY_PASSWORD
+  - name: Universitat de Lleida (Test 2)
+    address: '0x7e102ff28971be04c3ecb5b486edc94ed2b83c12'
+    privateKeyPath: keys/UdL-Test2-7e102ff28971be04c3ecb5b486edc94ed2b83c12.json
+    passwordEnvKey: UDL_KEY_PASSWORD

@@ -13,6 +13,7 @@ import { useAuth } from '@hooks/useAuth'
 import { useConnectorSupportedChains } from '@hooks/useDfnsWalletsByChain'
 import { usePontusXLegalName } from '@context/PontusXIdentity'
 import { useAccount } from 'wagmi'
+import { useAccountDisplayName } from '@hooks/useAccountDisplayName'
 
 export default function Account({
   accountId
@@ -38,6 +39,7 @@ export default function Account({
   const displayName = isOwnAuthenticatedProfile
     ? user.name
     : verifiedWallets?.[accountId] || legalName || accountTruncate(accountId)
+  const accountDisplayName = useAccountDisplayName(accountId, displayName)
   const displayEmail =
     isOwnAuthenticatedProfile && user?.email ? user.email : undefined
   const normalizedDisplayName = displayName?.trim().toLowerCase()
@@ -62,7 +64,7 @@ export default function Account({
         )}
       </figure>
       <div>
-        <h3 className={styles.name}>{displayName}</h3>
+        <h3 className={styles.name}>{accountDisplayName}</h3>
         {displayUsername && (
           <p className={styles.username}>{displayUsername}</p>
         )}

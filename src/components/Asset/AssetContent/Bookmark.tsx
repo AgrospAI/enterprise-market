@@ -24,6 +24,7 @@ export default function Bookmark({
   return (
     <button
       onClick={handleBookmark}
+      aria-label={i18n._(isBookmarked ? 'Remove Bookmark' : 'Add Bookmark')}
       className={`${styles.bookmark} ${isBookmarked ? styles.active : ''} ${
         className || ''
       }`}
