@@ -2,6 +2,11 @@ msgid ""
 msgstr ""
 
 #. js-lingui-explicit-id
+#: src/@hooks/useAccountDisplayName.ts
+msgid "(you)"
+msgstr "(tú)"
+
+#. js-lingui-explicit-id
 #: src/components/Privacy/PrivacyHeader.tsx
 #: src/i18n/contentMessages.ts
 #: src/pages/[slug].tsx
