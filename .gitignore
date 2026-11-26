@@ -21,6 +21,7 @@ storybook-static
 .qodo
 next-env.d.ts
 public/runtime-config.js
+.env.bak
 
 # Compiled Lingui catalogs (generated from tracked messages.po files)
 src/locales/*/messages.ts

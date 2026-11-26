@@ -4,7 +4,7 @@
  */
 .menu {
   width: 100%;
-  padding: 0 calc(var(--spacer) / 2);
+  padding: 0 clamp(16px, 2vw, 32px);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -30,7 +30,8 @@
 
 .container {
   width: 100%;
-  max-width: var(--container-width);
+  /* full width: the logo sits at the window's left edge, the actions at the right */
+  max-width: none;
   min-height: var(--menu-height);
   padding: 10px 0;
   display: flex;
@@ -474,12 +475,6 @@ svg.caret {
 @media screen and (min-width: 769px) {
   .mobileMenu {
     display: none !important;
-  }
-}
-
-@media screen and (min-width: 1550px) {
-  .container {
-    max-width: 1500px;
   }
 }
 

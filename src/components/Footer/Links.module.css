@@ -98,3 +98,18 @@
     column-gap: 5rem;
   }
 }
+
+/* One row (the home page's footer): the sections run on, without titles. */
+.inline,
+.inline .section,
+.inline .links {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+}
+
+.inline .link {
+  font-size: 13px;
+}

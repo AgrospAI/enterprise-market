@@ -22,459 +22,240 @@
   align-items: center;
 }
 
-/* top-right brand wave */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: -1px 0 auto auto;
-  width: min(100%, 48rem);
-  height: 13rem;
-  background: var(--wave-svg) no-repeat;
-  background-size: 100% 100%;
-  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent);
-  mask-image: linear-gradient(to left, #000 35%, transparent);
-  pointer-events: none;
-  z-index: -1;
-  animation: wave-drift 18s ease-in-out infinite alternate;
-}
-
-/* layered brand wave that hands over to the light section below */
-.heroWave {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  width: 100%;
-  height: clamp(72px, 10vw, 150px);
-  pointer-events: none;
-}
-
-.heroWaveLayer {
-  animation: hero-wave-flow calc(24s + var(--i) * 10s) linear infinite;
-}
-
-.heroWaveLayer:nth-of-type(2n) {
-  animation-direction: reverse;
-}
-
-/* vertical gradient stops: each wave brightens towards its base */
-.stopNavy {
-  stop-color: var(--deck-navy-2);
-}
-
-.stopBlue {
-  stop-color: var(--deck-blue);
-  stop-opacity: 0.85;
-}
-
-.stopHighlight {
-  stop-color: var(--brand-highlight);
-}
-
-.stopCyan {
-  stop-color: var(--deck-cyan);
-}
-
-/* the front wave ends in the mist of the section below */
-.stopMist {
-  stop-color: color-mix(
-    in srgb,
-    var(--deck-cyan) 22%,
-    var(--deck-surface-soft)
-  );
-}
-
-.stopWhite {
-  stop-color: var(--deck-surface-soft);
-}
-
-@keyframes hero-wave-flow {
-  to {
-    transform: translateX(-1440px);
-  }
-}
-
-/* local copy: CSS Modules localise animation names, so the global keyframes are not reachable */
-@keyframes wave-drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-2.5%, 2%, 0) scale(1.03);
-  }
-}
-
-.contentContainer {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 1160px;
+/* The whole page is the assistant: it fills the window under the header. */
+:global(main.full-width):has(> .hero) {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
-  padding: 4rem 20px;
-  box-sizing: border-box;
+  background: var(--deck-navy-2);
 }
 
-/* thin editorial column rules framing the centre stage */
-.contentContainer::before,
-.contentContainer::after {
-  content: '';
-  position: absolute;
-  top: var(--menu-height);
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.04) 70%,
-    transparent
-  );
-  pointer-events: none;
+.hero {
+  flex: 1;
+  justify-content: center;
 }
 
-.contentContainer::before {
-  left: 20px;
-}
-
-.contentContainer::after {
-  right: 20px;
-}
-
-.textContent {
+.content {
   position: relative;
+  z-index: 1;
+  width: min(100%, 1200px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1.5rem;
+  padding: 3rem 20px 2.5rem;
+  box-sizing: border-box;
   text-align: center;
-  width: 100%;
 }
 
-/* ---------- headline ---------- */
 .title {
   max-width: 22ch;
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.5rem;
   font-size: 68px;
   font-weight: 400;
   line-height: 1.04;
   letter-spacing: -0.04em;
   color: #fff;
   text-wrap: balance;
+  transition: font-size 0.2s ease;
 }
 
-.subtitle {
-  max-width: 40rem;
+/* With a conversation, the page is about it: the conversation fills the
+   window under the header at once, so it does not jump while answers arrive,
+   and keeps a readable line length. Its card already names the assistant. */
+.chatting {
+  justify-content: flex-start;
+}
+
+.chatting .content {
+  height: calc(100svh - var(--menu-height) - 0.5rem);
+  gap: 1rem;
+  padding: 1.25rem 20px 1rem;
+}
+
+.chatting .title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Over the message box: it is an AI assistant, not the search field the home
+   page used to have in the same place. */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin-top: -0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
-  font-size: 20px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
+  padding: 5px 12px 5px 10px;
+  border: 1px solid
+    color-mix(in srgb, var(--brand-agrospai-light) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-agrospai-light) 14%, transparent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badgeIcon {
+  width: 15px;
+  height: 15px;
+  color: var(--brand-agrospai-light);
+}
+
+.lead {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 17px;
+  line-height: 1.5;
   text-wrap: balance;
 }
 
-/* ---------- pill search ---------- */
-.searchBlock {
+.assistant {
   width: 100%;
-  max-width: 40rem;
-  margin-top: 2.75rem;
 }
 
-.searchContainer {
-  display: flex;
-  align-items: center;
-  height: 60px;
-  padding: 6px;
-  border-radius: var(--radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: border-color 0.25s ease, background-color 0.25s ease;
-}
-
-.searchContainer:hover {
-  border-color: rgba(255, 255, 255, 0.28);
-}
-
-.searchContainer:focus-within {
-  border-color: var(--deck-cyan);
-  background: rgba(255, 255, 255, 0.11);
-}
-
-.searchContainer .searchInput,
-.searchContainer .searchInput:focus {
+.chatting .assistant {
   flex: 1;
-  min-width: 0;
-  height: 100%;
-  margin: 0;
-  padding: 0 1.25rem;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  background: transparent;
-  font-family: var(--font-family-base);
-  font-size: 16px;
-  color: #fff;
-  /* long placeholders end in an ellipsis instead of a hard cut */
-  text-overflow: ellipsis;
-}
-
-.searchContainer .searchInput::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-  opacity: 1;
-}
-
-.searchButton {
+  min-height: 0;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  height: 100%;
-  flex-shrink: 0;
-  padding: 0 1.4rem;
-  border: 0;
-  border-radius: var(--radius-lg);
-  background: var(--button-hero-gradient);
-  box-shadow: var(--button-hero-shadow);
-  font-family: var(--font-family-base);
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  flex-direction: column;
 }
 
-.searchButton:hover,
-.searchButton:focus-visible {
-  box-shadow: var(--button-hero-shadow-hover);
+.chatting .assistant > div {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.searchButton:focus-visible {
-  outline: 2px solid var(--deck-cyan);
-  outline-offset: 2px;
+.chatting .assistant > div > div {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.searchIcon,
-.searchIcon path {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-/* ---------- pill actions ---------- */
-.ctaRow {
+.suggestions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.ctaGhost,
-.ctaPrimary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  height: 48px;
-  padding: 0 1.5rem;
-  border-radius: var(--radius-lg);
+.suggestion {
+  padding: 9px 18px;
+  border: 1px solid var(--control-border-on-dark);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
   font-family: var(--font-family-base);
   font-size: 15px;
-  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease,
-    color 0.25s ease, transform 0.25s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.ctaGhost {
-  border: 1px solid var(--control-border-on-dark);
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+.suggestion:hover {
+  border-color: var(--brand-agrospai-light);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.ctaGhost:hover,
-.ctaGhost:focus-visible {
-  border-color: var(--control-border-on-dark-hover);
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.ctaPrimary {
-  border: 1px solid #fff;
-  background: #fff;
-  color: var(--deck-navy);
-}
-
-.ctaPrimary:hover,
-.ctaPrimary:focus-visible {
-  background: var(--deck-surface);
-  border-color: var(--deck-surface);
-}
-
-.ctaGhost:focus-visible,
-.ctaPrimary:focus-visible {
-  outline: 2px solid var(--deck-cyan);
+.suggestion:focus-visible,
+.links a:focus-visible,
+.gateButton:focus-visible {
+  outline: 2px solid var(--brand-agrospai-light);
   outline-offset: 2px;
 }
 
-.ctaGhost:active,
-.ctaPrimary:active {
-  transform: translateY(1px);
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  font-size: 15px;
 }
 
-.ctaArrow {
-  display: inline-block;
-  transition: transform 0.25s ease;
+.links a {
+  padding-bottom: 1px;
+  border-bottom: 1px solid var(--control-border-on-dark);
+  color: #fff;
 }
 
-.ctaPrimary:hover .ctaArrow {
-  transform: translateX(3px);
+.links a:hover {
+  border-color: var(--brand-agrospai-light);
 }
 
-.uploadIcon {
-  width: 18px;
-  height: 18px;
-  /* the global svg rule centres with auto margins, which splits flex items */
+.fine {
   margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 13px;
 }
 
-.uploadIcon path {
-  fill: currentColor;
+.gateButton {
+  padding: 5px 12px;
+  border: 1px solid var(--deck-blue);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  color: var(--deck-blue);
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-/* everything below the hero sits on the soft mist body */
-:global(main.full-width):has(> .hero) {
-  background: var(--deck-surface-soft);
+.gateButton:hover {
+  background: var(--deck-blue-8);
 }
 
-/* ================== RESPONSIVE ADJUSTMENTS ================== */
 @media (max-width: 1024px) {
-  .contentContainer {
-    gap: 3.5rem;
-    padding: 3.5rem 2rem;
-  }
-
-  .contentContainer::before,
-  .contentContainer::after {
-    display: none;
-  }
-
   .title {
     font-size: 52px;
-  }
-
-  .subtitle {
-    font-size: 17px;
   }
 }
 
 @media (max-width: 480px) {
-  .contentContainer {
-    gap: 2.5rem;
-    padding: 2.5rem 16px 3rem;
+  .content {
+    padding: 2rem 16px;
+  }
+
+  .lead {
+    font-size: 15px;
   }
 
   .title {
     font-size: 38px;
     letter-spacing: -0.035em;
   }
-
-  .subtitle {
-    font-size: 16px;
-  }
-
-  .searchBlock {
-    margin-top: 2rem;
-  }
-
-  .searchContainer {
-    height: 56px;
-  }
-
-  .searchContainer .searchInput,
-  .searchContainer .searchInput:focus {
-    padding: 0 0.75rem 0 1rem;
-  }
-
-  .searchButton {
-    padding: 0 1rem;
-  }
-
-  /* icon-only search button on phones */
-  .searchButton span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
-  .ctaRow {
-    flex-direction: column;
-    width: 100%;
-    max-width: 20rem;
-  }
-
-  .ctaGhost,
-  .ctaPrimary {
-    justify-content: center;
-  }
-}
-
-/* Large desktop screens */
-@media screen and (min-width: 1550px) and (max-width: 2549px) {
-  .contentContainer {
-    max-width: 1500px;
-  }
 }
 
 /* 4K and larger displays */
 @media (min-width: 2550px) {
-  .contentContainer {
-    max-width: 1900px;
+  .content {
+    width: min(100%, 1300px);
   }
 
   .title {
     font-size: 92px;
   }
-
-  .subtitle {
-    max-width: 56rem;
-    font-size: 26px;
-  }
-
-  .searchBlock {
-    max-width: 56rem;
-  }
-
-  .searchContainer {
-    height: 76px;
-  }
-
-  .searchContainer .searchInput,
-  .ctaGhost,
-  .ctaPrimary,
-  .searchButton {
-    font-size: 19px;
-  }
-
-  .ctaGhost,
-  .ctaPrimary {
-    height: 56px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero::before,
-  .heroWaveLayer {
-    animation: none;
-  }
-
-  .ctaGhost,
-  .ctaPrimary,
-  .ctaArrow,
-  .searchButton {
+  .title {
     transition: none;
-    transform: none;
   }
 }

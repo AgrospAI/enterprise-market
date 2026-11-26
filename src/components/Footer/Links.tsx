@@ -32,7 +32,12 @@ function CookieSettingsButton({
  * entry, which meant the policy page could not be reached without also opening
  * the preference centre.
  */
-export default function Links(): ReactElement {
+export default function Links({
+  isInline = false
+}: {
+  /** All the links in one row, without the section titles. */
+  isInline?: boolean
+}): ReactElement {
   useLingui()
 
   const { appConfig, siteContent } = useMarketMetadata()
@@ -43,10 +48,10 @@ export default function Links(): ReactElement {
   const openCookieSettings = () => setShowPPC(true)
 
   return (
-    <div className={styles.container}>
+    <div className={isInline ? styles.inline : styles.container}>
       {content?.map((section) => (
         <div key={section.title} className={styles.section}>
-          <p className={styles.title}>{section.title}</p>
+          {!isInline && <p className={styles.title}>{section.title}</p>}
           <div className={styles.links}>
             {section.links.map((e) => {
               const key = `${e.name}-${e.link}`
