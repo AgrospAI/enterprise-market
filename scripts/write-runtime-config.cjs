@@ -9,7 +9,7 @@ const envFiles = [
   `.env.${mode}`,
   '.env'
 ]
-for (const envFile of envFiles) {
+for (const envFile of process.env.MARKET_ENV_PROFILE ? [] : envFiles) {
   const envPath = path.join(process.cwd(), envFile)
   if (!fs.existsSync(envPath)) continue
   const parsed = require('node:util').parseEnv(fs.readFileSync(envPath, 'utf8'))

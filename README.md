@@ -63,6 +63,26 @@ npm start
 This will start the development server under
 `http://localhost:8008`.
 
+### Choose the Ocean node
+
+Keep production node settings in `.env` and local overrides in `.env.local`.
+Both files can remain in place:
+
+```bash
+npm run start:production # production node, using .env only
+npm run start:local      # local node, using .env.local over .env defaults
+```
+
+Both commands run the development UI at `http://localhost:8008`. Stop the server
+before switching profiles and refresh the browser. Exported shell variables take
+priority. Plain `npm start` retains Next.js's normal environment precedence.
+The selected profile applies to both the browser runtime config and server APIs.
+
+For an optimized build, use `npm run build:production` or `npm run build:local`,
+then run `node scripts/with-node-env.cjs production npm run start-docker` (or
+`local`, matching the build). Public environment values are embedded at build time,
+so rebuild when switching profiles.
+
 ### Local components with Barge
 
 Using the `ocean-market` with `barge` components is recommended for advanced users, if you are new we advice you to use the `ocean-market` first with remote networks. If you prefer to connect to locally running components instead of remote connections, you can spin up [`barge`](https://github.com/oceanprotocol/barge) and use a local Ganache network in another terminal before running `npm start`. To fully test all [The Graph](https://thegraph.com) integrations, you have to start barge with the local Graph node:

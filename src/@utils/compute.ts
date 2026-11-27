@@ -2,12 +2,12 @@ import { i18n } from '../i18n/index'
 import {
   LoggerInstance,
   ProviderInstance,
-  ComputeJob,
+  NodeComputeJob,
   getErrorMessage,
   ComputeAlgorithm,
   getHash
 } from '@oceanprotocol/lib'
-import { CancelToken } from 'axios'
+import axios, { CancelToken } from 'axios'
 import {
   queryMetadata,
   getFilterTerm,
@@ -305,13 +305,59 @@ async function getJobs(
       const providerComputeJobs = (await ProviderInstance.computeStatus(
         uniqueProviders[i],
         signer
-      )) as ComputeJob[]
-      providerComputeJobs.forEach((job) =>
+      )) as NodeComputeJob[]
+      // Some nodes omit asset references from status responses. Their jobs
+      // command retains them, so enrich only those references and keep status/results.
+      let jobDetails: ComputeJobExtended[] = []
+      if (
+        /^https?:\/\//.test(uniqueProviders[i]) &&
+        providerComputeJobs.some(
+          (job: ComputeJobExtended) =>
+            !job.algorithm?.documentId && !job.algoDID
+        )
+      ) {
+        try {
+          const owner = await signer.getAddress()
+          const response = await axios.post(
+            `${uniqueProviders[i].replace(/\/+$/, '')}/directCommand`,
+            { command: 'jobs', consumerAddrs: [owner] },
+            { cancelToken: _cancelToken }
+          )
+          if (Array.isArray(response.data)) {
+            jobDetails = response.data.filter(
+              (job: ComputeJobExtended) =>
+                job.owner?.toLowerCase() === owner.toLowerCase()
+            )
+          }
+        } catch (error) {
+          LoggerInstance.warn(
+            'Could not load compute job asset references',
+            error
+          )
+        }
+      }
+      const detailsById = new Map(jobDetails.map((job) => [job.jobId, job]))
+      providerComputeJobs.forEach((status: ComputeJobExtended) => {
+        const details = detailsById.get(status.jobId)
+        const job = {
+          ...status,
+          algorithm: status.algorithm?.documentId
+            ? status.algorithm
+            : details?.algorithm,
+          assets: status.assets?.length ? status.assets : details?.assets
+        }
         providersComputeJobsExtended.push({
           ...job,
+          // Node status responses use DIDs; older responses include asset objects.
+          algorithm: job.algorithm?.documentId
+            ? job.algorithm
+            : { ...job.algorithm, documentId: job.algoDID },
+          assets: job.assets?.length
+            ? job.assets
+            : (job.inputDID || []).map((documentId) => ({ documentId })),
           providerUrl: uniqueProviders[i]
         })
-      )
+      })
     }
     if (providersComputeJobsExtended) {
       providersComputeJobsExtended.sort((a, b) => {
@@ -386,14 +432,15 @@ async function getJobs(
       providersComputeJobsExtended.forEach((job: ComputeJobExtended) => {
         const did = getJobDid(job)
         const asset = did ? assetsByDid.get(did) : null
-        const networkId = asset?.credentialSubject?.chainId || 0
+        const networkId =
+          asset?.credentialSubject?.chainId || job.payment?.chainId || 0
 
         if (assets) {
           if (asset) {
             const compJob: ComputeJobMetaData = {
               ...job,
               assetName: asset.credentialSubject?.metadata?.name,
-              assetDtSymbol: asset.indexedMetadata?.stats[0].symbol,
+              assetDtSymbol: asset.indexedMetadata?.stats?.[0]?.symbol,
               networkId: asset.credentialSubject.chainId
             }
             computeJobs.push(compJob)
@@ -404,7 +451,8 @@ async function getJobs(
             assetName:
               asset?.credentialSubject?.metadata?.name ||
               (did ? 'name' : i18n._('Algorithm Only Job')),
-            assetDtSymbol: asset?.indexedMetadata?.stats[0].symbol || 'symbol',
+            assetDtSymbol:
+              asset?.indexedMetadata?.stats?.[0]?.symbol || 'symbol',
             networkId
           }
           computeJobs.push(compJob)

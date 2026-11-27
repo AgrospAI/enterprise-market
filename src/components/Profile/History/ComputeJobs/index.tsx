@@ -140,10 +140,7 @@ export default function ComputeJobs({
     {
       name: i18n._('Algorithm'),
       selector: (row) => (
-        <AssetListTitle
-          did={row.algorithm ? row.algorithm.documentId : null}
-          title={row.algorithm ? row.algorithm.documentId : null}
-        />
+        <AssetListTitle did={row.algorithm ? row.algorithm.documentId : null} />
       )
     },
     {

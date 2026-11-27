@@ -31,7 +31,11 @@
     "pinata:cleanup": "node --env-file=.env --experimental-strip-types scripts/cleanup-pinata.ts",
     "deploy:access-requests": "node scripts/deploy-access-requests.mjs",
     "pretest:e2e": "npm run lingui:compile",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts"
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "start:production": "node scripts/with-node-env.cjs production npm start",
+    "start:local": "node scripts/with-node-env.cjs local npm start",
+    "build:production": "node scripts/with-node-env.cjs production npm run build",
+    "build:local": "node scripts/with-node-env.cjs local npm run build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1035.0",

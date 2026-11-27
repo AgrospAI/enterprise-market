@@ -154,14 +154,14 @@ function DetailsAssets({
 
   useEffect(() => {
     async function getAlgoMetadata() {
-      if (job.algorithm) {
+      if (job.algorithm?.documentId) {
         const ddo = (await getAsset(
           job.algorithm.documentId,
           newCancelToken()
         )) as AssetType
         if (ddo) {
-          setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
-          setAlgoName(ddo.credentialSubject.metadata.name)
+          setAlgoDtSymbol(ddo.indexedMetadata?.stats?.[0]?.symbol)
+          setAlgoName(ddo.credentialSubject?.metadata?.name)
           if (job.algorithm.serviceId) {
             const service = getServiceById(ddo, job.algorithm.serviceId)
             if (service) {
@@ -222,7 +222,7 @@ function DetailsAssets({
 
         <hr className={styles.assetDivider} />
 
-        {algoName && algoDtSymbol ? (
+        {algoName ? (
           <Asset
             title={algoName}
             symbol={algoDtSymbol}

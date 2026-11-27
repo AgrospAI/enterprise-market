@@ -1,4 +1,8 @@
-import { ComputeEnvironment, ComputeJob } from '@oceanprotocol/lib'
+import {
+  ComputeEnvironment,
+  ComputeJob,
+  NodeComputeJob
+} from '@oceanprotocol/lib'
 import { OrdersData_orders_datatoken as OrdersDatatoken } from '../@types/subgraph/OrdersData'
 
 // declaring into global scope to be able to use this as
@@ -38,7 +42,9 @@ declare global {
     symbol: string
   }
 
-  interface ComputeJobExtended extends ComputeJob {
+  interface ComputeJobExtended extends NodeComputeJob {
+    assets?: { documentId: string; serviceId?: string }[]
+    algorithm?: { documentId?: string; serviceId?: string }
     providerUrl: string
   }
 
