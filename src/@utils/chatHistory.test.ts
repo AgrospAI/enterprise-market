@@ -118,6 +118,22 @@ describe('chat history', () => {
     expect(readChatHistory(ADDRESS)).toEqual([message])
   })
 
+  it('keeps an answer asking to sign in, and only on answers', () => {
+    window.localStorage.setItem(
+      `chat:${ADDRESS.toLowerCase()}`,
+      JSON.stringify([
+        { role: 'user', content: 'download it', asksToSignIn: true },
+        { role: 'assistant', content: 'Sign in first.', asksToSignIn: true },
+        { role: 'assistant', content: 'Found 3', asksToSignIn: 'yes' }
+      ])
+    )
+    expect(readChatHistory(ADDRESS)).toEqual([
+      { role: 'user', content: 'download it' },
+      { role: 'assistant', content: 'Sign in first.', asksToSignIn: true },
+      { role: 'assistant', content: 'Found 3' }
+    ])
+  })
+
   it('keeps the steps of a message and drops invalid ones', () => {
     window.localStorage.setItem(
       `chat:${ADDRESS.toLowerCase()}`,

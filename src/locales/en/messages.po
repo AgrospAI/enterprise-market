@@ -5535,11 +5535,6 @@ msgstr "SSI Policies"
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
-msgid "Searching is open to everyone. Sign in with your wallet to download data or run jobs."
-msgstr "Searching is open to everyone. Sign in with your wallet to download data or run jobs."
-
-#. js-lingui-explicit-id
-#: src/i18n/sourceMessages.ts
 msgid "Secure random generation is not available in this browser."
 msgstr "Secure random generation is not available in this browser."
 
@@ -5847,6 +5842,11 @@ msgstr "The sign-in could not be verified."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts
+msgid "The user now sees a button to connect a wallet and sign in. Do not say where it is on the page."
+msgstr "The user now sees a button to connect a wallet and sign in. Do not say where it is on the page."
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
 msgid "This endpoint only accepts POST requests"
 msgstr "This endpoint only accepts POST requests"
 
@@ -5884,6 +5884,11 @@ msgstr "Timed out waiting for token allowance update."
 #: src/i18n/sourceMessages.ts
 msgid "Timeout waiting for permissions to be set"
 msgstr "Timeout waiting for permissions to be set"
+
+#. js-lingui-explicit-id
+#: src/i18n/sourceMessages.ts
+msgid "To download data, buy it or run jobs, connect your wallet and sign in."
+msgstr "To download data, buy it or run jobs, connect your wallet and sign in."
 
 #. js-lingui-explicit-id
 #: src/i18n/sourceMessages.ts

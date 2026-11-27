@@ -41,6 +41,11 @@ export interface ChatMessage {
   intents?: ChatIntent[]
   /** Results of a job the user asked about (user messages only). */
   attachment?: JobResultAttachment
+  /**
+   * The visitor asked for something that needs a wallet session: the answer
+   * shows the button to sign in (assistant messages only).
+   */
+  asksToSignIn?: boolean
 }
 
 export interface ChatRequestBody {
@@ -57,6 +62,8 @@ export type ChatStreamEvent =
   | { type: 'tool'; name: string; status: ChatToolStatus }
   /** A prepared action, validated by the server, for a confirmation card. */
   | { type: 'intent'; intent: ChatIntent }
+  /** A visitor without a session asked for more than searching. */
+  | { type: 'signIn' }
   /**
    * Tokens of the model's context in the largest call of the request, as the
    * model server counted them, and its window when it is configured.

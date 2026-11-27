@@ -151,6 +151,7 @@ export function useChat(
       let answer = ''
       const steps: ChatStep[] = []
       const intents: ChatIntent[] = []
+      let asksToSignIn = false
       const withAnswer = (): ChatMessage[] => {
         const content = answer.trim()
         return content || steps.length || intents.length
@@ -160,7 +161,8 @@ export function useChat(
                 role: 'assistant',
                 content,
                 ...(steps.length ? { steps: [...steps] } : {}),
-                ...(intents.length ? { intents: [...intents] } : {})
+                ...(intents.length ? { intents: [...intents] } : {}),
+                ...(asksToSignIn ? { asksToSignIn } : {})
               }
             ]
           : history
@@ -203,6 +205,10 @@ export function useChat(
           if (event.type === 'intent') {
             liveIntents.current.add(event.intent)
             intents.push(event.intent)
+            setMessages(withAnswer())
+          }
+          if (event.type === 'signIn') {
+            asksToSignIn = true
             setMessages(withAnswer())
           }
           if (event.type === 'usage') setUsage(event.usage)

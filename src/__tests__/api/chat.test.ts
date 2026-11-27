@@ -22,6 +22,7 @@ import {
   describeJobResults,
   runChatLoop,
   ANONYMOUS_SYSTEM_PROMPT,
+  SIGN_IN_SHOWN,
   SYSTEM_PROMPT
 } from '../../pages/api/chat/_loop'
 import { connectMcp } from '../../pages/api/chat/_mcp'
@@ -29,7 +30,9 @@ import { createRateLimiter } from '../../pages/api/chat/_rateLimit'
 import {
   ALLOWED_TOOLS,
   ANONYMOUS_TOOLS,
-  isAllowedTool
+  isAllowedTool,
+  SIGN_IN_TOOL,
+  SIGN_IN_TOOL_DEFINITION
 } from '../../pages/api/chat/_tools'
 import {
   buildSessionCookie,
@@ -147,7 +150,7 @@ describe('runChatLoop', () => {
       role: 'system',
       content: ANONYMOUS_SYSTEM_PROMPT
     })
-    expect(seen[0].tools).toEqual([tools[0]])
+    expect(seen[0].tools).toEqual([tools[0], SIGN_IN_TOOL_DEFINITION])
     expect(callTool).toHaveBeenCalledTimes(1)
     expect(callTool).toHaveBeenCalledWith('search_assets', { query: 'wine' })
     expect(events[0]).toEqual({
@@ -157,6 +160,54 @@ describe('runChatLoop', () => {
     })
     expect(ANONYMOUS_SYSTEM_PROMPT).toContain('sign in')
     expect(ANONYMOUS_SYSTEM_PROMPT).not.toContain('job_results')
+  })
+
+  it('asks a visitor without a session to sign in, without the MCP server', async () => {
+    const tools = ['search_assets'].map(
+      (name): LlmTool => ({
+        type: 'function',
+        function: { name, parameters: {} }
+      })
+    )
+    const { events, seen, callTool, run } = setup(
+      [
+        { content: '', toolCalls: [toolCall(SIGN_IN_TOOL, {})] },
+        { content: 'Sign in to download it.', toolCalls: [] }
+      ],
+      undefined,
+      undefined,
+      null,
+      tools
+    )
+    await run()
+
+    expect(seen[0].tools).toEqual([tools[0], SIGN_IN_TOOL_DEFINITION])
+    expect(callTool).not.toHaveBeenCalled()
+    expect(events[0]).toEqual({ type: 'signIn' })
+    expect(seen[1].messages).toContainEqual(
+      expect.objectContaining({ role: 'tool', content: SIGN_IN_SHOWN })
+    )
+    expect(ANONYMOUS_SYSTEM_PROMPT).toContain(SIGN_IN_TOOL)
+  })
+
+  it('does not offer the sign-in tool to a signed-in user', async () => {
+    const { seen, run } = setup([
+      { content: '', toolCalls: [toolCall(SIGN_IN_TOOL, {})] },
+      { content: 'Done', toolCalls: [] }
+    ])
+    await run()
+
+    expect(
+      ((seen[0].tools as LlmTool[] | undefined) ?? []).map(
+        (tool) => tool.function.name
+      )
+    ).not.toContain(SIGN_IN_TOOL)
+    expect(seen[1].messages).toContainEqual(
+      expect.objectContaining({
+        role: 'tool',
+        content: `Error: the tool ${SIGN_IN_TOOL} is not available`
+      })
+    )
   })
 
   it('gives the model the results of a job inside their own tag', async () => {
@@ -680,7 +731,7 @@ describe('allowed tools', () => {
   })
 
   it('only allows searching without a session', () => {
-    expect(ANONYMOUS_TOOLS).toEqual(['search_assets'])
+    expect(ANONYMOUS_TOOLS).toEqual(['search_assets', SIGN_IN_TOOL])
     expect(isAllowedTool('get_asset', ANONYMOUS_TOOLS)).toBe(false)
     expect(isAllowedTool('prepare_download', ANONYMOUS_TOOLS)).toBe(false)
   })

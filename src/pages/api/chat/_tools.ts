@@ -1,3 +1,5 @@
+import type { LlmTool } from './_llm'
+
 /** Tools that prepare an action: their result is an intent, not an action. */
 export const INTENT_TOOLS: readonly string[] = [
   'prepare_compute_job',
@@ -22,10 +24,29 @@ export const ALLOWED_TOOLS: readonly string[] = [
 const BLOCKED_ARGUMENTS = ['includeRawDdo']
 
 /**
- * What a visitor without a wallet session may use: searching the catalogue,
- * and nothing else. Anything more needs signing in with a wallet.
+ * Answered by the chat itself, not the MCP server: the browser then shows the
+ * visitor the button to sign in, only when they asked for more than searching.
  */
-export const ANONYMOUS_TOOLS: readonly string[] = ['search_assets']
+export const SIGN_IN_TOOL = 'request_sign_in'
+
+export const SIGN_IN_TOOL_DEFINITION: LlmTool = {
+  type: 'function',
+  function: {
+    name: SIGN_IN_TOOL,
+    description:
+      'Shows the user the button to connect a wallet and sign in. Call it when the user asks to download, buy, run a Compute-to-Data job, check which algorithms run on a dataset or read job results.',
+    parameters: { type: 'object', properties: {} }
+  }
+}
+
+/**
+ * What a visitor without a wallet session may use: searching the catalogue,
+ * and asking them to sign in. Anything more needs signing in with a wallet.
+ */
+export const ANONYMOUS_TOOLS: readonly string[] = [
+  'search_assets',
+  SIGN_IN_TOOL
+]
 
 /** The tools of a request: all of them, or only searching without a session. */
 export function toolsFor(isAnonymous: boolean): readonly string[] {

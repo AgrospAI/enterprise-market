@@ -140,7 +140,8 @@ function Message({
   }
   return (
     <div>
-      {message.steps?.length > 0 && (
+      {/* Only asking to sign in, with no tool run: there is nothing to list. */}
+      {message.steps?.some((step) => step.type === 'tool') && (
         <Steps steps={message.steps} isRunning={isRunning} />
       )}
       <div
@@ -241,9 +242,12 @@ function PanelHeader({
 }
 
 const BUSY_REASON = 'Wait until the action in progress finishes'
-/** Under the home page's box, while the assistant can only search. */
+/**
+ * Under the message box, once the visitor without a session asks for more than
+ * searching: not before, as most visitors only search.
+ */
 export const SIGN_IN_FOR_MORE =
-  'Searching is open to everyone. Sign in with your wallet to download data or run jobs.'
+  'To download data, buy it or run jobs, connect your wallet and sign in.'
 // How far from the end still counts as reading the latest message.
 const BOTTOM_SLACK_PX = 32
 
@@ -422,7 +426,10 @@ function Conversation({
   isInline: boolean
   onSessionLost: () => void
   onSignOut: () => void
-  /** Without a session: how to sign in for more than searching. */
+  /**
+   * Without a session: how to sign in for more than searching, shown once the
+   * latest answer asks for it.
+   */
   signInGate?: ReactNode
 }): ReactElement {
   const isSearchOnly = address === ANONYMOUS_CHAT
@@ -507,6 +514,9 @@ function Conversation({
   )
 
   const hasConversation = messages.length > 0 || isStreaming
+  const latest = messages[messages.length - 1]
+  const asksToSignIn =
+    isSearchOnly && latest?.role === 'assistant' && !!latest.asksToSignIn
   useEffect(() => setChatting(hasConversation), [hasConversation, setChatting])
   useEffect(() => () => setChatting(false), [setChatting])
 
@@ -674,7 +684,7 @@ function Conversation({
           leading={isInline ? <AssistantMark /> : undefined}
           placeholder={isInline ? ASSISTANT_PLACEHOLDER : undefined}
         >
-          {signInGate}
+          {asksToSignIn && signInGate}
         </Composer>
         <p className={styles.disclaimer}>
           AI answers can be wrong. Nothing is paid without your confirmation.

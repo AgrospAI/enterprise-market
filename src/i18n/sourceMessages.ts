@@ -295,9 +295,6 @@ export const sourceMessages = [
   /* i18n */ { id: 'S3 configuration is required for S3 file type' },
   /* i18n */ { id: 'S3 configuration is required for S3 file validation' },
   /* i18n */ { id: 'SSI Policies' },
-  /* i18n */ {
-    id: 'Searching is open to everyone. Sign in with your wallet to download data or run jobs.'
-  },
   /* i18n */ { id: 'Secret Access Key' },
   /* i18n */ {
     id: 'Secure random generation is not available in this browser.'
@@ -399,6 +396,9 @@ export const sourceMessages = [
   /* i18n */ { id: 'The service needs a configured price token.' },
   /* i18n */ { id: 'The service node is not configured for this marketplace.' },
   /* i18n */ { id: 'The sign-in could not be verified.' },
+  /* i18n */ {
+    id: 'The user now sees a button to connect a wallet and sign in. Do not say where it is on the page.'
+  },
   /* i18n */ { id: 'This endpoint only accepts POST requests' },
   /* i18n */ {
     id: 'This network either has no approved tokens or is not configured for this marketplace.'
@@ -409,6 +409,9 @@ export const sourceMessages = [
   /* i18n */ { id: 'Timed out waiting for the escrow allowance.' },
   /* i18n */ { id: 'Timed out waiting for token allowance update.' },
   /* i18n */ { id: 'Timeout waiting for permissions to be set' },
+  /* i18n */ {
+    id: 'To download data, buy it or run jobs, connect your wallet and sign in.'
+  },
   /* i18n */ { id: 'Too many requests' },
   /* i18n */ { id: 'Too many selected algorithms or publishers.' },
   /* i18n */ { id: 'Tool arguments must be a JSON object' },

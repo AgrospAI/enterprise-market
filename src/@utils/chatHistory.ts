@@ -65,12 +65,14 @@ function readMessage(message: ChatMessage): ChatMessage {
       ? parseJobResultAttachment(message.attachment)
       : undefined
   const { role, content } = message
+  const asksToSignIn = role === 'assistant' && message.asksToSignIn === true
   return {
     role,
     content,
     ...(steps.length ? { steps } : {}),
     ...(intents.length ? { intents } : {}),
-    ...(attachment ? { attachment } : {})
+    ...(attachment ? { attachment } : {}),
+    ...(asksToSignIn ? { asksToSignIn } : {})
   }
 }
 

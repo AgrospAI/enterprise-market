@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { useSiweSession } from '@hooks/useSiweSession'
 import { ChatPanelProvider, useChatPanel } from '@context/ChatPanel'
-import Chat, { ContextMeter, suggestionsFor } from '.'
+import Chat, { ContextMeter, SIGN_IN_FOR_MORE, suggestionsFor } from '.'
 import AssistantButton, { INTRO_SEEN_KEY } from './AssistantButton'
 import { ANONYMOUS_CHAT, CHAT_HISTORY_TTL_MS } from '@utils/chatHistory'
 import {
@@ -880,21 +880,21 @@ describe('Chat on the home page', () => {
       setSession({ anonymousSearch: true })
     })
 
-    it('searches by chat without a wallet, and offers to connect one', async () => {
+    it('searches by chat without a wallet, and asks for none', async () => {
       jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
       fetchMock.mockResolvedValue(
         streamResponse([{ type: 'text', delta: 'Found 3' }, { type: 'done' }])
       )
       renderOnHome()
+      // Nothing about wallets until the visitor asks for more than searching.
+      expect(screen.queryByText(SIGN_IN_FOR_MORE)).not.toBeInTheDocument()
       expect(
-        screen.getByText(/Searching is open to everyone/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('button', { name: 'Connect wallet' })
-      ).toBeInTheDocument()
+        screen.queryByRole('button', { name: 'Connect wallet' })
+      ).not.toBeInTheDocument()
 
       sendMessage('wine datasets')
       await screen.findByText('Found 3')
+      expect(screen.queryByText(SIGN_IN_FOR_MORE)).not.toBeInTheDocument()
       expect(fetchMock.mock.calls[0][0]).toBe('/api/chat')
       // Kept in this tab only, and nothing to sign out of.
       expect(window.sessionStorage.getItem(ANONYMOUS_KEY)).toContain(
@@ -906,8 +906,43 @@ describe('Chat on the home page', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('offers to sign in once the wallet is connected', () => {
+    it('offers to connect a wallet when the answer asks for it', async () => {
+      jest.mocked(useAccount).mockReturnValue({ isConnected: false } as any)
+      fetchMock.mockResolvedValue(
+        streamResponse([
+          { type: 'text', delta: 'Let me show you how.' },
+          { type: 'narration' },
+          { type: 'signIn' },
+          { type: 'text', delta: 'Sign in to download it.' },
+          { type: 'done' }
+        ])
+      )
       renderOnHome()
+      sendMessage('download the wine dataset')
+      await screen.findByText('Sign in to download it.')
+      // No market was checked: no empty list of steps.
+      expect(screen.queryByText(/Checked the market/)).not.toBeInTheDocument()
+      expect(screen.getByText(SIGN_IN_FOR_MORE)).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Connect wallet' })
+      ).toBeInTheDocument()
+      // Kept with the answer, so it is still there after a reload.
+      expect(window.sessionStorage.getItem(ANONYMOUS_KEY)).toContain(
+        '"asksToSignIn":true'
+      )
+    })
+
+    it('offers to sign in once the wallet is connected', async () => {
+      fetchMock.mockResolvedValue(
+        streamResponse([
+          { type: 'signIn' },
+          { type: 'text', delta: 'Sign in to run it.' },
+          { type: 'done' }
+        ])
+      )
+      renderOnHome()
+      sendMessage('run a job')
+      await screen.findByText('Sign in to run it.')
       fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
       expect(signIn).toHaveBeenCalled()
       expect(screen.getByLabelText('Message')).toBeInTheDocument()
@@ -936,8 +971,8 @@ describe('Chat on the home page', () => {
       expect(screen.getByText('Find data by chat')).toBeInTheDocument()
       expect(screen.getByLabelText('Message')).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: 'Connect wallet' })
-      ).toBeInTheDocument()
+        screen.queryByRole('button', { name: 'Connect wallet' })
+      ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Download a free dataset' })
       ).not.toBeInTheDocument()

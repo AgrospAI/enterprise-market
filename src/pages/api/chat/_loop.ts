@@ -15,6 +15,8 @@ import {
   isAllowedTool,
   isIntentTool,
   parseToolArguments,
+  SIGN_IN_TOOL,
+  SIGN_IN_TOOL_DEFINITION,
   toolsFor
 } from './_tools'
 
@@ -108,10 +110,14 @@ How to search:
 - Search once per topic. Search again only if the result has nothing relevant, and at most twice more.
 
 What you cannot do yet:
-- Downloading, buying, running a Compute-to-Data job, checking which algorithms run on a dataset, and reading job results need the user to connect a wallet and sign in, with the button in the message box. If the user asks for any of these, say so in one sentence, and give what you can from a search (for example the asset's link). Do not pretend to prepare anything.
+- Downloading, buying, running a Compute-to-Data job, checking which algorithms run on a dataset, and reading job results need the user to connect a wallet and sign in. If the user asks for any of these, call request_sign_in, which shows them the button to sign in, then say so in one sentence, and give what you can from a search (for example the asset's link). Do not pretend to prepare anything.
 - Answer about an asset only with what the search result says. For more, give its link: its page in the market has all the details.
 
 ${answerRules(true)}`
+
+/** What the model reads after asking the visitor to sign in. */
+export const SIGN_IN_SHOWN =
+  'The user now sees a button to connect a wallet and sign in. Do not say where it is on the page.'
 
 /** Sent before the last round, which has no tools: the model cannot tell otherwise. */
 export const FINAL_ROUND_NOTE = `You have no more tool calls for this message. Answer now from what you already found: say what you found and what is still missing, and tell me what to ask next, for example to name the dataset or the algorithm. Do not say that anything was prepared unless a prepare tool already succeeded.`
@@ -267,6 +273,11 @@ async function runToolCall(
     emit({ type: 'tool', name: 'unavailable', status: 'error' })
     return `Error: the tool ${name} is not available`
   }
+  // Answered here: the browser shows the button, nothing reaches the MCP server.
+  if (name === SIGN_IN_TOOL) {
+    emit({ type: 'signIn' })
+    return SIGN_IN_SHOWN
+  }
 
   emit({ type: 'tool', name, status: 'running' })
   try {
@@ -348,7 +359,15 @@ export async function runChatLoop({
       // The MCP session already lists only the allowed tools: this is a second guard.
       const tools = last
         ? undefined
-        : mcp.tools.filter((tool) => isAllowedTool(tool.function.name, allowed))
+        : [
+            // The sign-in tool is the chat's own, whatever the server lists.
+            ...mcp.tools.filter(
+              (tool) =>
+                tool.function.name !== SIGN_IN_TOOL &&
+                isAllowedTool(tool.function.name, allowed)
+            ),
+            ...(isAnonymous ? [SIGN_IN_TOOL_DEFINITION] : [])
+          ]
       const reply = await callLlm(conversation, tools, onText)
       const { content, toolCalls, usage, model: served } = reply
       if (served) model = served
