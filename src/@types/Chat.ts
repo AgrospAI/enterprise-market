@@ -70,6 +70,13 @@ export type ChatStreamEvent =
    */
   | { type: 'usage'; usage: ChatUsage }
   | { type: 'error'; message: string }
+  /**
+   * What a tool returned, as the model read it. Only sent with CHAT_EVAL_TRACE
+   * outside production, so an eval can check the answer against it.
+   */
+  | { type: 'toolResult'; name: string; args: unknown; text: string }
+  /** Lines of the answer dropped because they named an asset that does not exist. */
+  | { type: 'guard'; dropped: number; lines?: string[] }
   | { type: 'done' }
 
 export interface SiweSessionResponse {

@@ -9,6 +9,8 @@ import {
   IntentAssetRef,
   parseChatIntent
 } from 'src/@types/ChatIntent'
+import { createAnswerGuard, mcpLookup } from './_guard'
+import { checkHistory, historyNote, rewriteHistory } from './_history'
 import type { CallLlm, LlmMessage, LlmToolCall } from './_llm'
 import type { McpSession } from './_mcp'
 import {
@@ -47,11 +49,17 @@ function answerRules(isAnonymous: boolean): string {
       : " A message with job results was sent with a button, not typed: answer it in the language of the user's earlier messages."
   }
 - Write only the final answer. Write no text before or between tool calls, and never mention tools, searches or your process.
-- Answer only from tool results${
+- Answer only from the tool results of this message${
     isAnonymous ? '' : ' and job results'
-  }. Never invent assets, prices or links.
+  }. Your earlier answers in the conversation are not a source: they may be wrong. Name an asset, its DID or its link only if a tool returned it for this message, copying its name and marketUrl exactly. Never invent assets, titles, DIDs, prices, dates, versions or links.
+- If the user asks for something the tool results do not give (a date, a version, a difference between assets, a number of rows, a licence), say that the catalogue does not give it${
+    isAnonymous ? " and give the asset's link" : ''
+  }. Do not guess it or explain it.
+- If the user names an asset or a DID, look it up before answering. If no tool result has it, say you cannot find it in the catalogue, and do not describe it. A similar real asset may be offered, saying it is a different one.
+- If the user disagrees, insists or says something does not exist, check it again with the tools and answer with what they return, even if it contradicts the user or your earlier answer. If your earlier answer named something the tools do not return, say plainly that it was a mistake and that it is not in the catalogue, without making up why.
+- When nothing relevant is found, say so in one sentence and list nothing.
 - Keep it short: the whole answer under 120 words, not counting links. The user waits for every word.
-- Start with one sentence that answers directly, for example how many assets match.
+- Start with one sentence that answers directly. To say how many assets match, give the "total" of the search result, never a number you count or estimate, and only for that search's topic.
 - Show at most 3 assets, the most relevant first. If more match, the first sentence says how many there are.
 - Show each asset as a list item: **[Name](marketUrl)** followed by a dash and one short sentence on what it contains, its price and how it is consumed (Compute-to-Data or download). Never write a bare URL.
 - Leave out results that are not relevant, without mentioning them.${
@@ -78,7 +86,10 @@ Tools: search_assets finds assets, get_asset gives the full details of one DID, 
 How to search:
 - Asset names and descriptions are mostly in English, so search in English whatever language the user writes in: translate the topic first (for example "vino" becomes "wine").
 - Search once per topic. Search again only if the result has nothing relevant, and at most twice more.
-- Call get_asset only if the user needs something the search result does not include.
+- Search again in every message that names assets: earlier tool results are not kept between messages.
+- To find an asset by its title, search with the title as the text.
+- Each search result gives the asset's name, a short description, its author, tags, published date, and for each service its price and whether it is a download or Compute-to-Data: use them when asked.
+- Call get_asset only if the user needs something the search result does not include (for example the last update, the licence or the full description), or to check a DID the user gives.
 - Every turn with tools makes the user wait. When tool calls do not depend on each other, for example searching for a dataset and an algorithm the user named, make them in the same turn.
 
 What you can do:
@@ -108,12 +119,33 @@ The user has not signed in with a wallet, so you can only search the catalogue, 
 How to search:
 - Asset names and descriptions are mostly in English, so search in English whatever language the user writes in: translate the topic first (for example "vino" becomes "wine").
 - Search once per topic. Search again only if the result has nothing relevant, and at most twice more.
+- Search again in every message that names assets: earlier tool results are not kept between messages.
+- To find an asset by its title, search with the title as the text.
+- Each search result gives the asset's name, a short description, its author, tags, published date, and for each service its price and whether it is a download or Compute-to-Data: use them when asked.
 
 What you cannot do yet:
-- Downloading, buying, running a Compute-to-Data job, checking which algorithms run on a dataset, and reading job results need the user to connect a wallet and sign in. If the user asks for any of these, call request_sign_in, which shows them the button to sign in, then say so in one sentence, and give what you can from a search (for example the asset's link). Do not pretend to prepare anything.
+- Downloading, buying, running a Compute-to-Data job, checking which algorithms run on a dataset, and reading job results need the user to connect a wallet and sign in. If the user asks for any of these, call request_sign_in, which shows them the button to sign in, then say so in one sentence, and still answer what a search can: search for the asset and give its link, price and how it is consumed (download or Compute-to-Data). Do not pretend to prepare anything.
+- A question about how an asset is accessed, what it costs or what it contains is not a request to download: do not call request_sign_in for it. Search for the asset and answer from the result, as a list item with its link: its price and whether it is a download or Compute-to-Data. You may add that downloading or running a job needs signing in.
 - Answer about an asset only with what the search result says. For more, give its link: its page in the market has all the details.
 
 ${answerRules(true)}`
+
+/**
+ * Whether the model must look something up before it answers. A follow-up is
+ * answered from the catalogue again, not from earlier answers, which may be
+ * wrong; so is a message that names an asset (in quotes) or a DID. The model
+ * skipped the lookup in these cases and repeated or made up assets.
+ */
+export function mustLookUp(messages: ChatMessage[]): boolean {
+  const last = messages[messages.length - 1]
+  if (!last || last.role !== 'user' || last.attachment) return false
+  const isFollowUp = messages.some((m) => m.role === 'assistant')
+  const namesAsset =
+    /did:[a-z0-9]+:|["“«][^"”»\n]{4,}["”»]/i.test(last.content) ||
+    // A title written in capitals inside the sentence: "the Red Wine Dataset".
+    /\s\p{Lu}[\p{L}\d-]{0,40} \p{Lu}/u.test(last.content)
+  return isFollowUp || namesAsset
+}
 
 /** What the model reads after asking the visitor to sign in. */
 export const SIGN_IN_SHOWN =
@@ -266,7 +298,8 @@ async function runToolCall(
   mcp: Pick<McpSession, 'callTool'>,
   emit: (event: ChatStreamEvent) => void,
   intents: { address?: string; count: number },
-  allowed: readonly string[]
+  allowed: readonly string[],
+  trace = false
 ): Promise<string> {
   const { name } = call.function
   if (!isAllowedTool(name, allowed)) {
@@ -287,7 +320,9 @@ async function runToolCall(
       return emitIntent(name, structured, emit, intents)
     }
     emit({ type: 'tool', name, status: isError ? 'error' : 'done' })
-    return truncate(isError ? `Error: ${text}` : text)
+    const result = truncate(isError ? `Error: ${text}` : text)
+    if (trace) emit({ type: 'toolResult', name, args, text: result })
+    return result
   } catch (error) {
     if ((error as Error)?.name === 'AbortError') throw error
     console.error(`Chat tool ${name} failed:`, (error as Error)?.message)
@@ -320,7 +355,11 @@ export async function runChatLoop({
   callLlm,
   mcp,
   emit,
-  contextTokens
+  contextTokens,
+  trace = false,
+  guard: useGuard = true,
+  historyCheck: useHistoryCheck = true,
+  forceLookup: useForceLookup = true
 }: {
   messages: ChatMessage[]
   /**
@@ -333,18 +372,62 @@ export async function runChatLoop({
   emit: (event: ChatStreamEvent) => void
   /** The model's window in tokens, when it is configured. */
   contextTokens?: number
+  /** Also streams what each tool returned, for evals. Never in production. */
+  trace?: boolean
+  /** Drops answer lines that name assets no tool returned and the catalogue lacks. */
+  guard?: boolean
+  /** Looks up the assets earlier answers named and tells the model what exists. */
+  historyCheck?: boolean
+  /** On follow-ups and messages naming an asset, the first round must call a tool. */
+  forceLookup?: boolean
 }): Promise<void> {
   const isAnonymous = !address
   const allowed = toolsFor(isAnonymous)
   const intents = { address, count: 0 }
+  const checked = useHistoryCheck
+    ? await checkHistory(messages, mcp)
+    : undefined
   const conversation: LlmMessage[] = [
     {
       role: 'system',
-      content: isAnonymous ? ANONYMOUS_SYSTEM_PROMPT : SYSTEM_PROMPT
+      content:
+        (isAnonymous ? ANONYMOUS_SYSTEM_PROMPT : SYSTEM_PROMPT) +
+        (checked ? historyNote(checked) : '')
     },
-    ...messages.map(toLlmMessage)
+    ...(checked ? rewriteHistory(messages, checked) : messages).map(
+      toLlmMessage
+    )
   ]
-  const onText = (delta: string) => emit({ type: 'text', delta })
+  if (checked && trace) {
+    emit({ type: 'toolResult', name: 'history_check', args: {}, text: checked })
+  }
+  const emitText = (delta: string) => emit({ type: 'text', delta })
+  const guard = useGuard
+    ? createAnswerGuard({
+        emitText,
+        lookup: mcpLookup(mcp),
+        userText: messages
+          .filter((m) => m.role === 'user')
+          .map((m) => m.content)
+          .join('\n'),
+        onDropped: (dropped, lines) => {
+          console.warn(
+            `Chat guard dropped ${dropped} line(s) naming unknown assets`
+          )
+          // The dropped text only goes to evals: it is what the user must not see.
+          emit({ type: 'guard', dropped, ...(trace ? { lines } : {}) })
+        }
+      })
+    : undefined
+  const onText = guard ? (delta: string) => guard.write(delta) : emitText
+  const lookUpFirst = useForceLookup && mustLookUp(messages)
+  if (guard && checked) {
+    // Only the assets that exist may be named.
+    const { checkedNow } = JSON.parse(checked) as {
+      checkedNow: { exists: boolean }[]
+    }
+    guard.addToolResult(JSON.stringify(checkedNow.filter((a) => a.exists)))
+  }
   // The largest call of the request: the fullest the model's context got.
   let largest: ChatUsage | undefined
   // The model the server said answered, from the latest call that named one.
@@ -368,7 +451,13 @@ export async function runChatLoop({
             ),
             ...(isAnonymous ? [SIGN_IN_TOOL_DEFINITION] : [])
           ]
-      const reply = await callLlm(conversation, tools, onText)
+      const reply = await callLlm(
+        conversation,
+        tools,
+        onText,
+        round === 1 && tools && lookUpFirst ? 'required' : undefined
+      )
+      await guard?.flush()
       const { content, toolCalls, usage, model: served } = reply
       if (served) model = served
       if (
@@ -395,9 +484,10 @@ export async function runChatLoop({
       for (const [index, call] of toolCalls.entries()) {
         const result =
           index < MAX_TOOL_CALLS_PER_ROUND
-            ? await runToolCall(call, mcp, emit, intents, allowed)
+            ? await runToolCall(call, mcp, emit, intents, allowed, trace)
             : 'Error: too many tool calls at once'
         resultChars += result.length
+        guard?.addToolResult(result)
         conversation.push({
           role: 'tool',
           tool_call_id: call.id,

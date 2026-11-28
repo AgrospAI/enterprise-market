@@ -158,7 +158,13 @@ export default async function handler(
       mcp,
       callLlm: createLlmCaller(chat, controller.signal),
       emit,
-      contextTokens: chat.llmContextTokens
+      contextTokens: chat.llmContextTokens,
+      trace:
+        process.env.CHAT_EVAL_TRACE === '1' &&
+        process.env.NODE_ENV === 'development',
+      guard: process.env.CHAT_OUTPUT_GUARD !== '0',
+      historyCheck: process.env.CHAT_HISTORY_CHECK !== '0',
+      forceLookup: process.env.CHAT_FORCE_LOOKUP !== '0'
     })
   } catch (error) {
     // Conversation content is never logged, and upstream details stay here.

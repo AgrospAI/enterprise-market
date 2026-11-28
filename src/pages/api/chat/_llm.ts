@@ -37,7 +37,9 @@ export interface LlmReply {
 export type CallLlm = (
   messages: LlmMessage[],
   tools: LlmTool[] | undefined,
-  onText: (delta: string) => void
+  onText: (delta: string) => void,
+  /** "required" makes the model call a tool before answering. */
+  toolChoice?: 'auto' | 'required'
 ) => Promise<LlmReply>
 
 interface ToolCallDelta {
@@ -153,7 +155,7 @@ export function createLlmCaller(
     Partial<Pick<ChatConfig, 'llmThinking'>>,
   signal: AbortSignal
 ): CallLlm {
-  return async (messages, tools, onText) => {
+  return async (messages, tools, onText, toolChoice) => {
     const response = await fetch(`${config.llmBaseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -167,7 +169,9 @@ export function createLlmCaller(
         ...STREAM_USAGE,
         ...LLM_SAMPLING,
         ...(config.llmThinking ? {} : NO_THINKING),
-        ...(tools?.length ? { tools } : {})
+        ...(tools?.length
+          ? { tools, ...(toolChoice ? { tool_choice: toolChoice } : {}) }
+          : {})
       }),
       signal
     })
