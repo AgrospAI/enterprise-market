@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gate=\"$CLAUDE_PROJECT_DIR/../llm-bench-wt/scripts/eval_gate.sh\"; if [ -f \"$gate\" ]; then exec bash \"$gate\"; fi",
+            "timeout": 1800
+          }
+        ]
+      }
+    ]
+  }
+}
